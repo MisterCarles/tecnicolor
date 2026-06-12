@@ -3,676 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tecnicolor — Registro Intervencionista del Dolor</title>
+<title>Tecnicolor</title>
 <style>
 :root {
-  --bg: #0d1117; --surface: #161b22; --surface2: #21262d; --border: #30363d;
-  --accent: #7c3aed; --accent2: #a78bfa; --text: #e6edf3; --text2: #8b949e;
-  --success: #3fb950; --radius: 10px;
+  --bg:#141414; --surface:#1e1e1e; --surface2:#262626; --border:#383838;
+  --accent:#9b6dff; --accent2:#c4a8ff; --text:#f0f0f0; --text2:#888896;
+  --success:#4caf7d; --radius:10px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
 
-.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-.app-logo { display: flex; align-items: center; gap: 10px; }
-.app-logo-icon { font-size: 22px; }
-.app-logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.05em; color: var(--accent2); }
-.app-logo-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
-.nav-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
-.nav-btn:hover { background: var(--border); color: var(--text); }
+/* ── Splash ─────────────────────────────────────────────── */
+#splash{position:fixed;inset:0;z-index:1000;background:#141414;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;cursor:pointer;opacity:1;transition:opacity .7s ease}
+#splash.fade-out{opacity:0;pointer-events:none}
+.sp-logo{height:72px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .1s}
+#splash.ready .sp-logo{opacity:1}
+.sp-q{max-width:560px;text-align:center;font-size:clamp(20px,3.5vw,30px);font-weight:300;line-height:1.6;color:var(--text);font-style:italic;opacity:0;transform:translateY(16px);transition:opacity .9s ease .2s,transform .9s ease .2s}
+#splash.ready .sp-q{opacity:1;transform:translateY(0)}
+.sp-a{margin-top:28px;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .9s ease .6s}
+#splash.ready .sp-a{opacity:1}
+.sp-hint{position:absolute;bottom:32px;font-size:11px;color:var(--text2);opacity:0;transition:opacity .6s ease 1.2s}
+#splash.ready .sp-hint{opacity:.35}
 
-.app-main { max-width: 680px; margin: 0 auto; padding: 24px 16px 100px; }
-.section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
-.section-header { padding: 13px 18px; display: flex; align-items: center; gap: 12px; background: var(--surface2); border-bottom: 1px solid var(--border); }
-.section-num { background: var(--accent); color: white; font-size: 11px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.section-title { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
-.section-body { padding: 16px 18px; }
+/* ── Header ─────────────────────────────────────────────── */
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.app-logo{display:flex;align-items:center;gap:10px}
+.app-logo-img{height:36px;width:auto}
+.app-logo-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
+.nav-btn:hover{background:var(--border);color:var(--text)}
 
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+/* ── Screens ────────────────────────────────────────────── */
+.screen{max-width:680px;margin:0 auto;padding:24px 16px 100px}
 
-.opt { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; text-align: left; transition: all 0.15s; line-height: 1.4; }
-.opt:hover { border-color: var(--accent2); background: rgba(124,58,237,0.08); }
-.opt.sel { border-color: var(--accent); background: rgba(124,58,237,0.18); color: var(--accent2); }
-.opt .o-icon { font-size: 18px; display: block; margin-bottom: 4px; }
-.opt .o-label { font-size: 13px; font-weight: 600; }
-.opt .o-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.opt.sel .o-sub { color: rgba(167,139,250,0.7); }
+/* ── Selector ───────────────────────────────────────────── */
+.search-wrap{position:relative;margin-bottom:24px}
+.search-box{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .2s}
+.search-box:focus-within{border-color:var(--accent)}
+.search-icon{font-size:18px;flex-shrink:0;opacity:.5}
+.search-box input{flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text);font-family:inherit}
+.search-box input::placeholder{color:var(--text2)}
+.search-clear{background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px;padding:0 4px}
+.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .1s}
+.search-item:hover{background:var(--surface2)}
+.search-item+.search-item{border-top:1px solid var(--border)}
+.search-item-icon{font-size:20px;flex-shrink:0}
+.search-item-name{font-size:14px;font-weight:500;color:var(--text)}
+.search-item-cat{font-size:11px;color:var(--text2);margin-top:2px}
+.search-empty{padding:16px;text-align:center;color:var(--text2);font-size:13px}
+.selector-hint{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:12px}
+.cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 14px;cursor:pointer;text-align:left;transition:all .15s}
+.cat-card:hover:not(.disabled){border-color:var(--accent);background:rgba(155,109,255,.08)}
+.cat-card.disabled{opacity:.4;cursor:default}
+.cat-icon{font-size:24px;display:block;margin-bottom:8px}
+.cat-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.cat-desc{font-size:11px;color:var(--text2);line-height:1.4}
+.tech-cat-header{display:flex;align-items:center;gap:10px;padding:12px 0 16px;font-size:16px;font-weight:600}
+.tech-list{display:flex;flex-direction:column;gap:8px}
+.tech-btn{background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;border-radius:8px;cursor:pointer;text-align:left;font-size:14px;font-weight:500;transition:all .15s}
+.tech-btn:hover{border-color:var(--accent);background:rgba(155,109,255,.08);color:var(--accent2)}
+.back-cat-btn{background:none;border:none;color:var(--text2);font-size:13px;cursor:pointer;padding:0 0 16px;display:flex;align-items:center;gap:6px}
+.back-cat-btn:hover{color:var(--text)}
 
-.tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.tag { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text2); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.15s; user-select: none; }
-.tag:hover { border-color: var(--accent2); color: var(--text); }
-.tag.sel { border-color: var(--accent); background: rgba(124,58,237,0.18); color: var(--accent2); }
+/* ── Form tech header ───────────────────────────────────── */
+.form-tech-header{display:flex;align-items:center;gap:14px;padding:20px 0 4px;margin-bottom:12px}
+.form-tech-icon{font-size:32px}
+.form-tech-cat{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:3px}
+.form-tech-name{font-size:20px;font-weight:700;color:var(--text)}
 
-.nivel { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text2); padding: 5px 9px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: monospace; transition: all 0.15s; user-select: none; }
-.nivel:hover { border-color: var(--accent2); color: var(--text); }
-.nivel.sel { border-color: var(--accent); background: rgba(124,58,237,0.2); color: var(--accent2); }
+/* ── Sections ───────────────────────────────────────────── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.section-header{padding:12px 18px;display:flex;align-items:center;gap:10px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.section-num{background:var(--accent);color:white;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em}
+.section-body{padding:16px 18px}
 
-input[type="text"], input[type="number"] { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); padding: 9px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; width: 100%; transition: border-color 0.15s; }
-input:focus { outline: none; border-color: var(--accent); }
-input::placeholder { color: var(--text2); }
+/* ── Grids ──────────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:7px}
 
-textarea { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 76px; transition: border-color 0.15s; }
-textarea:focus { outline: none; border-color: var(--accent); }
-textarea::placeholder { color: var(--text2); }
-.macro-area { min-height: 150px; border-color: rgba(124,58,237,0.35) !important; line-height: 1.65; }
-.macro-hint { font-size: 11px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+/* ── Opt buttons ────────────────────────────────────────── */
+.opt{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;transition:all .15s;line-height:1.4;width:100%}
+.opt:hover{border-color:var(--accent2);background:rgba(155,109,255,.08)}
+.opt.sel{border-color:var(--accent);background:rgba(155,109,255,.18);color:var(--accent2)}
+.opt .o-icon{font-size:17px;display:block;margin-bottom:4px}
+.opt .o-label{font-size:13px;font-weight:600;display:block}
+.opt .o-sub{font-size:11px;color:var(--text2);margin-top:2px;display:block}
+.opt.sel .o-sub{color:rgba(196,168,255,.6)}
 
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; }
-.toggle-label { font-size: 13px; }
-.toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
-.toggle input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 22px; cursor: pointer; transition: 0.2s; }
-.toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
-.toggle input:checked + .toggle-slider { background: var(--accent); }
-.toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+/* ── Tags ───────────────────────────────────────────────── */
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;user-select:none}
+.tag:hover{border-color:var(--accent2);color:var(--text)}
+.tag.sel{border-color:var(--accent);background:rgba(155,109,255,.18);color:var(--accent2)}
+.nivel{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);padding:5px 9px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:monospace;transition:all .15s;user-select:none}
+.nivel:hover{border-color:var(--accent2);color:var(--text)}
+.nivel.sel{border-color:var(--accent);background:rgba(155,109,255,.2);color:var(--accent2)}
 
-.sub { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.sub-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
-.sub-label-opt { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text2); }
+/* ── Inputs ─────────────────────────────────────────────── */
+input[type="text"],input[type="number"]{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:inherit;width:100%;transition:border-color .15s}
+input:focus{outline:none;border-color:var(--accent)}
+input::placeholder{color:var(--text2)}
+textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:76px;transition:border-color .15s}
+textarea:focus{outline:none;border-color:var(--accent)}
+textarea::placeholder{color:var(--text2)}
+.macro-area{min-height:130px;border-color:rgba(155,109,255,.3)!important;line-height:1.65}
+.macro-hint{font-size:11px;color:var(--text2);margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.btn-regen{background:rgba(155,109,255,.15);border:1px solid rgba(155,109,255,.4);color:var(--accent2);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;transition:all .15s}
+.btn-regen:hover{background:rgba(155,109,255,.25)}
 
-.row { display: flex; gap: 10px; align-items: flex-start; }
-.field { flex: 1; }
-.field-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-.div { height: 1px; background: var(--border); margin: 12px 0; }
-.mt1 { margin-top: 6px; } .mt2 { margin-top: 10px; } .mt3 { margin-top: 14px; }
+/* ── Toggle ─────────────────────────────────────────────── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0}
+.toggle-label{font-size:13px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:.2s}
+.toggle-slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(18px)}
 
-.btn-generate { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; border: none; padding: 14px 36px; border-radius: 30px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.06em; box-shadow: 0 4px 24px rgba(124,58,237,0.55); transition: all 0.2s; z-index: 50; white-space: nowrap; }
-.btn-generate:hover { background: #6d28d9; box-shadow: 0 6px 28px rgba(124,58,237,0.7); transform: translateX(-50%) translateY(-2px); }
+/* ── Sub-sections ───────────────────────────────────────── */
+.sub{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.sub-label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.sub-label-opt{font-weight:400;text-transform:none;letter-spacing:0}
+.row{display:flex;gap:10px;align-items:flex-start}
+.field{flex:1}
+.field-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.div{height:1px;background:var(--border);margin:12px 0}
+.mt1{margin-top:6px}.mt2{margin-top:10px}.mt3{margin-top:14px}
 
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 680px; max-height: 92vh; display: flex; flex-direction: column; }
-.modal-head { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 14px; font-weight: 700; }
-.modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-.report-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.75; color: var(--text); resize: vertical; min-height: 320px; }
-.report-textarea:focus { outline: none; border-color: var(--accent); }
-.modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-.modal-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); transition: all 0.15s; }
-.modal-btn-pri { background: var(--accent); border-color: var(--accent); color: white; }
-.modal-btn-sec { background: var(--surface2); color: var(--text); }
-.modal-btn-pri:hover { background: #6d28d9; }
-.modal-btn-sec:hover { background: var(--border); }
+/* ── Spine diagram ──────────────────────────────────────── */
+.spine-wrap{background:var(--surface2);border-radius:10px;padding:14px 10px;margin-top:4px;overflow-x:auto}
+.spine-region-hdr{text-align:center;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);padding:8px 0 4px;margin-top:4px}
+.spine-region-hdr:first-child{margin-top:0}
+.spine-col-hdr{display:grid;grid-template-columns:1fr 90px 1fr;gap:4px;align-items:center;margin-bottom:6px}
+.spine-col-hdr span{font-size:10px;color:var(--text2);text-align:center;font-weight:500}
+.spine-col-hdr .col-l{text-align:right}
+.spine-col-hdr .col-r{text-align:left}
+.spine-row{display:grid;grid-template-columns:1fr 90px 1fr;gap:4px;align-items:center;margin-bottom:3px;position:relative}
+.spine-row::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--border);transform:translateX(-50%);z-index:0;pointer-events:none}
+.spine-center{position:relative;z-index:1;text-align:center;cursor:pointer;padding:3px 0}
+.spine-center:hover .vert-lb{color:var(--accent2)}
+.vert-lb{font-size:11px;font-weight:700;font-family:monospace;color:var(--text2);display:block;background:var(--surface);padding:3px 6px;border-radius:4px;border:1px solid var(--border);transition:all .15s}
+.vert-nt{font-size:9px;color:var(--text2);display:block;margin-top:1px;letter-spacing:.03em}
+.spine-side{display:flex;justify-content:flex-end;z-index:1;position:relative}
+.spine-side.r{justify-content:flex-start}
+.bdot{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:monospace;color:var(--text2);transition:all .15s;user-select:none;flex-shrink:0}
+.bdot:hover{border-color:var(--accent2);color:var(--text)}
+.bdot.sel{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 0 8px rgba(155,109,255,.5)}
+.bdot.sel-light{background:rgba(155,109,255,.2);border-color:var(--accent)}
+.spine-legend{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:11px;color:var(--text2)}
+.spine-legend span{display:flex;align-items:center;gap:5px}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:inline-block}
+.legend-dot.sel{background:var(--accent);border-color:var(--accent)}
 
-.toast { position: fixed; top: 68px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 8px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-.toast.on { opacity: 1; }
-.hidden { display: none !important; }
+/* ── Generate btn ───────────────────────────────────────── */
+.btn-generate{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;border:none;padding:14px 36px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.05em;box-shadow:0 4px 24px rgba(155,109,255,.5);transition:all .2s;z-index:50;white-space:nowrap}
+.btn-generate:hover{background:#8559e8;box-shadow:0 6px 28px rgba(155,109,255,.7);transform:translateX(-50%) translateY(-2px)}
 
-/* ── Splash screen ──────────────────────────────────────────────── */
-#splash {
-  position: fixed; inset: 0; z-index: 1000;
-  background: #0d1117;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 40px 32px;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 0.7s ease;
-}
-#splash.fade-out { opacity: 0; pointer-events: none; }
+/* ── Modal ──────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column}
+.modal-head{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:700}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.report-textarea{width:100%;background:#111;border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:13px;line-height:1.75;color:var(--text);resize:vertical;min-height:320px}
+.report-textarea:focus{outline:none;border-color:var(--accent)}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);transition:all .15s}
+.modal-btn-pri{background:var(--accent);border-color:var(--accent);color:white}
+.modal-btn-sec{background:var(--surface2);color:var(--text)}
+.modal-btn-pri:hover{background:#8559e8}
+.modal-btn-sec:hover{background:var(--border)}
 
-.splash-app-name {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.25em;
-  text-transform: uppercase; color: var(--accent2);
-  margin-bottom: 56px; opacity: 0.6;
-}
+/* ── Toast ──────────────────────────────────────────────── */
+.toast{position:fixed;top:68px;left:50%;transform:translateX(-50%);background:var(--success);color:white;padding:8px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+.hidden{display:none!important}
 
-.splash-quote {
-  max-width: 560px; text-align: center;
-  font-size: clamp(22px, 4vw, 32px);
-  font-weight: 300;
-  line-height: 1.55;
-  color: var(--text);
-  letter-spacing: -0.01em;
-  font-style: italic;
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
-}
-#splash.ready .splash-quote { opacity: 1; transform: translateY(0); }
-
-.splash-author {
-  margin-top: 28px;
-  font-size: 13px; font-weight: 500;
-  color: var(--text2);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.9s ease 0.6s;
-}
-#splash.ready .splash-author { opacity: 1; }
-
-.splash-hint {
-  position: absolute; bottom: 32px;
-  font-size: 12px; color: var(--text2);
-  opacity: 0;
-  transition: opacity 0.6s ease 1.2s;
-}
-#splash.ready .splash-hint { opacity: 0.4; }
-
-@media (max-width: 480px) {
-  .grid-auto { grid-template-columns: repeat(2, 1fr); }
-  .row { flex-direction: column; }
+@media(max-width:480px){
+  .grid-auto{grid-template-columns:repeat(2,1fr)}
+  .row{flex-direction:column}
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
+  .spine-row{grid-template-columns:1fr 76px 1fr}
+  .spine-col-hdr{grid-template-columns:1fr 76px 1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ── Splash ────────────────────────────────────────────────── -->
+<!-- SPLASH -->
 <div id="splash" onclick="dismissSplash()">
-  <div class="splash-app-name">Tecnicolor</div>
-  <div class="splash-quote" id="splash-quote"></div>
-  <div class="splash-author" id="splash-author"></div>
-  <div class="splash-hint">toca para continuar</div>
+  <img src="logo.png" alt="Tecnicolor" class="sp-logo">
+  <div class="sp-q" id="sq"></div>
+  <div class="sp-a" id="sa"></div>
+  <div class="sp-hint">toca para continuar</div>
 </div>
 
-<header class="app-header">
+<!-- HEADER -->
+<header class="app-header hidden" id="app-header">
   <div class="app-logo">
-    <span class="app-logo-icon">🧠</span>
-    <div>
-      <div class="app-logo-text">Tecnicolor</div>
-      <div class="app-logo-sub">Registro intervencionista del dolor</div>
-    </div>
+    <img src="logo.png" alt="Tecnicolor" class="app-logo-img">
+    <div class="app-logo-sub" style="margin-top:0">Registro intervencionista del dolor</div>
   </div>
-  <button class="nav-btn" onclick="resetForm()">↺ Nuevo</button>
+  <button class="nav-btn hidden" id="btn-back" onclick="goBack()">← Volver</button>
 </header>
 
-<div class="toast" id="toast">✓ Copiado al portapapeles</div>
-
-<main class="app-main">
-
-  <!-- 01 · TIPO DE TÉCNICA -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">01</div>
-      <div class="section-title">Tipo de técnica</div>
+<!-- SELECTOR -->
+<div class="screen hidden" id="screen-selector">
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="¿Qué técnica? Escribe aunque sea con faltas..." oninput="onSearch(this.value)" autocomplete="off">
+      <button class="search-clear hidden" id="search-clear" onclick="clearSearch()">✕</button>
     </div>
-    <div class="section-body">
-      <div class="grid-2">
-        <button class="opt" id="grp-epidural" onclick="selGrupo('epidural', this)">
-          <span class="o-icon">💉</span>
-          <span class="o-label">Epidural</span>
-          <span class="o-sub">Interlaminar · Parasagital · Caudal · TF</span>
-        </button>
-        <button class="opt" id="grp-rf" onclick="selGrupo('rf', this)">
-          <span class="o-icon">⚡</span>
-          <span class="o-label">Radiofrecuencia</span>
-          <span class="o-sub">Cervical · Lumbar · SI · Periférica</span>
-        </button>
-        <button class="opt" id="grp-infiltracion" onclick="selGrupo('infiltracion', this)">
-          <span class="o-icon">🩹</span>
-          <span class="o-label">Infiltración</span>
-          <span class="o-sub">SI · Botox · PRP</span>
-        </button>
-        <button class="opt" id="grp-implante" onclick="selGrupo('implante', this)">
-          <span class="o-icon">🔋</span>
-          <span class="o-label">Implante</span>
-          <span class="o-sub">SCS · PNS · Bomba intratecal</span>
-        </button>
-      </div>
-      <div id="sub-epidural" class="hidden sub">
-        <div class="sub-label">Abordaje</div>
-        <div class="tags">
-          <span class="tag" onclick="selTecnica('epi-interlaminar', this)">Interlaminar</span>
-          <span class="tag" onclick="selTecnica('epi-parasagital', this)">Parasagital</span>
-          <span class="tag" onclick="selTecnica('epi-caudal', this)">Caudal</span>
-          <span class="tag" onclick="selTecnica('transforaminal', this)">Transforaminal</span>
-        </div>
-      </div>
-      <div id="sub-rf" class="hidden sub">
-        <div class="sub-label">Técnica específica</div>
-        <div class="tags">
-          <span class="tag" onclick="selTecnica('rf-cervical', this)">RF ramos mediales cervicales</span>
-          <span class="tag" onclick="selTecnica('rf-lumbar', this)">RF ramos mediales lumbares</span>
-          <span class="tag" onclick="selTecnica('rf-si', this)">RF articulación sacroilíaca</span>
-          <span class="tag" onclick="selTecnica('rf-periferica', this)">RF periférica</span>
-        </div>
-      </div>
-      <div id="sub-infiltracion" class="hidden sub">
-        <div class="sub-label">Técnica específica</div>
-        <div class="tags">
-          <span class="tag" onclick="selTecnica('inf-si', this)">Sacroilíaca</span>
-          <span class="tag" onclick="selTecnica('botox', this)">Botox</span>
-          <span class="tag" onclick="selTecnica('prp', this)">PRP</span>
-        </div>
-      </div>
-      <div id="sub-implante" class="hidden sub">
-        <div class="sub-label">Técnica específica</div>
-        <div class="tags">
-          <span class="tag" onclick="selTecnica('scs', this)">Estimulación medular (SCS)</span>
-          <span class="tag" onclick="selTecnica('pns', this)">Estimulador periférico (PNS)</span>
-          <span class="tag" onclick="selTecnica('bomba', this)">Bomba intratecal</span>
-        </div>
-      </div>
-    </div>
+    <div class="search-results hidden" id="search-results"></div>
   </div>
-
-  <!-- 02 · DATOS DEL PROCEDIMIENTO -->
-  <div class="section hidden" id="sec-datos">
-    <div class="section-header">
-      <div class="section-num">02</div>
-      <div class="section-title">Datos del procedimiento</div>
-    </div>
-    <div class="section-body">
-      <div class="field-label">Lugar de realización</div>
-      <div class="grid-2 mt1">
-        <button class="opt" onclick="selUbicacion('qx', this)">
-          <span class="o-icon">🏥</span><span class="o-label">Quirófano</span>
-        </button>
-        <button class="opt" onclick="selUbicacion('sala', this)">
-          <span class="o-icon">🛋️</span><span class="o-label">Sala de técnicas</span>
-        </button>
-      </div>
-      <div class="sub">
-        <div class="toggle-row" style="padding-top:0">
-          <span class="toggle-label">Profilaxis antibiótica</span>
-          <label class="toggle">
-            <input type="checkbox" id="chk-atb" onchange="togATB()">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div id="blk-atb" class="hidden mt2">
-          <div class="tags">
-            <span class="tag" onclick="selTag1(this)">Cefazolina 2 g iv</span>
-            <span class="tag" onclick="selTag1(this)">Cefazolina 1 g iv</span>
-            <span class="tag" onclick="selTag1(this)">Cefuroxima 1500 mg iv</span>
-            <span class="tag" onclick="selTag1(this)">Clindamicina 600 mg iv</span>
-            <span class="tag" onclick="selTag1(this)">Gentamicina 240 mg iv</span>
-          </div>
-          <input type="text" id="atb-custom" placeholder="Otro antibiótico..." class="mt2">
-        </div>
-      </div>
-    </div>
+  <div id="cat-view">
+    <div class="selector-hint">o elige por categoría</div>
+    <div class="cat-grid" id="cat-grid"></div>
   </div>
-
-  <!-- 03 · DESCRIPCIÓN -->
-  <div class="section hidden" id="sec-macro">
-    <div class="section-header">
-      <div class="section-num">03</div>
-      <div class="section-title">Descripción del procedimiento</div>
+  <div class="hidden" id="tech-view">
+    <button class="back-cat-btn" onclick="showAllCats()">← Todas las categorías</button>
+    <div class="tech-cat-header">
+      <span id="tech-cat-icon"></span>
+      <span id="tech-cat-name"></span>
     </div>
-    <div class="section-body">
-      <textarea id="macro-txt" class="macro-area" rows="7" placeholder="Selecciona una técnica..."></textarea>
-      <div class="macro-hint">✏️ Texto generado automáticamente — edítalo antes de generar el informe.</div>
-    </div>
+    <div class="tech-list" id="tech-list"></div>
   </div>
+</div>
 
-  <!-- 04 · LOCALIZACIÓN -->
-  <div class="section hidden" id="sec-loc">
-    <div class="section-header">
-      <div class="section-num">04</div>
-      <div class="section-title">Localización</div>
-    </div>
-    <div class="section-body">
-
-      <!-- Lateralidad (no para interlaminar ni caudal) -->
-      <div id="blk-lat">
-        <div class="field-label">Lateralidad</div>
-        <div class="grid-3 mt1">
-          <button class="opt" onclick="selLat('D', this)"><span class="o-label">➡️ Derecha</span></button>
-          <button class="opt" onclick="selLat('I', this)"><span class="o-label">⬅️ Izquierda</span></button>
-          <button class="opt" onclick="selLat('B', this)"><span class="o-label">↔️ Bilateral</span></button>
-        </div>
-      </div>
-
-      <!-- Nivel espinal entre-niveles (epidurales) -->
-      <div id="blk-nivel-espinal" class="hidden mt3">
-        <div class="field-label">Nivel espinal</div>
-        <div class="tags mt1" id="nivel-espinal-tags"></div>
-      </div>
-
-      <!-- Ramos mediales cervicales — nivel individual -->
-      <div id="blk-rf-cerv" class="hidden mt3">
-        <div class="field-label">Niveles (ramos mediales cervicales)</div>
-        <div class="tags mt1">
-          <span class="nivel" onclick="togNivel(this)">C3</span>
-          <span class="nivel" onclick="togNivel(this)">C4</span>
-          <span class="nivel" onclick="togNivel(this)">C5</span>
-          <span class="nivel" onclick="togNivel(this)">C6</span>
-          <span class="nivel" onclick="togNivel(this)">C7</span>
-        </div>
-      </div>
-
-      <!-- Ramos mediales lumbares — nivel individual -->
-      <div id="blk-rf-lumb" class="hidden mt3">
-        <div class="field-label">Niveles (ramos mediales lumbares)</div>
-        <div class="tags mt1">
-          <span class="nivel" onclick="togNivel(this)">L1</span>
-          <span class="nivel" onclick="togNivel(this)">L2</span>
-          <span class="nivel" onclick="togNivel(this)">L3</span>
-          <span class="nivel" onclick="togNivel(this)">L4</span>
-          <span class="nivel" onclick="togNivel(this)">L5</span>
-          <span class="nivel" onclick="togNivel(this)">S1</span>
-        </div>
-      </div>
-
-      <!-- Nervio / zona (RF periférica, PNS) -->
-      <div id="blk-nervio" class="hidden mt3">
-        <div class="field-label">Nervio / zona objetivo</div>
-        <input type="text" id="nervio-input" placeholder="p. ej. Nervio occipital mayor, nervio femoral...">
-      </div>
-
-      <!-- Fase implante -->
-      <div id="blk-fase" class="hidden mt3">
-        <div class="field-label">Fase del procedimiento</div>
-        <div class="grid-2 mt1">
-          <button class="opt" onclick="selFase('prueba', this)">
-            <span class="o-icon">🔬</span><span class="o-label">Prueba / Trial</span>
-          </button>
-          <button class="opt" onclick="selFase('definitivo', this)">
-            <span class="o-icon">✅</span><span class="o-label">Implante definitivo</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Aguja genérica (no RF) -->
-      <div class="sub" id="blk-aguja">
-        <div class="sub-label">Tipo de aguja <span class="sub-label-opt">(opcional)</span></div>
-        <div class="tags mt1">
-          <span class="tag" onclick="togTag(this)">Tuohy</span>
-          <span class="tag" onclick="togTag(this)">Intramuscular</span>
-          <span class="tag" onclick="togTag(this)">Espinal 25G</span>
-          <span class="tag" onclick="togTag(this)">Espinal 27G</span>
-          <span class="tag" onclick="togTag(this)">Quincke</span>
-          <span class="tag" onclick="togTag(this)">Insyte / Abbocath</span>
-        </div>
-        <input type="text" id="aguja-custom" placeholder="Otro tipo o calibre específico..." class="mt2">
-      </div>
-
-      <!-- Botox -->
-      <div id="blk-botox" class="hidden mt3">
-        <div class="field-label">Zonas / músculos tratados</div>
-        <textarea id="botox-zonas" rows="2" placeholder="p. ej. Trapecio bilateral, esplenio del cuello..." class="mt1"></textarea>
-        <div class="row mt2">
-          <div class="field">
-            <div class="field-label">Unidades totales (UI)</div>
-            <input type="number" id="botox-ui" placeholder="UI">
-          </div>
-          <div class="field">
-            <div class="field-label">Dilución</div>
-            <input type="text" id="botox-dil" placeholder="p. ej. 2 mL / 100 UI">
-          </div>
-        </div>
-      </div>
-
-      <!-- PRP -->
-      <div id="blk-prp" class="hidden mt3">
-        <div class="row">
-          <div class="field">
-            <div class="field-label">Zona</div>
-            <input type="text" id="prp-zona" placeholder="p. ej. rodilla, hombro...">
-          </div>
-          <div class="field">
-            <div class="field-label">Volumen (mL)</div>
-            <input type="number" id="prp-vol" placeholder="mL" step="0.5">
-          </div>
-        </div>
-        <div class="mt2">
-          <div class="field-label">Activación</div>
-          <div class="tags mt1">
-            <span class="tag" id="prp-act-si" onclick="selPRPact(this)">Activado (CaCl₂)</span>
-            <span class="tag" id="prp-act-no" onclick="selPRPact(this)">No activado (autólogo puro)</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- 05 · GUÍA DE IMAGEN -->
-  <div class="section hidden" id="sec-imagen">
-    <div class="section-header">
-      <div class="section-num">05</div>
-      <div class="section-title">Guía de imagen</div>
-    </div>
-    <div class="section-body">
-      <div class="grid-3">
-        <button class="opt" onclick="togImagen('fluoroscopia', this)">
-          <span class="o-icon">🔬</span><span class="o-label">Fluoroscopia / Rx</span>
-        </button>
-        <button class="opt" onclick="togImagen('ecografia', this)">
-          <span class="o-icon">📡</span><span class="o-label">Ecografía</span>
-        </button>
-        <button class="opt" onclick="togImagen('ninguna', this)">
-          <span class="o-icon">👁️</span><span class="o-label">Sin guía</span>
-        </button>
-      </div>
-      <div class="div"></div>
-      <div class="toggle-row">
-        <span class="toggle-label">Contraste radiológico (radioopaco)</span>
-        <label class="toggle">
-          <input type="checkbox" id="chk-contraste">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <!-- 06 · FÁRMACOS -->
-  <div class="section hidden" id="sec-farmacos">
-    <div class="section-header">
-      <div class="section-num">06</div>
-      <div class="section-title">Fármacos del procedimiento</div>
-    </div>
-    <div class="section-body">
-
-      <!-- AL multiselección -->
-      <div id="blk-al">
-        <div class="sub-label">Anestésico local <span class="sub-label-opt">(selección múltiple)</span></div>
-        <div class="grid-auto mt1" id="al-grid">
-          <button class="opt" onclick="togAL('Lidocaína 1%', this)"><span class="o-label">Lidocaína 1%</span></button>
-          <button class="opt" onclick="togAL('Lidocaína 2%', this)"><span class="o-label">Lidocaína 2%</span></button>
-          <button class="opt" onclick="togAL('Bupivacaína 0.25%', this)"><span class="o-label">Bupivacaína 0.25%</span></button>
-          <button class="opt" onclick="togAL('Bupivacaína 0.5%', this)"><span class="o-label">Bupivacaína 0.5%</span></button>
-          <button class="opt" onclick="togAL('Levobupivacaína 0.25%', this)"><span class="o-label">Levobupivacaína 0.25%</span></button>
-          <button class="opt" onclick="togAL('Ropivacaína 0.2%', this)"><span class="o-label">Ropivacaína 0.2%</span></button>
-          <button class="opt" onclick="togAL('Ropivacaína 0.5%', this)"><span class="o-label">Ropivacaína 0.5%</span></button>
-          <button class="opt" onclick="togAL('Mepivacaína 1%', this)"><span class="o-label">Mepivacaína 1%</span></button>
-        </div>
-        <div class="row mt2">
-          <div class="field">
-            <div class="field-label">Volumen / dosis</div>
-            <input type="text" id="al-vol" placeholder="p. ej. 10 mL, 5+5 mL...">
-          </div>
-          <div class="field">
-            <div class="field-label">AL personalizado</div>
-            <input type="text" id="al-custom" placeholder="Otro...">
-          </div>
-        </div>
-      </div>
-
-      <!-- Corticoide -->
-      <div class="sub" id="blk-cort">
-        <div class="sub-label">Corticoide</div>
-        <div class="grid-auto mt1" id="cort-grid">
-          <button class="opt" onclick="selCort('Triamcinolona 40 mg', this)"><span class="o-label">Triamcinolona 40 mg</span></button>
-          <button class="opt" onclick="selCort('Triamcinolona 80 mg', this)"><span class="o-label">Triamcinolona 80 mg</span></button>
-          <button class="opt" onclick="selCort('Betametasona 6 mg', this)"><span class="o-label">Betametasona 6 mg</span></button>
-          <button class="opt" onclick="selCort('Betametasona 12 mg', this)"><span class="o-label">Betametasona 12 mg</span></button>
-          <button class="opt" onclick="selCort('Dexametasona 4 mg', this)"><span class="o-label">Dexametasona 4 mg</span></button>
-          <button class="opt" onclick="selCort('Dexametasona 8 mg', this)"><span class="o-label">Dexametasona 8 mg</span></button>
-          <button class="opt" onclick="selCort('Metilprednisolona 40 mg', this)"><span class="o-label">Metilprednisolona 40 mg</span></button>
-          <button class="opt" onclick="selCort('—', this)"><span class="o-label">Sin corticoide</span></button>
-        </div>
-      </div>
-
-      <!-- RF: electrodo + parámetros -->
-      <div id="blk-rf" class="hidden sub">
-        <div class="sub-label">Electrodo de radiofrecuencia</div>
-        <div class="row mt1">
-          <div class="field">
-            <div class="field-label">Longitud</div>
-            <div class="tags mt1">
-              <span class="nivel" onclick="selRFlong('50', this)">50 mm</span>
-              <span class="nivel" onclick="selRFlong('100', this)">100 mm</span>
-              <span class="nivel" onclick="selRFlong('150', this)">150 mm</span>
-            </div>
-          </div>
-          <div class="field">
-            <div class="field-label">Punta activa</div>
-            <div class="tags mt1">
-              <span class="nivel" onclick="selRFtip('2', this)">2 mm</span>
-              <span class="nivel" onclick="selRFtip('5', this)">5 mm</span>
-              <span class="nivel" onclick="selRFtip('10', this)">10 mm</span>
-            </div>
-          </div>
-        </div>
-        <div class="sub-label mt3">Modalidad y parámetros</div>
-        <div class="grid-2 mt1">
-          <button class="opt" onclick="selRF('Convencional', this)">
-            <span class="o-icon">⚡</span>
-            <span class="o-label">Convencional</span>
-            <span class="o-sub">80 °C · 90 s</span>
-          </button>
-          <button class="opt" onclick="selRF('Pulsada', this)">
-            <span class="o-icon">〜</span>
-            <span class="o-label">Pulsada</span>
-            <span class="o-sub">42 °C · 4 × 30 s</span>
-          </button>
-        </div>
-        <div class="row mt2">
-          <div class="field">
-            <div class="field-label">Temperatura (°C)</div>
-            <input type="number" id="rf-temp" placeholder="80">
-          </div>
-          <div class="field">
-            <div class="field-label">Tiempo (s)</div>
-            <input type="number" id="rf-tiempo" placeholder="90">
-          </div>
-          <div class="field">
-            <div class="field-label">Lesiones/electrodo</div>
-            <input type="number" id="rf-lesiones" placeholder="1">
-          </div>
-        </div>
-        <div class="toggle-row mt1">
-          <span class="toggle-label">Test de estimulación previo</span>
-          <label class="toggle">
-            <input type="checkbox" id="chk-test-rf">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Bomba IT -->
-      <div id="blk-it" class="hidden sub">
-        <div class="sub-label">Fármaco intratecal</div>
-        <div class="tags mt1">
-          <span class="tag" onclick="selTag1(this)">Morfina</span>
-          <span class="tag" onclick="selTag1(this)">Ziconotida</span>
-          <span class="tag" onclick="selTag1(this)">Baclofeno</span>
-          <span class="tag" onclick="selTag1(this)">Bupivacaína IT</span>
-          <span class="tag" onclick="selTag1(this)">Hidromorfona</span>
-        </div>
-        <div class="row mt2">
-          <div class="field">
-            <div class="field-label">Concentración</div>
-            <input type="text" id="it-conc" placeholder="p. ej. 1 mg/mL">
-          </div>
-          <div class="field">
-            <div class="field-label">Dosis inicial</div>
-            <input type="text" id="it-dosis" placeholder="p. ej. 0.5 mg/día">
-          </div>
-          <div class="field">
-            <div class="field-label">Volumen reservorio</div>
-            <input type="text" id="it-vol" placeholder="mL">
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- 07 · RESULTADO -->
-  <div class="section hidden" id="sec-resultado">
-    <div class="section-header">
-      <div class="section-num">07</div>
-      <div class="section-title">Resultado del procedimiento</div>
-    </div>
-    <div class="section-body">
-      <div class="grid-2">
-        <button class="opt" onclick="selResultado('sin-incidencias', this)">
-          <span class="o-icon">✅</span><span class="o-label">Sin incidencias</span><span class="o-sub">Procedimiento correcto</span>
-        </button>
-        <button class="opt" onclick="selResultado('dolor-intraprocedimiento', this)">
-          <span class="o-icon">⚠️</span><span class="o-label">Dolor intraprocedimiento</span><span class="o-sub">Tolerancia parcial</span>
-        </button>
-        <button class="opt" onclick="selResultado('complicacion-menor', this)">
-          <span class="o-icon">🔶</span><span class="o-label">Complicación menor</span><span class="o-sub">Resuelta en sala</span>
-        </button>
-        <button class="opt" onclick="selResultado('complicacion-mayor', this)">
-          <span class="o-icon">🔴</span><span class="o-label">Complicación mayor</span><span class="o-sub">Requirió intervención</span>
-        </button>
-      </div>
-      <div class="sub">
-        <div class="sub-label">EVA post-procedimiento inmediato</div>
-        <div class="tags mt1" id="eva-tags">
-          <span class="nivel" onclick="selEVA(this,'0')">0</span>
-          <span class="nivel" onclick="selEVA(this,'1')">1</span>
-          <span class="nivel" onclick="selEVA(this,'2')">2</span>
-          <span class="nivel" onclick="selEVA(this,'3')">3</span>
-          <span class="nivel" onclick="selEVA(this,'4')">4</span>
-          <span class="nivel" onclick="selEVA(this,'5')">5</span>
-          <span class="nivel" onclick="selEVA(this,'6')">6</span>
-          <span class="nivel" onclick="selEVA(this,'7')">7</span>
-          <span class="nivel" onclick="selEVA(this,'8')">8</span>
-          <span class="nivel" onclick="selEVA(this,'9')">9</span>
-          <span class="nivel" onclick="selEVA(this,'10')">10</span>
-        </div>
-      </div>
-      <div id="blk-complicacion" class="hidden sub">
-        <div class="sub-label">Descripción de la complicación</div>
-        <textarea id="complicacion-txt" rows="2" placeholder="Describir la incidencia y resolución..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- 08 · SEDACIÓN -->
-  <div class="section hidden" id="sec-sedacion">
-    <div class="section-header">
-      <div class="section-num">08</div>
-      <div class="section-title">Sedación / analgesia procedimental</div>
-    </div>
-    <div class="section-body">
-      <div class="toggle-row">
-        <span class="toggle-label">Se realizó sedación o analgesia procedimental</span>
-        <label class="toggle">
-          <input type="checkbox" id="chk-sedacion" onchange="togSedacion()">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div id="blk-sedacion" class="hidden mt2">
-        <div class="tags">
-          <span class="tag" onclick="this.classList.toggle('sel')">Midazolam</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Propofol</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Fentanilo</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Ketamina</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Dexmedetomidina</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Paracetamol iv</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Nolotil iv</span>
-          <span class="tag" onclick="this.classList.toggle('sel')">Óxido nitroso</span>
-        </div>
-        <textarea id="sed-obs" class="mt2" rows="2" placeholder="Dosis, vía, detalles adicionales..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- 09 · NOTAS ADICIONALES -->
-  <div class="section hidden" id="sec-obs">
-    <div class="section-header">
-      <div class="section-num">09</div>
-      <div class="section-title">Notas adicionales</div>
-    </div>
-    <div class="section-body">
-      <textarea id="obs-txt" rows="4" placeholder="Indicaciones al alta, próxima revisión, cualquier texto libre..."></textarea>
-    </div>
-  </div>
-
-</main>
+<!-- FORM -->
+<div class="screen hidden" id="screen-form">
+  <div id="form-container"></div>
+</div>
 
 <button class="btn-generate hidden" id="btn-gen" onclick="generarInforme()">GENERAR INFORME →</button>
 
-<!-- Modal -->
+<!-- REPORT MODAL -->
 <div class="overlay hidden" id="overlay">
   <div class="modal">
     <div class="modal-head">
@@ -683,519 +254,853 @@ textarea::placeholder { color: var(--text2); }
       <textarea class="report-textarea" id="report-out" spellcheck="false"></textarea>
     </div>
     <div class="modal-foot">
-      <button class="modal-btn modal-btn-sec" onclick="closeModal()">← Editar formulario</button>
-      <button class="modal-btn modal-btn-pri" onclick="copyReport()">📋 Copiar texto</button>
+      <button class="modal-btn modal-btn-sec" onclick="closeModal()">← Editar</button>
+      <button class="modal-btn modal-btn-pri" onclick="copyReport()">📋 Copiar</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast">✓ Copiado al portapapeles</div>
+
 <script>
-// ── Splash ───────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════════
+
 const QUOTES = [
-  { q: "Solo sé que no sé nada.", a: "Sócrates" },
-  { q: "Todo fluye, nada permanece.", a: "Heráclito" },
-  { q: "El infierno son los demás.", a: "Jean-Paul Sartre" },
-  { q: "Dios ha muerto. Y nosotros lo hemos matado.", a: "Friedrich Nietzsche" },
-  { q: "Pienso, luego existo.", a: "René Descartes" },
-  { q: "La imaginación es más importante que el conocimiento.", a: "Albert Einstein" },
-  { q: "El hombre está condenado a ser libre.", a: "Jean-Paul Sartre" },
-  { q: "Lo que no me destruye me hace más fuerte.", a: "Friedrich Nietzsche" },
-  { q: "En medio del invierno, encontré en mí un verano invencible.", a: "Albert Camus" },
-  { q: "Atrévete a saber.", a: "Immanuel Kant" },
-  { q: "El tiempo es la imagen móvil de la eternidad.", a: "Platón" },
-  { q: "La vida no examinada no merece ser vivida.", a: "Sócrates" },
-  { q: "Ser o no ser: esa es la cuestión.", a: "William Shakespeare" },
-  { q: "Todo lo sólido se desvanece en el aire.", a: "Karl Marx" },
-  { q: "El hombre es la medida de todas las cosas.", a: "Protágoras" },
-  { q: "No cuentes los días; haz que los días cuenten.", a: "Muhammad Ali" },
-  { q: "La belleza es la promesa de felicidad.", a: "Stendhal" },
-  { q: "Hay una grieta en todo. Así es como entra la luz.", a: "Leonard Cohen" },
-  { q: "El coraje es saber a qué no hay que tener miedo.", a: "Platón" },
-  { q: "Prefiero tener preguntas que no pueden ser contestadas que respuestas que no pueden ser cuestionadas.", a: "Richard Feynman" },
-  { q: "Todo acto de creación es, ante todo, un acto de destrucción.", a: "Pablo Picasso" },
-  { q: "La duda es el origen de la sabiduría.", a: "René Descartes" },
-  { q: "No existe viento favorable para el que no sabe a qué puerto se dirige.", a: "Séneca" },
-  { q: "Vivimos como si nunca fuéramos a morir y morimos como si nunca hubiéramos vivido.", a: "Dalai Lama" },
-  { q: "El universo no nos debe claridad.", a: "Richard Feynman" },
-  { q: "Para ser irreemplazable, hay que ser siempre diferente.", a: "Coco Chanel" },
-  { q: "El sufrimiento es inevitable. El drama es opcional.", a: "Epicteto" },
-  { q: "La filosofía es un combate contra el embrujo de nuestro entendimiento.", a: "Ludwig Wittgenstein" },
-  { q: "Lo esencial es invisible a los ojos.", a: "Antoine de Saint-Exupéry" },
-  { q: "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.", a: "Proverbio africano" },
+  {q:"Solo sé que no sé nada.",a:"Sócrates"},
+  {q:"Todo fluye, nada permanece.",a:"Heráclito"},
+  {q:"El infierno son los demás.",a:"Jean-Paul Sartre"},
+  {q:"Dios ha muerto. Y nosotros lo hemos matado.",a:"Friedrich Nietzsche"},
+  {q:"Pienso, luego existo.",a:"René Descartes"},
+  {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
+  {q:"El hombre está condenado a ser libre.",a:"Jean-Paul Sartre"},
+  {q:"Lo que no me destruye me hace más fuerte.",a:"Friedrich Nietzsche"},
+  {q:"En medio del invierno, encontré en mí un verano invencible.",a:"Albert Camus"},
+  {q:"Atrévete a saber.",a:"Immanuel Kant"},
+  {q:"La vida no examinada no merece ser vivida.",a:"Sócrates"},
+  {q:"Ser o no ser: esa es la cuestión.",a:"William Shakespeare"},
+  {q:"Todo lo sólido se desvanece en el aire.",a:"Karl Marx"},
+  {q:"Hay una grieta en todo. Así es como entra la luz.",a:"Leonard Cohen"},
+  {q:"Prefiero preguntas sin respuesta que respuestas sin pregunta.",a:"Richard Feynman"},
+  {q:"No existe viento favorable para el que no sabe a qué puerto se dirige.",a:"Séneca"},
+  {q:"Lo esencial es invisible a los ojos.",a:"Antoine de Saint-Exupéry"},
+  {q:"El coraje es saber a qué no hay que tener miedo.",a:"Platón"},
+  {q:"No cuentes los días; haz que los días cuenten.",a:"Muhammad Ali"},
+  {q:"La filosofía es un combate contra el embrujo de nuestro entendimiento.",a:"Ludwig Wittgenstein"},
 ];
 
-let splashTimer;
+const CATEGORIES = [
+  {id:'epidural',    name:'Epidural',        icon:'💉', desc:'Interlaminar · Transforaminal · Caudal · Parasagital'},
+  {id:'facetas',     name:'Facetas',          icon:'⚡', desc:'Bloqueo · Radiofrecuencia — Cervical · Torácico · Lumbar'},
+  {id:'botox',       name:'Botox',            icon:'💊', desc:'Toxina botulínica tipo A'},
+  {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Intraarticular · Periarticular · RF · Ramas capsulares'},
+  {id:'rodilla',     name:'Rodilla',          icon:'🦵', desc:'Intraarticular · Perirodilla'},
+  {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Bloqueo · Radiofrecuencia'},
+  {id:'estimuladores',name:'Estimuladores',   icon:'🔋', desc:'Próximamente',disabled:true},
+  {id:'simpatico',   name:'Simpático',        icon:'🌡️', desc:'Próximamente',disabled:true},
+  {id:'infusiones',  name:'Infusiones',       icon:'💧', desc:'Próximamente',disabled:true},
+  {id:'bomba',       name:'Relleno de bomba', icon:'🔄', desc:'Próximamente',disabled:true},
+];
 
-function initSplash() {
-  const item = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-  document.getElementById('splash-quote').textContent = `"${item.q}"`;
-  document.getElementById('splash-author').textContent = `— ${item.a}`;
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      document.getElementById('splash').classList.add('ready');
+const TECHNIQUES = [
+  {id:'epi-interlaminar',        name:'Epidural interlaminar',           cat:'epidural',    aliases:['epidural interlaminar','interlaminar','epidrual','epirdual']},
+  {id:'epi-transforaminal',      name:'Epidural transforaminal',         cat:'epidural',    aliases:['transforaminal','tf','foraminal','tranforaminal']},
+  {id:'epi-caudal',              name:'Epidural caudal',                 cat:'epidural',    aliases:['caudal','epidural caudal','sacra','hiato']},
+  {id:'epi-parasagital',         name:'Epidural parasagital',            cat:'epidural',    aliases:['parasagital','parasagittal','parasajital']},
+  {id:'facetas-bloqueo-cerv',    name:'Bloqueo facetas cervicales',      cat:'facetas',     aliases:['facetas cervical','bloqueo facetas cervical','ramos mediales cervicales']},
+  {id:'facetas-rf-cerv',         name:'RF facetas cervicales',           cat:'facetas',     aliases:['radiofrecuencia cervical','rf facetas cervicales','rf cervical']},
+  {id:'facetas-bloqueo-tor',     name:'Bloqueo facetas torácicas',       cat:'facetas',     aliases:['facetas toracicas','bloqueo toracico','ramos mediales toracicos']},
+  {id:'facetas-rf-tor',          name:'RF facetas torácicas',            cat:'facetas',     aliases:['radiofrecuencia toracica','rf facetas toracicas','rf toracico']},
+  {id:'facetas-bloqueo-lumb',    name:'Bloqueo facetas lumbares',        cat:'facetas',     aliases:['facetas lumbares','bloqueo lumbar','ramos mediales lumbares']},
+  {id:'facetas-rf-lumb',         name:'RF facetas lumbares',             cat:'facetas',     aliases:['radiofrecuencia lumbar','rf facetas lumbares','rf lumbar']},
+  {id:'botox',                   name:'Botox',                           cat:'botox',       aliases:['botox','toxina botulinica','botulínica','bótox']},
+  {id:'hombro-intraarticular',   name:'Hombro intraarticular',           cat:'hombro',      aliases:['hombro intraarticular','glenohumeral']},
+  {id:'hombro-periarticular',    name:'Hombro periarticular',            cat:'hombro',      aliases:['hombro periarticular','subacromio','subdeltoideo']},
+  {id:'hombro-rf-supra',         name:'RF pulsada supraspinoso',         cat:'hombro',      aliases:['supra','supraspinoso','rf supra','rf pulsada hombro']},
+  {id:'hombro-capsular-bloqueo', name:'Bloqueo ramas capsulares hombro', cat:'hombro',      aliases:['ramas capsulares hombro','bloqueo capsular']},
+  {id:'hombro-capsular-rf',      name:'RF ramas capsulares hombro',      cat:'hombro',      aliases:['rf capsular hombro','radiofrecuencia capsular']},
+  {id:'rodilla-intraarticular',  name:'Rodilla intraarticular',          cat:'rodilla',     aliases:['rodilla intraarticular','knee','rodilla']},
+  {id:'rodilla-perirodilla',     name:'Perirodilla',                     cat:'rodilla',     aliases:['perirodilla','rodilla periarticular']},
+  {id:'sacroiliaca-bloqueo',     name:'Infiltración sacroilíaca',        cat:'sacroiliaca', aliases:['sacroiliaca','sacroilíaca','si','infiltracion sacroiliaca']},
+  {id:'sacroiliaca-rf',          name:'RF sacroilíaca',                  cat:'sacroiliaca', aliases:['rf sacroiliaca','radiofrecuencia sacroiliaca']},
+];
+
+// ── Spine diagram data ──────────────────────────────────────
+const SPINE = [
+  {r:'C', id:'C2',  lb:'C2',  nt:'GON',          showVert:true},
+  {r:'C', id:'C3s', lb:'C3',  nt:'TON (sup.)',    showVert:true},
+  {r:'C', id:'C3p', lb:'',    nt:'C3 profundo',   showVert:false},
+  {r:'C', id:'C4',  lb:'C4',  nt:'',              showVert:true},
+  {r:'C', id:'C5',  lb:'C5',  nt:'',              showVert:true},
+  {r:'C', id:'C6',  lb:'C6',  nt:'',              showVert:true},
+  {r:'C', id:'C7',  lb:'C7',  nt:'',              showVert:true},
+  {r:'T', id:'T1',  lb:'T1',  nt:'',              showVert:true},
+  {r:'T', id:'T2',  lb:'T2',  nt:'',              showVert:true},
+  {r:'T', id:'T3',  lb:'T3',  nt:'',              showVert:true},
+  {r:'T', id:'T4',  lb:'T4',  nt:'',              showVert:true},
+  {r:'T', id:'T5',  lb:'T5',  nt:'',              showVert:true},
+  {r:'T', id:'T6',  lb:'T6',  nt:'',              showVert:true},
+  {r:'T', id:'T7',  lb:'T7',  nt:'',              showVert:true},
+  {r:'T', id:'T8',  lb:'T8',  nt:'',              showVert:true},
+  {r:'T', id:'T9',  lb:'T9',  nt:'',              showVert:true},
+  {r:'T', id:'T10', lb:'T10', nt:'',              showVert:true},
+  {r:'T', id:'T11', lb:'T11', nt:'',              showVert:true},
+  {r:'T', id:'T12', lb:'T12', nt:'',              showVert:true},
+  {r:'L', id:'L1',  lb:'L1',  nt:'',              showVert:true},
+  {r:'L', id:'L2',  lb:'L2',  nt:'',              showVert:true},
+  {r:'L', id:'L3',  lb:'L3',  nt:'',              showVert:true},
+  {r:'L', id:'L4',  lb:'L4',  nt:'',              showVert:true},
+  {r:'L', id:'L5',  lb:'L5',  nt:'r. posterior',  showVert:true},
+];
+
+const BRANCH_LBL = {
+  C2:'C2 (GON)', C3s:'C3 TON', C3p:'C3 profundo',
+  C4:'C4', C5:'C5', C6:'C6', C7:'C7',
+  T1:'T1', T2:'T2', T3:'T3', T4:'T4', T5:'T5', T6:'T6',
+  T7:'T7', T8:'T8', T9:'T9', T10:'T10', T11:'T11', T12:'T12',
+  L1:'L1', L2:'L2', L3:'L3', L4:'L4', L5:'L5 (ramo dorsal)',
+};
+
+const SPINE_ORDER = ['C2','C3s','C3p','C4','C5','C6','C7','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5'];
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let TECH_ID = null;
+const S = {
+  ubicacion:null, posicion:null, lat:null, niveles:[],
+  branches: new Set(),
+  imagen:[], alList:[], cort:null,
+  rfTipo:null, rfLong:null, rfTip:null,
+  resultado:null, eva:null, sust:null,
+};
+
+// ════════════════════════════════════════════════════════════
+// SPLASH
+// ════════════════════════════════════════════════════════════
+let splashTimer;
+function initSplash(){
+  const item=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('sq').textContent=`"${item.q}"`;
+  document.getElementById('sa').textContent=`— ${item.a}`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('splash').classList.add('ready')));
+  splashTimer=setTimeout(dismissSplash,4500);
+}
+function dismissSplash(){
+  clearTimeout(splashTimer);
+  const el=document.getElementById('splash');
+  el.classList.add('fade-out');
+  setTimeout(()=>{el.remove();showSelector();},750);
+}
+
+// ════════════════════════════════════════════════════════════
+// SEARCH
+// ════════════════════════════════════════════════════════════
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,'')}
+function lev(a,b){
+  if(!a.length)return b.length;if(!b.length)return a.length;
+  const dp=Array.from({length:a.length+1},(_,i)=>[i]);
+  for(let j=1;j<=b.length;j++)dp[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[a.length][b.length];
+}
+function scoreMatch(query,t){
+  const q=norm(query);
+  const corpus=norm([t.name,...t.aliases].join(' '));
+  let score=0;
+  if(corpus.includes(q))score+=100;
+  q.split(/\s+/).filter(w=>w.length>=2).forEach(word=>{
+    if(corpus.includes(word)){score+=50;return;}
+    corpus.split(/\s+/).forEach(cw=>{
+      if(cw.length<2)return;
+      const d=lev(word,cw);
+      if(d===0)score+=60;else if(d===1)score+=35;else if(d===2&&word.length>=4)score+=15;
     });
   });
-  splashTimer = setTimeout(dismissSplash, 4500);
+  return score;
+}
+function onSearch(query){
+  const clear=document.getElementById('search-clear');
+  const res=document.getElementById('search-results');
+  clear.classList.toggle('hidden',!query);
+  if(!query||query.trim().length<2){res.classList.add('hidden');return;}
+  const matches=TECHNIQUES.map(t=>({...t,score:scoreMatch(query,t)})).filter(t=>t.score>0).sort((a,b)=>b.score-a.score).slice(0,6);
+  if(!matches.length){res.innerHTML='<div class="search-empty">Sin resultados — prueba otra descripción</div>';}
+  else{res.innerHTML=matches.map(t=>{const cat=CATEGORIES.find(c=>c.id===t.cat);return`<div class="search-item" onclick="selectTechnique('${t.id}')"><span class="search-item-icon">${cat?.icon||'·'}</span><div><div class="search-item-name">${t.name}</div><div class="search-item-cat">${cat?.name||t.cat}</div></div></div>`;}).join('');}
+  res.classList.remove('hidden');
+}
+function clearSearch(){
+  document.getElementById('search-input').value='';
+  document.getElementById('search-results').classList.add('hidden');
+  document.getElementById('search-clear').classList.add('hidden');
 }
 
-function dismissSplash() {
-  clearTimeout(splashTimer);
-  const el = document.getElementById('splash');
-  el.classList.add('fade-out');
-  setTimeout(() => el.remove(), 800);
-}
-
-initSplash();
-
-// ── Estado ───────────────────────────────────────────────────────
-const S = {
-  grupo: null, tecnica: null,
-  lat: null, niveles: [],
-  imagen: [],
-  alList: [],
-  cort: null, rfTipo: null, rfLong: null, rfTip: null,
-  fase: null, resultado: null, eva: null,
-  ubicacion: null,
-};
-
-// ── Macros ───────────────────────────────────────────────────────
-const MACROS = {
-  'epi-interlaminar': `Se realiza infiltración epidural interlaminar {ubi}bajo control de imagen. Paciente en decúbito prono con almohada abdominal. Asepsia y antisepsia de la zona. Bajo anestesia local de la piel y tejido celular subcutáneo, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Se confirma posición epidural con inyección de contraste radiológico. Se administra la mezcla terapéutica sin incidencias.`,
-  'epi-parasagital': `Se realiza infiltración epidural por abordaje parasagital {ubi}bajo control de imagen. Paciente en decúbito prono. Asepsia y antisepsia. Con proyección parasagital y angulación lateral respecto a la línea media, se introduce la aguja en el espacio epidural mediante pérdida de resistencia. Se confirma posición epidural con inyección de contraste radiológico con distribución adecuada. Se administra la mezcla terapéutica sin incidencias.`,
-  'epi-caudal': `Se realiza infiltración epidural caudal {ubi}bajo control de imagen. Paciente en decúbito prono. Asepsia y antisepsia de la zona sacra. Localización del hiato sacro y confirmación radioscópica. Bajo anestesia local, se introduce aguja a través del ligamento sacrococcígeo hasta el canal sacro. Se confirma posición intracanalicular con inyección de contraste radiológico sin patrón vascular ni subaracnoideo. Se administra la mezcla terapéutica sin incidencias.`,
-  'transforaminal': `Se realiza infiltración transforaminal {ubi}bajo control radioscópico. Paciente en decúbito prono. Con proyección oblicua tipo "ojo de escopeta" se visualiza el foramen neural diana. Bajo anestesia local, se avanza aguja hasta el cuadrante posterosuperior del foramen (zona de seguridad). Se confirma posición periradicular con inyección de contraste radiológico en patrón de flujo epidural sin distribución vascular. Se administra la mezcla terapéutica sin incidencias.`,
-  'rf-cervical': `Se realiza radiofrecuencia de ramos mediales cervicales {ubi}bajo control radioscópico. Paciente en decúbito prono. Bajo anestesia local, se posicionan los electrodos en la unión del pilar articular con el proceso transverso, en posición tangencial al nervio diana. Test de estimulación sensitiva a 50 Hz con reproducción de parestesias locales y motor a 2 Hz sin contracción a voltajes seguros. Se procede a la lesión térmica según los parámetros establecidos sin incidencias.`,
-  'rf-lumbar': `Se realiza radiofrecuencia de ramos mediales lumbares {ubi}bajo control radioscópico. Paciente en decúbito prono. Con proyección anteroposterior y oblicua se posicionan los electrodos en la confluencia del proceso articular superior con el proceso transverso. Test sensitivo a 50 Hz con concordancia topográfica y motor a 2 Hz sin contracción de miembros inferiores. Se realiza la lesión según los parámetros establecidos sin incidencias.`,
-  'rf-si': `Se realiza radiofrecuencia de la articulación sacroilíaca {ubi}bajo control radioscópico. Paciente en decúbito prono. Se posicionan los electrodos cubriendo los ramos dorsales S1-S3 a lo largo de la interlínea sacroilíaca posterior. Test sensitivo y motor sin respuesta a miembros inferiores. Se procede a la lesión según parámetros establecidos sin incidencias.`,
-  'rf-periferica': `Se realiza radiofrecuencia periférica {ubi}bajo guía de imagen. Bajo anestesia local, se localiza el nervio diana y se posiciona el electrodo en su proximidad. Test sensitivo a 50 Hz con reproducción de parestesias en el territorio neural y motor a 2 Hz sin contracción muscular indeseada. Se procede a la lesión según modalidad y parámetros seleccionados sin incidencias.`,
-  'inf-si': `Se realiza infiltración de la articulación sacroilíaca {ubi}bajo control de imagen. Paciente en decúbito prono. Se localiza la interlínea articular sacroilíaca en su tercio inferior. Bajo anestesia local, se introduce aguja hasta el interior articular confirmando posición con inyección de contraste radiológico en patrón articular. Se administra la mezcla terapéutica sin incidencias.`,
-  'botox': `Se realiza infiltración de toxina botulínica tipo A {ubi}. Paciente en posición adecuada. Localización de los grupos musculares diana mediante palpación y/o guía ecográfica. Se infiltran los músculos seleccionados distribuyendo el volumen en múltiples puntos de inyección intramuscular. Se advierte de latencia de efecto de 7-14 días. Procedimiento sin incidencias.`,
-  'prp': `Se realiza infiltración de plasma rico en plaquetas (PRP) {ubi}. Extracción de sangre periférica y procesado mediante centrifugación para obtención del concentrado plaquetario. Bajo guía de imagen se localiza la zona diana y se infiltra el PRP. Se advierte de posible dolor postinfiltración de 24-48 horas. Procedimiento sin incidencias.`,
-  'scs': `Se realiza implante de sistema de estimulación medular (SCS) {ubi}. Paciente en decúbito prono bajo sedación consciente. Acceso epidural percutáneo con aguja de Tuohy. Introducción del electrodo hasta el nivel medular diana bajo control fluoroscópico. Test de estimulación intraoperatoria con cobertura parestésica adecuada del territorio doloroso. Fijación del electrodo para período de prueba / conexión al generador implantado. Procedimiento sin incidencias.`,
-  'pns': `Se realiza implante de estimulador nervioso periférico (PNS) {ubi}. Bajo guía de imagen se localiza el nervio diana. Acceso percutáneo para introducción del electrodo en la proximidad del nervio. Test de estimulación con reproducción de parestesias concordantes. Fijación y conexión al generador. Procedimiento sin incidencias.`,
-  'bomba': `Se realiza implante de sistema de infusión intratecal {ubi}. Paciente en decúbito lateral bajo sedación. Punción intratecal lumbar con aguja de Tuohy. Introducción del catéter intratecal hasta el nivel diana bajo control fluoroscópico con flujo libre de LCR confirmado. El catéter queda fijado para período de prueba / conectado a la bomba en bolsillo subcutáneo abdominal. Programación inicial del sistema. Procedimiento sin incidencias.`,
-};
-
-const LABELS = {
-  'epi-interlaminar': 'Epidural interlaminar', 'epi-parasagital': 'Epidural parasagital',
-  'epi-caudal': 'Epidural caudal', 'transforaminal': 'Infiltración transforaminal',
-  'rf-cervical': 'RF ramos mediales cervicales', 'rf-lumbar': 'RF ramos mediales lumbares',
-  'rf-si': 'RF articulación sacroilíaca', 'rf-periferica': 'RF periférica',
-  'inf-si': 'Infiltración articulación sacroilíaca', 'botox': 'Toxina botulínica (Botox)',
-  'prp': 'PRP', 'scs': 'SCS — Estimulación medular', 'pns': 'PNS — Estimulación periférica',
-  'bomba': 'Bomba intratecal',
-};
-
-const LAT_L = { D: 'lado derecho', I: 'lado izquierdo', B: 'bilateral' };
-const IMG_L = { fluoroscopia: 'fluoroscopia / Rx', ecografia: 'ecografía', ninguna: 'sin guía de imagen' };
-const UBIC_S = { qx: 'en quirófano ', sala: 'en sala de técnicas ' };
-const UBIC_L = { qx: 'quirófano', sala: 'sala de técnicas' };
-const RES_L = {
-  'sin-incidencias': 'Sin incidencias.', 'dolor-intraprocedimiento': 'Dolor intraprocedimiento con tolerancia parcial.',
-  'complicacion-menor': 'Complicación menor resuelta en sala.', 'complicacion-mayor': 'Complicación mayor que requirió intervención.',
-};
-
-// Técnicas SIN lateralidad
-const SIN_LAT = new Set(['epi-interlaminar','epi-caudal']);
-// Técnicas de RF
-const ES_RF = new Set(['rf-cervical','rf-lumbar','rf-si','rf-periferica']);
-
-// ── Selección grupo ──────────────────────────────────────────────
-function selGrupo(g, el) {
-  S.grupo = g; S.tecnica = null; S.niveles = [];
-  document.querySelectorAll('[id^="grp-"]').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-  ['sub-epidural','sub-rf','sub-infiltracion','sub-implante'].forEach(id =>
-    document.getElementById(id).classList.add('hidden'));
-  document.getElementById('sub-' + g).classList.remove('hidden');
-  document.querySelectorAll('[id^="sub-"] .tag').forEach(t => t.classList.remove('sel'));
-  hideDynamic();
-}
-
-function hideDynamic() {
-  ['sec-datos','sec-macro','sec-loc','sec-imagen','sec-farmacos','sec-resultado','sec-sedacion','sec-obs'].forEach(id =>
-    document.getElementById(id).classList.add('hidden'));
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function showSelector(){
+  document.getElementById('app-header').classList.remove('hidden');
+  document.getElementById('screen-selector').classList.remove('hidden');
+  document.getElementById('screen-form').classList.add('hidden');
   document.getElementById('btn-gen').classList.add('hidden');
+  document.getElementById('btn-back').classList.add('hidden');
+  document.getElementById('cat-grid').innerHTML=CATEGORIES.map(c=>`
+    <button class="cat-card${c.disabled?' disabled':''}" ${c.disabled?'':` onclick="showCat('${c.id}')"`}>
+      <span class="cat-icon">${c.icon}</span>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-desc">${c.desc}</div>
+    </button>`).join('');
 }
-
-// ── Selección técnica ────────────────────────────────────────────
-function selTecnica(t, el) {
-  S.tecnica = t; S.niveles = [];
-  document.querySelectorAll('[id^="sub-"] .tag').forEach(x => x.classList.remove('sel'));
-  el.classList.add('sel');
-
-  // Macro con ubicación ya seleccionada si la hay
-  const ubi = S.ubicacion ? UBIC_S[S.ubicacion] : '';
-  document.getElementById('macro-txt').value = (MACROS[t] || '').replace('{ubi}', ubi);
-
-  ['sec-datos','sec-macro','sec-loc','sec-imagen','sec-farmacos','sec-resultado','sec-sedacion','sec-obs'].forEach(id =>
-    document.getElementById(id).classList.remove('hidden'));
+function showCat(catId){
+  const cat=CATEGORIES.find(c=>c.id===catId);
+  document.getElementById('cat-view').classList.add('hidden');
+  const tv=document.getElementById('tech-view');
+  tv.classList.remove('hidden');
+  document.getElementById('tech-cat-icon').textContent=cat.icon+' ';
+  document.getElementById('tech-cat-name').textContent=cat.name;
+  document.getElementById('tech-list').innerHTML=TECHNIQUES.filter(t=>t.cat===catId)
+    .map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
+}
+function showAllCats(){
+  document.getElementById('cat-view').classList.remove('hidden');
+  document.getElementById('tech-view').classList.add('hidden');
+}
+function goBack(){
+  document.getElementById('screen-form').classList.add('hidden');
+  document.getElementById('screen-selector').classList.remove('hidden');
+  document.getElementById('btn-gen').classList.add('hidden');
+  document.getElementById('btn-back').classList.add('hidden');
+  showAllCats();clearSearch();
+}
+function selectTechnique(id){
+  TECH_ID=id;
+  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null});
+  S.branches=new Set();
+  document.getElementById('search-results').classList.add('hidden');
+  document.getElementById('screen-selector').classList.add('hidden');
+  document.getElementById('screen-form').classList.remove('hidden');
   document.getElementById('btn-gen').classList.remove('hidden');
-
-  buildLoc(t);
+  document.getElementById('btn-back').classList.remove('hidden');
+  document.getElementById('form-container').innerHTML=buildForm(id);
+  initHandlers();
+  const mt=document.getElementById('macro-txt');
+  if(mt) mt.value=genMacro(id);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function buildLoc(t) {
-  const show = id => document.getElementById(id).classList.remove('hidden');
-  const hide = id => document.getElementById(id).classList.add('hidden');
-
-  ['blk-lat','blk-nivel-espinal','blk-rf-cerv','blk-rf-lumb','blk-nervio','blk-fase','blk-botox','blk-prp'].forEach(hide);
-  ['blk-al','blk-cort','blk-rf','blk-it','blk-aguja'].forEach(hide);
-  hide('blk-complicacion');
-
-  // Lateralidad: ocultar para interlaminar y caudal
-  if (!SIN_LAT.has(t)) show('blk-lat');
-
-  // Aguja genérica: solo en no-RF
-  if (!ES_RF.has(t)) show('blk-aguja');
-
-  switch(t) {
-    case 'epi-interlaminar':
-    case 'epi-parasagital':
-      show('blk-nivel-espinal');
-      buildNivelEspinal(['C2-C3','C3-C4','C4-C5','C5-C6','C6-C7','C7-T1',
-        'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10','T10-T11','T11-T12','T12-L1',
-        'L1-L2','L2-L3','L3-L4','L4-L5','L5-S1']);
-      show('blk-al'); show('blk-cort'); break;
-    case 'epi-caudal':
-      show('blk-al'); show('blk-cort'); break;
-    case 'transforaminal':
-      show('blk-nivel-espinal');
-      buildNivelEspinal(['C3-C4','C4-C5','C5-C6','C6-C7','C7-T1','T1-T2','T2-T3','T3-T4','T4-T5','T5-T6',
-        'L1-L2','L2-L3','L3-L4','L4-L5','L5-S1']);
-      show('blk-al'); show('blk-cort'); break;
-    case 'rf-cervical':
-      show('blk-rf-cerv'); show('blk-rf'); break;
-    case 'rf-lumbar':
-      show('blk-rf-lumb'); show('blk-rf'); break;
-    case 'rf-si':
-      show('blk-rf'); break;
-    case 'rf-periferica':
-      show('blk-nervio'); show('blk-rf'); break;
-    case 'inf-si':
-      show('blk-al'); show('blk-cort'); break;
-    case 'botox':
-      show('blk-botox'); break;
-    case 'prp':
-      show('blk-prp'); break;
-    case 'scs':
-      show('blk-fase'); break;
-    case 'pns':
-      show('blk-nervio'); show('blk-fase'); break;
-    case 'bomba':
-      show('blk-fase'); show('blk-it'); break;
+// ════════════════════════════════════════════════════════════
+// NATURAL LANGUAGE GENERATORS
+// ════════════════════════════════════════════════════════════
+function natUbi(){return S.ubicacion?(S.ubicacion==='qx'?'en quirófano ':'en sala de técnicas '):''}
+function natOpeningLine(){
+  const pos = S.posicion || 'posición adecuada';
+  const lugar = S.ubicacion ? (S.ubicacion==='qx'?'quirófano':'sala de técnicas') : 'sala';
+  return `Paciente en ${pos}, en ${lugar}, bajo medidas de asepsia tras limpieza de zona a intervenir.`;
+}
+function natLat(prep){
+  if(!S.lat)return '';
+  const m={D:'en el lado derecho',I:'en el lado izquierdo',B:'bilateral'};
+  return (prep?prep+' ':'')+m[S.lat];
+}
+function natNiveles(){
+  if(!S.niveles.length)return '';
+  const n=S.niveles;
+  if(n.length===1)return `a nivel ${n[0]}`;
+  return `a niveles ${n.slice(0,-1).join(', ')} y ${n[n.length-1]}`;
+}
+function natBranches(){
+  if(!S.branches.size)return '';
+  const groups={};
+  for(const b of S.branches){const[lvl,side]=b.split('-');if(!groups[lvl])groups[lvl]=new Set();groups[lvl].add(side);}
+  const sorted=SPINE_ORDER.filter(l=>groups[l]);
+  const desc=sorted.map(lvl=>{
+    const s=groups[lvl],lbl=BRANCH_LBL[lvl]||lvl;
+    if(s.has('L')&&s.has('R'))return`${lbl} bilateral`;
+    if(s.has('R'))return`${lbl} derecho`;
+    return`${lbl} izquierdo`;
+  });
+  if(!desc.length)return '';
+  if(desc.length===1)return desc[0];
+  return desc.slice(0,-1).join(', ')+' y '+desc[desc.length-1];
+}
+function natElectrodo(){
+  const parts=[];
+  if(S.rfLong)parts.push(`de ${S.rfLong} mm`);
+  if(S.rfTip)parts.push(`punta activa de ${S.rfTip} mm`);
+  return parts.length?'electrodos '+parts.join(', con '):'los electrodos de radiofrecuencia';
+}
+function natRFParams(){
+  const p1=gv('rf-p1'),t=gv('rf-tiempo');
+  const parts=[];
+  if(S.rfTipo==='Pulsada'){if(p1)parts.push(`a ${p1} V`);}else{if(p1)parts.push(`a ${p1} °C`);}
+  if(t)parts.push(`durante ${t} s por punto`);
+  return parts.length?parts.join(', '):'';
+}
+function natTests(){
+  const s=gv('rf-sens'),m=gv('rf-motor');
+  const parts=[];
+  if(s)parts.push(`test sensitivo a ${s}`);
+  if(m)parts.push(`test motor a ${m} sin contracción muscular indeseada`);
+  return parts.length?'Se realizan '+parts.join(' y ')+'. ':'';
+}
+function natAL(){
+  const names=[...S.alList];const c=gv('al-custom');if(c)names.push(c);const v=gv('al-vol');
+  if(!names.length&&!v)return'';
+  return names.join(' + ')+(v?` (${v})`:'');
+}
+function natMezcla(){
+  const al=natAL(),cort=S.cort&&S.cort!=='—'?S.cort:'';
+  const parts=[al,cort].filter(Boolean);
+  return parts.length?parts.join(' con '):'';
+}
+function natImagen(){
+  const map={fluoroscopia:'control radioscópico',ecografia:'guía ecográfica'};
+  const parts=(S.imagen||[]).map(x=>map[x]).filter(Boolean);
+  if(!parts.length)return'control de imagen';
+  return parts.length===1?parts[0]:parts.join(' y ');
+}
+function natATB(){
+  if(!gc('chk-atb'))return'';
+  const atb=[...gsel('[data-a="atb1"]')];const ao=gv('atb-otro');if(ao)atb.push(ao);
+  if(!atb.length)return'Se administra profilaxis antibiótica. ';
+  return`Se administra profilaxis antibiótica con ${atb.join(' y ')}. `;
+}
+function natResultado(){
+  if(!S.resultado)return'';
+  const eva=S.eva!=null?` EVA post-procedimiento inmediato: ${S.eva}/10.`:'';
+  const comp=gv('comp-txt');
+  switch(S.resultado){
+    case 'sin-incidencias': return`Procedimiento realizado sin incidencias.${eva}`;
+    case 'dolor-intra': return`Durante el procedimiento el paciente refirió dolor con tolerancia parcial${comp?`: ${comp}`:''}. Se adoptaron las medidas oportunas.${eva}`;
+    case 'comp-menor': return`Incidencia menor durante el procedimiento${comp?`: ${comp}`:''}. Resuelta en sala sin complicaciones adicionales.${eva}`;
+    case 'comp-mayor': return`Complicación mayor durante el procedimiento${comp?`: ${comp}`:''}. Requirió intervención adicional.${eva}`;
+    default:return'';
   }
 }
 
-function buildNivelEspinal(niveles) {
-  const c = document.getElementById('nivel-espinal-tags');
-  c.innerHTML = '';
-  niveles.forEach(n => {
-    const s = document.createElement('span');
-    s.className = 'nivel'; s.textContent = n;
-    s.onclick = () => togNivel(s);
-    c.appendChild(s);
+// ════════════════════════════════════════════════════════════
+// MACRO GENERATOR (natural language)
+// ════════════════════════════════════════════════════════════
+function genMacro(id){
+  const lat=natLat(), niv=natNiveles(), br=natBranches();
+  const electrodo=natElectrodo(), rfparams=natRFParams(), tests=natTests();
+  const mezcla=natMezcla();
+  const opening=natOpeningLine();
+  const atb=natATB();
+  const img=natImagen();
+  const contr=gc('chk-contraste')?' con contraste radiológico':'';
+
+  const latNiv=[lat,niv].filter(Boolean).join(', ');
+  const latBr=[lat,br].filter(Boolean);
+  const latBrDesc=latBr.length?latBr.join(', '):'';
+
+  switch(id){
+    case 'epi-interlaminar':{
+      let t=`${opening} ${atb}Se realiza infiltración epidural interlaminar`;
+      if(niv)t+=` ${niv}`;
+      t+=` bajo ${img}. Bajo anestesia local, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Se confirma posición epidural${contr}. Se administra`;
+      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
+      t+='. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'epi-parasagital':{
+      let t=`${opening} ${atb}Se realiza infiltración epidural parasagital`;
+      if(latNiv)t+=` ${latNiv}`;
+      t+=` bajo ${img}. Con proyección parasagital y angulación lateral se introduce la aguja en el espacio epidural mediante pérdida de resistencia. Se confirma posición epidural${contr}. Se administra`;
+      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
+      t+='. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'epi-caudal':{
+      let t=`${opening} ${atb}Se realiza infiltración epidural caudal bajo ${img}. Localización del hiato sacro y confirmación radioscópica. Bajo anestesia local, se introduce aguja hasta el canal sacro. Se confirma posición intracanalicular${contr} sin distribución vascular ni subaracnoidea. Se administra`;
+      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
+      t+='. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'epi-transforaminal':{
+      let t=`${opening} ${atb}Se realiza infiltración transforaminal`;
+      if(latNiv)t+=` ${latNiv}`;
+      t+=` bajo ${img}. Con proyección oblicua se visualiza el foramen neural diana. Bajo anestesia local, se avanza aguja hasta el cuadrante posterosuperior del foramen. Se confirma posición periradicular${contr} sin distribución vascular. Se administra`;
+      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
+      t+='. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':{
+      const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
+      let t=`${opening} ${atb}Se realiza bloqueo de ramos mediales ${reg} bajo ${img}`;
+      if(latBrDesc)t+=`, tratando ${latBrDesc}`;
+      t+='. Bajo anestesia local, se localiza el punto anatómico del ramo medial y se administra';
+      const bm=gv('blq-mezcla')||'la mezcla terapéutica';
+      t+=` ${bm}`;
+      const bv=gv('blq-vol');if(bv)t+=` (${bv} por punto)`;
+      t+='. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':{
+      const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
+      const modal=S.rfTipo?S.rfTipo.toLowerCase():'';
+      let t=`${opening} ${atb}Se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg} bajo ${img}`;
+      if(latBrDesc)t+=`, tratando ${latBrDesc}`;
+      t+=`. Se posicionan ${electrodo} en la localización anatómica del ramo medial. ${tests}`;
+      if(rfparams)t+=`Se realiza la lesión ${rfparams}. `;
+      t+='Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'botox':{
+      const ui=gv('botox-ui'),vol=gv('botox-vol'),punc=gv('botox-punc');
+      const veh=document.querySelector('[data-a="tg1-veh"].sel')?.textContent||'';
+      let t=`${opening} ${atb}Se realiza infiltración de toxina botulínica tipo A`;
+      const sitio=gv('botox-sitio');if(sitio)t+=` en: ${sitio}`;
+      t+='.';
+      const details=[];
+      if(ui)details.push(`${ui} UI totales`);
+      if(vol)details.push(`volumen total ${vol} mL`);
+      if(punc)details.push(`${punc} punciones`);
+      if(veh)details.push(`vehículo: ${veh.toLowerCase()}`);
+      if(details.length)t+=` Dosis: ${details.join(', ')}.`;
+      t+=' Se advierte de latencia de efecto de 7-14 días. Procedimiento sin incidencias.';
+      return t;
+    }
+    case 'hombro-intraarticular':
+      return `${opening} ${atb}Se realiza infiltración intraarticular de hombro${lat?`, ${lat}`:''}  bajo ${img}. Se accede al espacio glenohumeral y se confirma posición intraarticular.${S.sust?` Se administra ${S.sust}.`:' Se administra la sustancia terapéutica.'} Procedimiento sin incidencias.`;
+    case 'hombro-periarticular':
+      return `${opening} ${atb}Se realiza infiltración periarticular de hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localiza el espacio subdeltoideo/subacromial. Se confirma posición y se administra${S.sust?` ${S.sust}`:' la sustancia terapéutica'}. Procedimiento sin incidencias.`;
+    case 'hombro-rf-supra':
+      return `${opening} ${atb}Se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio supraescapular${lat?`, ${lat}`:''}  bajo ${img}. Se localiza el nervio en la escotadura escapular y se posiciona ${electrodo}. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+    case 'hombro-capsular-bloqueo':
+      return `${opening} ${atb}Se realiza bloqueo de ramas capsulares del hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localizan las ramas capsulares anterior y posterior. Se administra${S.sust?` ${S.sust}`:' la mezcla terapéutica'}. Procedimiento sin incidencias.`;
+    case 'hombro-capsular-rf':
+      return `${opening} ${atb}Se realiza radiofrecuencia de ramas capsulares del hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localizan las ramas y se posiciona ${electrodo}. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+    case 'rodilla-intraarticular':
+      return `${opening} ${atb}Se realiza infiltración intraarticular de rodilla${lat?`, ${lat}`:''}  bajo ${img}. Se accede al espacio articular confirmando posición. Se administra${S.sust?` ${S.sust}`:' la sustancia terapéutica'}. Procedimiento sin incidencias.`;
+    case 'rodilla-perirodilla':
+      return `${opening} ${atb}Se realiza infiltración periarticular de rodilla${lat?`, ${lat}`:''}  bajo ${img}. Se identifican las estructuras periarticulares diana y se realizan las infiltraciones según pauta. Procedimiento sin incidencias.`;
+    case 'sacroiliaca-bloqueo':
+      return `${opening} ${atb}Se realiza infiltración de la articulación sacroilíaca${lat?`, ${lat}`:''}  bajo ${img}. Se localiza la interlínea articular en su tercio inferior. Se accede al espacio articular confirmando posición${contr}. Se administra${S.sust?` ${S.sust}`:' la mezcla terapéutica'}. Procedimiento sin incidencias.`;
+    case 'sacroiliaca-rf':
+      return `${opening} ${atb}Se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():''} de la articulación sacroilíaca${lat?`, ${lat}`:''}  bajo ${img}. Se posiciona ${electrodo} cubriendo los ramos dorsales S1-S3. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+    default:return opening;
+  }
+}
+function regenMacro(){
+  const mt=document.getElementById('macro-txt');
+  if(mt)mt.value=genMacro(TECH_ID);
+}
+
+// ════════════════════════════════════════════════════════════
+// SPINE DIAGRAM BUILDER
+// ════════════════════════════════════════════════════════════
+function buildSpineDiagram(){
+  const regions=[
+    {r:'C',label:'Cervical'},
+    {r:'T',label:'Torácico'},
+    {r:'L',label:'Lumbar'},
+  ];
+  let html=`<div class="spine-wrap">`;
+  html+=`<div class="spine-col-hdr"><span class="col-l">← Izquierda</span><span></span><span class="col-r">Derecha →</span></div>`;
+  regions.forEach(reg=>{
+    const levels=SPINE.filter(s=>s.r===reg.r);
+    html+=`<div class="spine-region-hdr">${reg.label}</div>`;
+    levels.forEach(s=>{
+      const cL=S.branches.has(s.id+'-L')?'sel':'';
+      const cR=S.branches.has(s.id+'-R')?'sel':'';
+      const vertContent=s.showVert?`<span class="vert-lb">${s.lb||'·'}</span>`:`<span class="vert-lb" style="opacity:.3">·</span>`;
+      const noteHtml=s.nt?`<span class="vert-nt">${s.nt}</span>`:'';
+      html+=`<div class="spine-row">
+        <div class="spine-side"><button class="bdot ${cL}" data-branch="${s.id}-L" title="${BRANCH_LBL[s.id]||s.id} — izquierdo"></button></div>
+        <div class="spine-center" onclick="toggleBothBranches('${s.id}')" title="Clic: bilateral">${vertContent}${noteHtml}</div>
+        <div class="spine-side r"><button class="bdot ${cR}" data-branch="${s.id}-R" title="${BRANCH_LBL[s.id]||s.id} — derecho"></button></div>
+      </div>`;
+    });
+  });
+  html+=`<div class="spine-legend"><span><span class="legend-dot"></span>No tratado</span><span><span class="legend-dot sel"></span>Tratado</span><span style="color:var(--text2);font-size:10px">Clic en etiqueta → bilateral</span></div>`;
+  html+=`</div>`;
+  return html;
+}
+
+function toggleBothBranches(lvl){
+  const kL=lvl+'-L', kR=lvl+'-R';
+  const bothSel=S.branches.has(kL)&&S.branches.has(kR);
+  if(bothSel){S.branches.delete(kL);S.branches.delete(kR);}
+  else{S.branches.add(kL);S.branches.add(kR);}
+  refreshSpineDots();
+  regenMacro();
+}
+
+function toggleBranch(key){
+  if(S.branches.has(key))S.branches.delete(key);
+  else S.branches.add(key);
+  refreshSpineDots();
+  regenMacro();
+}
+
+function refreshSpineDots(){
+  document.querySelectorAll('.bdot').forEach(dot=>{
+    const k=dot.dataset.branch;
+    dot.classList.toggle('sel',S.branches.has(k));
   });
 }
 
-// ── Ubicación ────────────────────────────────────────────────────
-function selUbicacion(v, el) {
-  S.ubicacion = v;
-  el.parentElement.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-  // Actualizar macro si tiene el placeholder
-  const ta = document.getElementById('macro-txt');
-  if (ta.value.includes('{ubi}')) {
-    ta.value = ta.value.replace('{ubi}', UBIC_S[v]);
+// ════════════════════════════════════════════════════════════
+// FORM BLOCKS
+// ════════════════════════════════════════════════════════════
+const sec=(title,body)=>`<div class="section"><div class="section-header"><div class="section-num">·</div><div class="section-title">${title}</div></div><div class="section-body">${body}</div></div>`;
+
+const BKDATOS=sec('Procedimiento',`
+  <div class="field-label">Posición del paciente</div>
+  <div class="tags mt1">
+    <span class="tag" data-a="posicion" data-v="decúbito prono">Decúbito prono</span>
+    <span class="tag" data-a="posicion" data-v="decúbito supino">Decúbito supino</span>
+    <span class="tag" data-a="posicion" data-v="decúbito lateral izquierdo">Decúbito lateral izq.</span>
+    <span class="tag" data-a="posicion" data-v="decúbito lateral derecho">Decúbito lateral der.</span>
+    <span class="tag" data-a="posicion" data-v="sedestación">Sedestación</span>
+  </div>
+  <div class="sub-label mt3">Lugar de realización</div>
+  <div class="grid-2 mt1">
+    <button class="opt" data-a="ubicacion" data-v="qx"><span class="o-icon">🏥</span><span class="o-label">Quirófano</span></button>
+    <button class="opt" data-a="ubicacion" data-v="sala"><span class="o-icon">🛋️</span><span class="o-label">Sala de técnicas</span></button>
+  </div>
+  <div class="sub">
+    <div class="toggle-row" style="padding-top:0"><span class="toggle-label">Profilaxis antibiótica</span>
+      <label class="toggle"><input type="checkbox" id="chk-atb" onchange="tog('blk-atb',this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="blk-atb" class="hidden mt2">
+      <div class="tags">${['Cefazolina 2 g iv','Cefazolina 1 g iv','Cefuroxima 1500 mg iv','Clindamicina 600 mg iv'].map(a=>`<span class="tag" data-a="atb1">${a}</span>`).join('')}</div>
+      <input type="text" id="atb-otro" placeholder="Otro antibiótico..." class="mt2">
+    </div>
+  </div>`);
+
+const BKMACRO=sec('Descripción del procedimiento',`
+  <textarea id="macro-txt" class="macro-area" rows="6" placeholder="Descripción..."></textarea>
+  <div class="macro-hint">
+    <span>✏️ Editable — los campos actualizan el texto automáticamente</span>
+    <button class="btn-regen" onclick="regenMacro()">↻ Regenerar</button>
+  </div>`);
+
+const BKIMAGEN=sec('Guía de imagen',`
+  <div class="grid-3">
+    <button class="opt" data-a="imagen" data-v="fluoroscopia"><span class="o-icon">🔬</span><span class="o-label">Fluoroscopia / Rx</span></button>
+    <button class="opt" data-a="imagen" data-v="ecografia"><span class="o-icon">📡</span><span class="o-label">Ecografía</span></button>
+    <button class="opt" data-a="imagen" data-v="ninguna"><span class="o-icon">👁️</span><span class="o-label">Sin guía</span></button>
+  </div>
+  <div class="div"></div>
+  <div class="toggle-row"><span class="toggle-label">Contraste radiológico (radioopaco)</span>
+    <label class="toggle"><input type="checkbox" id="chk-contraste"><span class="toggle-slider"></span></label>
+  </div>`);
+
+const BKALCORT=sec('Fármacos',`
+  <div class="sub-label">Anestésico local <span class="sub-label-opt">(múltiple)</span></div>
+  <div class="grid-auto mt1">${['Lidocaína 1%','Lidocaína 2%','Bupivacaína 0.25%','Bupivacaína 0.5%','Levobupivacaína 0.25%','Ropivacaína 0.2%','Ropivacaína 0.5%','Mepivacaína 1%'].map(al=>`<button class="opt" data-a="al" data-v="${al}"><span class="o-label">${al}</span></button>`).join('')}</div>
+  <div class="row mt2">
+    <div class="field"><div class="field-label">Volumen / dosis</div><input type="text" id="al-vol" placeholder="10 mL, 5+5 mL..." oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">AL libre</div><input type="text" id="al-custom" placeholder="Otro..." oninput="regenMacro()"></div>
+  </div>
+  <div class="sub"><div class="sub-label">Corticoide</div>
+    <div class="grid-auto mt1">${['Triamcinolona 40 mg','Triamcinolona 80 mg','Betametasona 6 mg','Betametasona 12 mg','Dexametasona 4 mg','Dexametasona 8 mg','Metilprednisolona 40 mg','Sin corticoide'].map(c=>`<button class="opt" data-a="cort" data-v="${c==='Sin corticoide'?'—':c}"><span class="o-label">${c}</span></button>`).join('')}
+    </div>
+  </div>`);
+
+const BKRF=sec('Radiofrecuencia',`
+  <div class="sub-label">Electrodo</div>
+  <div class="row mt1">
+    <div class="field"><div class="field-label">Longitud</div><div class="tags mt1">
+      <span class="nivel" data-a="rflong" data-v="50">50 mm</span>
+      <span class="nivel" data-a="rflong" data-v="100">100 mm</span>
+    </div></div>
+    <div class="field"><div class="field-label">Punta activa</div><div class="tags mt1">
+      <span class="nivel" data-a="rftip" data-v="5">5 mm</span>
+      <span class="nivel" data-a="rftip" data-v="10">10 mm</span>
+    </div></div>
+  </div>
+  <div class="sub-label mt3">Modalidad</div>
+  <div class="grid-2 mt1">
+    <button class="opt" data-a="rftype" data-v="Convencional"><span class="o-icon">⚡</span><span class="o-label">Convencional</span></button>
+    <button class="opt" data-a="rftype" data-v="Pulsada"><span class="o-icon">〜</span><span class="o-label">Pulsada</span></button>
+  </div>
+  <div class="row mt2">
+    <div class="field"><div class="field-label" id="lbl-p1">Temperatura (°C)</div><input type="number" id="rf-p1" placeholder="80" oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Tiempo/punto (s)</div><input type="number" id="rf-tiempo" placeholder="90" oninput="regenMacro()"></div>
+  </div>
+  <div class="sub-label mt3">Tests de estimulación <span class="sub-label-opt">(opcional)</span></div>
+  <div class="row mt1">
+    <div class="field"><div class="field-label">Test sensitivo</div><input type="text" id="rf-sens" placeholder="50 Hz / umbral..." oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Test motor</div><input type="text" id="rf-motor" placeholder="2 Hz / umbral..." oninput="regenMacro()"></div>
+  </div>`);
+
+const BKSED=sec('Sedación / analgesia procedimental',`
+  <div class="toggle-row"><span class="toggle-label">Se realizó sedación o analgesia</span>
+    <label class="toggle"><input type="checkbox" id="chk-sed" onchange="tog('blk-sed',this.checked)"><span class="toggle-slider"></span></label>
+  </div>
+  <div id="blk-sed" class="hidden mt2">
+    <div class="tags">${['Midazolam','Propofol','Fentanilo','Ketamina','Dexmedetomidina','Paracetamol iv','Nolotil iv'].map(f=>`<span class="tag" data-a="tgtog">${f}</span>`).join('')}</div>
+    <textarea id="sed-obs" class="mt2" rows="2" placeholder="Dosis, vía, detalles..."></textarea>
+  </div>`);
+
+const BKRES=sec('Resultado',`
+  <div class="grid-2">
+    <button class="opt" data-a="resultado" data-v="sin-incidencias"><span class="o-icon">✅</span><span class="o-label">Sin incidencias</span></button>
+    <button class="opt" data-a="resultado" data-v="dolor-intra"><span class="o-icon">⚠️</span><span class="o-label">Dolor intraprocedimiento</span></button>
+    <button class="opt" data-a="resultado" data-v="comp-menor"><span class="o-icon">🔶</span><span class="o-label">Complicación menor</span></button>
+    <button class="opt" data-a="resultado" data-v="comp-mayor"><span class="o-icon">🔴</span><span class="o-label">Complicación mayor</span></button>
+  </div>
+  <div class="sub"><div class="sub-label">EVA post-procedimiento</div>
+    <div class="tags mt1">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="nivel" data-a="eva" data-v="${n}">${n}</span>`).join('')}</div>
+  </div>
+  <div id="blk-comp" class="hidden sub">
+    <div class="sub-label">Descripción complicación</div>
+    <textarea id="comp-txt" rows="2" placeholder="Incidencia y resolución..."></textarea>
+  </div>`);
+
+const BKNOTAS=sec('Notas adicionales',`<textarea id="obs-txt" rows="3" placeholder="Indicaciones al alta, próxima revisión, texto libre..."></textarea>`);
+
+const bkLat=()=>`<div class="mt3"><div class="field-label">Lateralidad</div><div class="grid-3 mt1">
+  <button class="opt" data-a="lat" data-v="D"><span class="o-label">➡️ Derecha</span></button>
+  <button class="opt" data-a="lat" data-v="I"><span class="o-label">⬅️ Izquierda</span></button>
+  <button class="opt" data-a="lat" data-v="B"><span class="o-label">↔️ Bilateral</span></button>
+</div></div>`;
+
+const bkNivEpi=lista=>`<div class="mt3"><div class="field-label">Nivel espinal</div><div class="tags mt1">${lista.map(n=>`<span class="nivel" data-a="nivel" data-v="${n}">${n}</span>`).join('')}</div></div>`;
+
+const BKSUST=sec('Sustancia infiltrada',`
+  <div class="grid-2">
+    <button class="opt" data-a="sust" data-v="PRP"><span class="o-icon">🩸</span><span class="o-label">PRP</span></button>
+    <button class="opt" data-a="sust" data-v="Ácido hialurónico"><span class="o-icon">💧</span><span class="o-label">Ácido hialurónico</span></button>
+    <button class="opt" data-a="sust" data-v="AL + corticoide"><span class="o-icon">💉</span><span class="o-label">AL + Corticoide</span></button>
+    <button class="opt" data-a="sust" data-v="Anestésico local"><span class="o-icon">💊</span><span class="o-label">Anestésico local</span></button>
+  </div>
+  <div id="blk-sust-alcort" class="hidden">${BKALCORT}</div>
+  <div class="row mt2">
+    <div class="field"><div class="field-label">Volumen (mL)</div><input type="number" id="sust-vol" placeholder="mL" step="0.5"></div>
+    <div class="field"><div class="field-label">Producto / marca</div><input type="text" id="sust-marca" placeholder="Opcional..."></div>
+  </div>`);
+
+const BKFACETAS_LOC=sec('Localización',bkLat()+`<div class="mt3"><div class="field-label">Ramos mediales — selecciona en el diagrama</div>${buildSpineDiagram()}</div>`);
+
+// ════════════════════════════════════════════════════════════
+// FORM BUILDER
+// ════════════════════════════════════════════════════════════
+const NIVELES_EPI=['C2-C3','C3-C4','C4-C5','C5-C6','C6-C7','C7-T1','T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10','T10-T11','T11-T12','T12-L1','L1-L2','L2-L3','L3-L4','L4-L5','L5-S1'];
+const NIVELES_TF=['C3-C4','C4-C5','C5-C6','C6-C7','C7-T1','T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','L1-L2','L2-L3','L3-L4','L4-L5','L5-S1'];
+
+function techHeader(id){
+  const t=TECHNIQUES.find(x=>x.id===id);
+  const c=CATEGORIES.find(x=>x.id===t?.cat);
+  return`<div class="form-tech-header"><span class="form-tech-icon">${c?.icon||'·'}</span><div><div class="form-tech-cat">${c?.name||''}</div><div class="form-tech-name">${t?.name||''}</div></div></div>`;
+}
+
+function buildForm(id){
+  const H=techHeader(id);
+  const locEpi=(body)=>sec('Localización',body);
+  switch(id){
+    case 'epi-interlaminar':
+      return H+BKDATOS+BKMACRO+locEpi(bkNivEpi(NIVELES_EPI))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+    case 'epi-caudal':
+      return H+BKDATOS+BKMACRO+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+    case 'epi-parasagital':
+      return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_EPI))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+    case 'epi-transforaminal':
+      return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_TF))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+    case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':
+      return H+BKDATOS+BKMACRO+BKFACETAS_LOC+
+        sec('Mezcla infiltrada',`<div class="row"><div class="field"><div class="field-label">Volumen por punto</div><input type="text" id="blq-vol" placeholder="p. ej. 1 mL" oninput="regenMacro()"></div><div class="field"><div class="field-label">Mezcla</div><input type="text" id="blq-mezcla" placeholder="AL + corticoide..." oninput="regenMacro()"></div></div>`)+
+        BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':
+      return H+BKDATOS+BKMACRO+BKFACETAS_LOC+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'botox':
+      return H+BKDATOS+BKMACRO+
+        sec('Infiltración',`
+          <div class="field-label">Sitio de infiltración</div>
+          <textarea id="botox-sitio" rows="2" class="mt1" placeholder="Músculos y zonas..." oninput="regenMacro()"></textarea>
+          <div class="row mt2">
+            <div class="field"><div class="field-label">Unidades (UI)</div><input type="number" id="botox-ui" placeholder="UI" oninput="regenMacro()"></div>
+            <div class="field"><div class="field-label">Volumen total (mL)</div><input type="number" id="botox-vol" placeholder="mL" step="0.1" oninput="regenMacro()"></div>
+            <div class="field"><div class="field-label">N.º punciones</div><input type="number" id="botox-punc" oninput="regenMacro()"></div>
+          </div>
+          <div class="mt3"><div class="field-label">Vehículo</div><div class="tags mt1">
+            <span class="tag" data-a="tg1-veh">Suero fisiológico</span>
+            <span class="tag" data-a="tg1-veh">Anestésico local</span>
+          </div></div>`)+
+        BKRES+BKNOTAS;
+    case 'hombro-intraarticular':case 'hombro-periarticular':case 'hombro-capsular-bloqueo':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'hombro-rf-supra':case 'hombro-capsular-rf':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'rodilla-intraarticular':case 'rodilla-perirodilla':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'sacroiliaca-bloqueo':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'sacroiliaca-rf':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    default:
+      return H+'<div class="section"><div class="section-body" style="padding:20px;color:var(--text2)">Formulario en construcción...</div></div>';
   }
 }
 
-function togATB() {
-  document.getElementById('blk-atb').classList.toggle('hidden', !document.getElementById('chk-atb').checked);
-}
+// ════════════════════════════════════════════════════════════
+// EVENT HANDLERS
+// ════════════════════════════════════════════════════════════
+function tog(id,on){document.getElementById(id)?.classList.toggle('hidden',!on)}
 
-// ── Campos ───────────────────────────────────────────────────────
-function selLat(v, el) {
-  S.lat = v;
-  el.parentElement.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
+function initHandlers(){
+  document.getElementById('form-container').addEventListener('click',e=>{
+    // Branch dots
+    const bdot=e.target.closest('.bdot');
+    if(bdot){toggleBranch(bdot.dataset.branch);return;}
 
-function togNivel(el) {
-  el.classList.toggle('sel');
-  const v = el.textContent;
-  if (el.classList.contains('sel')) { if (!S.niveles.includes(v)) S.niveles.push(v); }
-  else S.niveles = S.niveles.filter(n => n !== v);
-}
+    const el=e.target.closest('[data-a]');
+    if(!el)return;
+    const a=el.dataset.a,v=el.dataset.v;
 
-function togImagen(v, el) {
-  el.classList.toggle('sel');
-  if (el.classList.contains('sel')) { if (!S.imagen.includes(v)) S.imagen.push(v); }
-  else S.imagen = S.imagen.filter(x => x !== v);
-}
-
-function togAL(v, el) {
-  el.classList.toggle('sel');
-  if (el.classList.contains('sel')) { if (!S.alList.includes(v)) S.alList.push(v); }
-  else S.alList = S.alList.filter(x => x !== v);
-}
-
-function togTag(el) {
-  el.classList.toggle('sel');
-}
-
-function selCort(v, el) {
-  S.cort = v;
-  document.querySelectorAll('#cort-grid .opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selRF(v, el) {
-  S.rfTipo = v;
-  el.parentElement.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selRFlong(v, el) {
-  S.rfLong = v;
-  el.parentElement.querySelectorAll('.nivel').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selRFtip(v, el) {
-  S.rfTip = v;
-  el.parentElement.querySelectorAll('.nivel').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selFase(v, el) {
-  S.fase = v;
-  el.parentElement.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selResultado(v, el) {
-  S.resultado = v;
-  el.parentElement.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-  document.getElementById('blk-complicacion').classList.toggle('hidden', !['complicacion-menor','complicacion-mayor'].includes(v));
-}
-
-function selEVA(el, v) {
-  S.eva = v;
-  document.querySelectorAll('#eva-tags .nivel').forEach(t => t.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selTag1(el) {
-  el.closest('.tags').querySelectorAll('.tag').forEach(t => t.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function selPRPact(el) {
-  document.querySelectorAll('#blk-prp .tags .tag').forEach(t => t.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function togSedacion() {
-  document.getElementById('blk-sedacion').classList.toggle('hidden', !document.getElementById('chk-sedacion').checked);
-}
-
-// ── Helpers ──────────────────────────────────────────────────────
-function val(id) { return (document.getElementById(id)?.value || '').trim(); }
-function chk(id) { return document.getElementById(id)?.checked || false; }
-function selTags(sel) { return Array.from(document.querySelectorAll(sel + '.sel')).map(t => t.textContent.trim()); }
-
-// ── Párrafo técnico integrado ────────────────────────────────────
-function buildTechParagraph() {
-  const t = S.tecnica;
-  const parts = [];
-
-  // Imagen
-  if (S.imagen.length) {
-    const imgs = S.imagen.map(x => IMG_L[x]);
-    let img = `Control de imagen: ${imgs.join(' y ')}`;
-    if (chk('chk-contraste')) img += ' con contraste radioopaco';
-    parts.push(img + '.');
-  }
-
-  // Aguja (no-RF) o electrodo (RF)
-  if (ES_RF.has(t)) {
-    const partsRF = [];
-    if (S.rfLong || S.rfTip) {
-      let e = 'Electrodo';
-      if (S.rfLong) e += ` de ${S.rfLong} mm`;
-      if (S.rfTip) e += `, punta activa de ${S.rfTip} mm`;
-      partsRF.push(e);
+    if(a==='posicion'){
+      S.posicion=v;
+      el.closest('.tags').querySelectorAll('[data-a="posicion"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
     }
-    if (S.rfTipo) {
-      const temp = val('rf-temp'), tiempo = val('rf-tiempo'), lesiones = val('rf-lesiones');
-      let rf = `RF ${S.rfTipo.toLowerCase()}`;
-      const params = [];
-      if (temp) params.push(`${temp} °C`);
-      if (tiempo) params.push(`${tiempo} s`);
-      if (params.length) rf += ` — ${params.join(', ')}`;
-      if (lesiones) rf += `, ${lesiones} lesión(es)/electrodo`;
-      partsRF.push(rf);
+    else if(a==='ubicacion'){
+      S.ubicacion=v;
+      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
     }
-    if (chk('chk-test-rf')) partsRF.push('test de estimulación positivo previo a lesión');
-    if (partsRF.length) parts.push(partsRF.join('. ') + '.');
-  } else {
-    const agujaList = selTags('#blk-aguja .tags .tag');
-    const agujaCustom = val('aguja-custom');
-    if (agujaCustom) agujaList.push(agujaCustom);
-    if (agujaList.length) parts.push(`Material: ${agujaList.join(', ')}.`);
-  }
-
-  // AL
-  const alNombres = [...S.alList];
-  const alCustom = val('al-custom');
-  if (alCustom) alNombres.push(alCustom);
-  const alVol = val('al-vol');
-  if (alNombres.length || alVol) {
-    let al = 'Anestésico local: ';
-    if (alNombres.length) al += alNombres.join(' + ');
-    if (alVol) al += ` ${alVol}`;
-    parts.push(al + '.');
-  }
-
-  // Corticoide
-  if (S.cort && S.cort !== '—') parts.push(`Corticoide: ${S.cort}.`);
-
-  // ATB
-  if (chk('chk-atb')) {
-    const atbSel = selTags('#blk-atb .tags .tag');
-    const atbCustom = val('atb-custom');
-    const atbList = [...atbSel, ...(atbCustom ? [atbCustom] : [])];
-    if (atbList.length) parts.push(`Profilaxis antibiótica: ${atbList.join(', ')}.`);
-    else parts.push('Profilaxis antibiótica administrada.');
-  }
-
-  // Botox
-  if (t === 'botox') {
-    const zonas = val('botox-zonas'), ui = val('botox-ui'), dil = val('botox-dil');
-    const bParts = [];
-    if (zonas) bParts.push(`Zonas: ${zonas}`);
-    if (ui) bParts.push(`${ui} UI`);
-    if (dil) bParts.push(`dilución ${dil}`);
-    if (bParts.length) parts.push(bParts.join('. ') + '.');
-  }
-
-  // PRP
-  if (t === 'prp') {
-    const zona = val('prp-zona'), pvol = val('prp-vol');
-    const actSi = document.getElementById('prp-act-si')?.classList.contains('sel');
-    const actNo = document.getElementById('prp-act-no')?.classList.contains('sel');
-    const pParts = [];
-    if (zona) pParts.push(`Zona: ${zona}`);
-    if (pvol) pParts.push(`${pvol} mL`);
-    if (actSi) pParts.push('activado con CaCl₂');
-    else if (actNo) pParts.push('no activado');
-    if (pParts.length) parts.push(pParts.join('. ') + '.');
-  }
-
-  // IT
-  if (t === 'bomba') {
-    const itFarm = selTags('#blk-it .tags .tag'), itConc = val('it-conc'), itDosis = val('it-dosis'), itVol = val('it-vol');
-    const iParts = [];
-    if (itFarm.length) iParts.push(`Fármaco IT: ${itFarm.join(', ')}`);
-    if (itConc) iParts.push(`concentración ${itConc}`);
-    if (itDosis) iParts.push(`dosis inicial ${itDosis}`);
-    if (itVol) iParts.push(`reservorio ${itVol} mL`);
-    if (iParts.length) parts.push(iParts.join('. ') + '.');
-  }
-
-  return parts.join(' ');
+    else if(a==='lat'){
+      S.lat=v;
+      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='nivel'){
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel')){if(!S.niveles.includes(v))S.niveles.push(v);}
+      else S.niveles=S.niveles.filter(n=>n!==v);
+      regenMacro();
+    }
+    else if(a==='imagen'){
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel')){if(!S.imagen.includes(v))S.imagen.push(v);}
+      else S.imagen=S.imagen.filter(x=>x!==v);
+      regenMacro();
+    }
+    else if(a==='al'){
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel')){if(!S.alList.includes(v))S.alList.push(v);}
+      else S.alList=S.alList.filter(x=>x!==v);
+      regenMacro();
+    }
+    else if(a==='cort'){
+      S.cort=v;
+      document.querySelectorAll('[data-a="cort"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='rftype'){
+      S.rfTipo=v;
+      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      const lbl=document.getElementById('lbl-p1');
+      if(lbl)lbl.textContent=v==='Pulsada'?'Voltaje (V)':'Temperatura (°C)';
+      regenMacro();
+    }
+    else if(a==='rflong'){
+      S.rfLong=v;
+      el.parentElement.querySelectorAll('.nivel').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='rftip'){
+      S.rfTip=v;
+      el.parentElement.querySelectorAll('.nivel').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='resultado'){
+      S.resultado=v;
+      document.querySelectorAll('[data-a="resultado"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      document.getElementById('blk-comp')?.classList.toggle('hidden',!v.includes('comp'));
+    }
+    else if(a==='eva'){
+      S.eva=v;
+      document.querySelectorAll('[data-a="eva"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+    }
+    else if(a==='atb1'){
+      el.closest('.tags').querySelectorAll('[data-a="atb1"]').forEach(t=>t.classList.remove('sel'));
+      el.classList.add('sel');
+    }
+    else if(a==='tgtog'){el.classList.toggle('sel');}
+    else if(a==='tg1-veh'){
+      el.closest('.tags').querySelectorAll('[data-a="tg1-veh"]').forEach(t=>t.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='sust'){
+      S.sust=v;
+      document.querySelectorAll('[data-a="sust"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      document.getElementById('blk-sust-alcort')?.classList.toggle('hidden',!['AL + corticoide','Anestésico local'].includes(v));
+      regenMacro();
+    }
+  });
 }
 
-// ── Generar informe ──────────────────────────────────────────────
-function generarInforme() {
-  const t = S.tecnica;
-  if (!t) { alert('Selecciona un tipo de técnica primero.'); return; }
+// ════════════════════════════════════════════════════════════
+// REPORT
+// ════════════════════════════════════════════════════════════
+const IMG_L={fluoroscopia:'fluoroscopia / Rx',ecografia:'ecografía',ninguna:'sin guía de imagen'};
+const RES_L={'sin-incidencias':'Sin incidencias.','dolor-intra':'Dolor intraprocedimiento con tolerancia parcial.','comp-menor':'Complicación menor resuelta en sala.','comp-mayor':'Complicación mayor que requirió intervención.'};
+const UBIC_L={qx:'quirófano',sala:'sala de técnicas'};
+const LAT_L={D:'lado derecho',I:'lado izquierdo',B:'bilateral'};
 
-  const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  const lines = [];
-  const add = s => lines.push(s);
-  const br = () => lines.push('');
+const gv=id=>(document.getElementById(id)?.value||'').trim();
+const gc=id=>document.getElementById(id)?.checked||false;
+const gsel=sel=>Array.from(document.querySelectorAll(sel)).filter(e=>e.classList.contains('sel')).map(e=>e.textContent.trim());
+
+function generarInforme(){
+  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const lines=[];const add=s=>lines.push(s);const br=()=>lines.push('');
 
   add(`Fecha: ${fecha}`);
   br();
 
-  // Cabecera técnica
-  let cabecera = LABELS[t] || t;
-  const detalles = [];
-  if (S.lat) detalles.push(LAT_L[S.lat]);
-  if (S.ubicacion) detalles.push(UBIC_L[S.ubicacion]);
-  if (detalles.length) cabecera += ` — ${detalles.join(', ')}`;
-  add(cabecera.toUpperCase());
+  // Texto clínico directo
+  const macro=gv('macro-txt');
+  if(macro) add(macro);
 
-  if (S.niveles.length) add(`Nivel(es): ${S.niveles.join(', ')}`);
-  const nervio = val('nervio-input');
-  if (nervio) add(`Nervio / zona: ${nervio}`);
-  if (S.fase) add(`Fase: ${S.fase === 'prueba' ? 'Prueba / Trial' : 'Implante definitivo'}`);
-
-  br();
-
-  // Macro (descripción clínica, editable)
-  let macro = val('macro-txt').replace(/{ubi}/g, '');
-  if (macro) { add(macro); br(); }
-
-  // Párrafo técnico integrado
-  const techPar = buildTechParagraph();
-  if (techPar) { add(techPar); br(); }
-
-  // Resultado y EVA
-  if (S.resultado) {
-    add(`RESULTADO: ${RES_L[S.resultado]}`);
-    const compTxt = val('complicacion-txt');
-    if (compTxt) add(compTxt);
-  }
-  if (S.eva !== null && S.eva !== undefined) {
-    add(`EVA post-procedimiento: ${S.eva}/10`);
+  // Sedación (si aplica), integrada al final del bloque narrativo
+  if(gc('chk-sed')){
+    const sf=gsel('[data-a="tgtog"]'),so=gv('sed-obs');
+    let sed='Se realizó sedación / analgesia procedimental';
+    if(sf.length)sed+=` con ${sf.join(', ')}`;
+    if(so)sed+=`. ${so}`;
+    br();add(sed+'.');
   }
 
-  // Sedación (después del resultado)
-  if (chk('chk-sedacion')) {
-    const sedFarm = selTags('#blk-sedacion .tags .tag');
-    const sedObs = val('sed-obs');
-    let sed = 'Sedación / analgesia procedimental';
-    if (sedFarm.length) sed += `: ${sedFarm.join(', ')}`;
-    if (sedObs) sed += `. ${sedObs}`;
-    br();
-    add(sed + '.');
-  }
+  // Resultado e incidencias en lenguaje natural
+  const res=natResultado();
+  if(res){br();add(res);}
 
   // Notas libres
-  const obs = val('obs-txt');
-  if (obs) { br(); add(obs); }
+  const obs=gv('obs-txt');
+  if(obs){br();add(obs);}
 
-  document.getElementById('report-out').value = lines.join('\n');
+  document.getElementById('report-out').value=lines.join('\n');
   document.getElementById('overlay').classList.remove('hidden');
 }
 
-function closeModal() { document.getElementById('overlay').classList.add('hidden'); }
-
-function copyReport() {
-  navigator.clipboard.writeText(document.getElementById('report-out').value).then(() => {
-    const t = document.getElementById('toast');
-    t.classList.add('on');
-    setTimeout(() => t.classList.remove('on'), 2500);
+function closeModal(){document.getElementById('overlay').classList.add('hidden');}
+function copyReport(){
+  navigator.clipboard.writeText(document.getElementById('report-out').value).then(()=>{
+    const t=document.getElementById('toast');t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2000);
   });
 }
 
-function resetForm() {
-  Object.assign(S, { grupo:null, tecnica:null, lat:null, niveles:[], imagen:[], alList:[],
-    cort:null, rfTipo:null, rfLong:null, rfTip:null, fase:null, resultado:null, eva:null, ubicacion:null });
-  document.querySelectorAll('.sel').forEach(el => el.classList.remove('sel'));
-  document.querySelectorAll('input[type=text], input[type=number], textarea').forEach(el => el.value = '');
-  document.querySelectorAll('input[type=checkbox]').forEach(el => { el.checked = false; });
-  ['sub-epidural','sub-rf','sub-infiltracion','sub-implante'].forEach(id =>
-    document.getElementById(id).classList.add('hidden'));
-  ['blk-sedacion','blk-atb'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  hideDynamic();
-  closeModal();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+initSplash();
 </script>
 </body>
 </html>
