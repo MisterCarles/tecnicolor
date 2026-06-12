@@ -9,16 +9,22 @@
   --bg:#141414; --surface:#1e1e1e; --surface2:#262626; --border:#383838;
   --accent:#9b6dff; --accent2:#c4a8ff; --text:#f0f0f0; --text2:#888896;
   --success:#4caf7d; --radius:10px;
+  --splash-bg:#141414;
+}
+html.light {
+  --bg:#f5f5f2; --surface:#ffffff; --surface2:#eeeeea; --border:#d4d4ce;
+  --accent:#7c3aed; --accent2:#6d28d9; --text:#1c1c1e; --text2:#65656f;
+  --success:#2d9e5f; --splash-bg:#f5f5f2;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16.5px;transition:background .25s,color .25s}
 
 /* ── Splash ─────────────────────────────────────────────── */
-#splash{position:fixed;inset:0;z-index:1000;background:#141414;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;cursor:pointer;opacity:1;transition:opacity .7s ease}
+#splash{position:fixed;inset:0;z-index:1000;background:var(--splash-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;cursor:pointer;opacity:1;transition:opacity .7s ease}
 #splash.fade-out{opacity:0;pointer-events:none}
-.sp-logo{height:72px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .1s}
+.sp-logo{height:110px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .1s}
 #splash.ready .sp-logo{opacity:1}
-.sp-q{max-width:560px;text-align:center;font-size:clamp(20px,3.5vw,30px);font-weight:300;line-height:1.6;color:var(--text);font-style:italic;opacity:0;transform:translateY(16px);transition:opacity .9s ease .2s,transform .9s ease .2s}
+.sp-q{max-width:580px;text-align:center;font-size:clamp(21px,3.5vw,32px);font-weight:300;line-height:1.6;color:var(--text);font-style:italic;opacity:0;transform:translateY(16px);transition:opacity .9s ease .2s,transform .9s ease .2s}
 #splash.ready .sp-q{opacity:1;transform:translateY(0)}
 .sp-a{margin-top:28px;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .9s ease .6s}
 #splash.ready .sp-a{opacity:1}
@@ -27,9 +33,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ── Header ─────────────────────────────────────────────── */
 .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.app-logo{display:flex;align-items:center;gap:10px}
-.app-logo-img{height:36px;width:auto}
-.app-logo-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.app-logo{display:flex;align-items:center;gap:12px}
+.app-logo-img{height:44px;width:auto}
+.app-logo-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.theme-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;line-height:1}
+.theme-btn:hover{background:var(--surface2)}
+.header-right{display:flex;align-items:center;gap:8px}
 .nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
 .nav-btn:hover{background:var(--border);color:var(--text)}
 
@@ -209,7 +218,10 @@ textarea::placeholder{color:var(--text2)}
     <img src="logo.png" alt="Tecnicolor" class="app-logo-img">
     <div class="app-logo-sub" style="margin-top:0">Registro intervencionista del dolor</div>
   </div>
-  <button class="nav-btn hidden" id="btn-back" onclick="goBack()">← Volver</button>
+  <div class="header-right">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    <button class="nav-btn hidden" id="btn-back" onclick="goBack()">← Volver</button>
+  </div>
 </header>
 
 <!-- SELECTOR -->
@@ -596,91 +608,87 @@ function genMacro(id){
   const latBr=[lat,br].filter(Boolean);
   const latBrDesc=latBr.length?latBr.join(', '):'';
 
+  const fin = 'El procedimiento transcurre sin incidencias, bien tolerado por el paciente.';
+
   switch(id){
     case 'epi-interlaminar':{
-      let t=`${opening} ${atb}Se realiza infiltración epidural interlaminar`;
-      if(niv)t+=` ${niv}`;
-      t+=` bajo ${img}. Bajo anestesia local, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Se confirma posición epidural${contr}. Se administra`;
-      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
-      t+='. Procedimiento sin incidencias.';
+      let t=`${opening} ${atb}Bajo ${img}, se procede a infiltración epidural interlaminar`;
+      if(niv) t+=` a nivel ${niv}`;
+      t+=`. Previa anestesia local de la piel y tejido celular subcutáneo, se introduce aguja de Tuohy y se avanza hasta el espacio epidural mediante técnica de pérdida de resistencia, con sensación característica de entrada en dicho espacio. Se confirma posición epidural correcta${contr?` mediante inyección de contraste radiológico bajo visión fluoroscópica, sin distribución vascular ni subaracnoidea`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-parasagital':{
-      let t=`${opening} ${atb}Se realiza infiltración epidural parasagital`;
-      if(latNiv)t+=` ${latNiv}`;
-      t+=` bajo ${img}. Con proyección parasagital y angulación lateral se introduce la aguja en el espacio epidural mediante pérdida de resistencia. Se confirma posición epidural${contr}. Se administra`;
-      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
-      t+='. Procedimiento sin incidencias.';
+      let t=`${opening} ${atb}Bajo ${img}, se procede a infiltración epidural por abordaje parasagital`;
+      if(latNiv) t+=` ${latNiv}`;
+      t+=`. Con angulación lateral respecto a la línea media y proyección parasagital, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Este abordaje permite una distribución preferencial ipsilateral del fármaco. Se confirma posición epidural${contr?` con contraste radiológico, sin patrón vascular ni subaracnoideo`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-caudal':{
-      let t=`${opening} ${atb}Se realiza infiltración epidural caudal bajo ${img}. Localización del hiato sacro y confirmación radioscópica. Bajo anestesia local, se introduce aguja hasta el canal sacro. Se confirma posición intracanalicular${contr} sin distribución vascular ni subaracnoidea. Se administra`;
-      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
-      t+='. Procedimiento sin incidencias.';
+      let t=`${opening} ${atb}Bajo ${img}, se realiza infiltración epidural caudal. Se identifica y confirma el hiato sacro mediante palpación y control radioscópico. Previa anestesia local, se introduce aguja a través del ligamento sacrococcígeo hasta el canal sacro. Se confirma posición intracanalicular${contr?` con contraste radiológico, constatando distribución epidural sin patrón vascular ni subaracnoideo`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-transforaminal':{
-      let t=`${opening} ${atb}Se realiza infiltración transforaminal`;
-      if(latNiv)t+=` ${latNiv}`;
-      t+=` bajo ${img}. Con proyección oblicua se visualiza el foramen neural diana. Bajo anestesia local, se avanza aguja hasta el cuadrante posterosuperior del foramen. Se confirma posición periradicular${contr} sin distribución vascular. Se administra`;
-      t+=mezcla?` ${mezcla}`:' la mezcla terapéutica';
-      t+='. Procedimiento sin incidencias.';
+      let t=`${opening} ${atb}Bajo ${img}, se realiza infiltración transforaminal`;
+      if(latNiv) t+=` ${latNiv}`;
+      t+=`. Con proyección oblicua ipsilateral tipo "ojo de escopeta" se identifica el foramen neural diana. Previa anestesia local, se introduce aguja hasta el cuadrante posterosuperior del foramen, en zona de seguridad anatómica. Se confirma posición periradicular${contr?` mediante inyección de contraste, con distribución epidural y sin patrón vascular intravascular`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':{
       const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
-      let t=`${opening} ${atb}Se realiza bloqueo de ramos mediales ${reg} bajo ${img}`;
-      if(latBrDesc)t+=`, tratando ${latBrDesc}`;
-      t+='. Bajo anestesia local, se localiza el punto anatómico del ramo medial y se administra';
       const bm=gv('blq-mezcla')||'la mezcla terapéutica';
-      t+=` ${bm}`;
-      const bv=gv('blq-vol');if(bv)t+=` (${bv} por punto)`;
-      t+='. Procedimiento sin incidencias.';
+      const bv=gv('blq-vol');
+      let t=`${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramos mediales ${reg}`;
+      if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
+      t+=`. Previa anestesia local, se localiza la posición anatómica del ramo medial en cada nivel bajo control radioscópico. Se administra ${bm}${bv?' ('+bv+' por punto)':''}. ${fin}`;
       return t;
     }
     case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':{
       const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
       const modal=S.rfTipo?S.rfTipo.toLowerCase():'';
-      let t=`${opening} ${atb}Se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg} bajo ${img}`;
-      if(latBrDesc)t+=`, tratando ${latBrDesc}`;
-      t+=`. Se posicionan ${electrodo} en la localización anatómica del ramo medial. ${tests}`;
-      if(rfparams)t+=`Se realiza la lesión ${rfparams}. `;
-      t+='Procedimiento sin incidencias.';
+      let t=`${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg}`;
+      if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
+      t+=`. Previa anestesia local, se posicionan ${electrodo} en la localización anatómica del ramo medial de cada nivel bajo visión fluoroscópica. `;
+      if(tests) t+=tests;
+      else t+=`Se realizan test de estimulación sensitiva y motora previo a la lesión, con respuesta adecuada. `;
+      if(rfparams) t+=`Se procede a la lesión por radiofrecuencia ${rfparams} en cada electrodo. `;
+      else t+=`Se procede a la lesión por radiofrecuencia según parámetros establecidos. `;
+      t+=fin;
       return t;
     }
     case 'botox':{
       const ui=gv('botox-ui'),vol=gv('botox-vol'),punc=gv('botox-punc');
       const veh=document.querySelector('[data-a="tg1-veh"].sel')?.textContent||'';
-      let t=`${opening} ${atb}Se realiza infiltración de toxina botulínica tipo A`;
-      const sitio=gv('botox-sitio');if(sitio)t+=` en: ${sitio}`;
+      const sitio=gv('botox-sitio');
+      let t=`${opening} ${atb}Se procede a la infiltración de toxina botulínica tipo A`;
+      if(sitio) t+=` en ${sitio}`;
       t+='.';
-      const details=[];
-      if(ui)details.push(`${ui} UI totales`);
-      if(vol)details.push(`volumen total ${vol} mL`);
-      if(punc)details.push(`${punc} punciones`);
-      if(veh)details.push(`vehículo: ${veh.toLowerCase()}`);
-      if(details.length)t+=` Dosis: ${details.join(', ')}.`;
-      t+=' Se advierte de latencia de efecto de 7-14 días. Procedimiento sin incidencias.';
+      const d=[];
+      if(ui) d.push(`dosis total de ${ui} UI`);
+      if(veh) d.push(`diluida en ${veh.toLowerCase()}`);
+      if(vol) d.push(`volumen total ${vol} mL`);
+      if(punc) d.push(`distribuida en ${punc} puntos de inyección`);
+      if(d.length) t+=` La toxina se administra con ${d.join(', ')}.`;
+      t+=` Se informa al paciente del período de latencia esperado de 7-14 días hasta el inicio del efecto clínico. ${fin}`;
       return t;
     }
     case 'hombro-intraarticular':
-      return `${opening} ${atb}Se realiza infiltración intraarticular de hombro${lat?`, ${lat}`:''}  bajo ${img}. Se accede al espacio glenohumeral y se confirma posición intraarticular.${S.sust?` Se administra ${S.sust}.`:' Se administra la sustancia terapéutica.'} Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular glenohumeral${lat?` ${lat}`:''}. Se localiza el espacio articular y se confirma posición intraarticular correcta. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-periarticular':
-      return `${opening} ${atb}Se realiza infiltración periarticular de hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localiza el espacio subdeltoideo/subacromial. Se confirma posición y se administra${S.sust?` ${S.sust}`:' la sustancia terapéutica'}. Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza infiltración periarticular de hombro${lat?`, ${lat}`:''}. Se identifica el espacio subdeltoideo/subacromial y se confirma posición correcta de la aguja. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-rf-supra':
-      return `${opening} ${atb}Se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio supraescapular${lat?`, ${lat}`:''}  bajo ${img}. Se localiza el nervio en la escotadura escapular y se posiciona ${electrodo}. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio supraescapular${lat?`, ${lat}`:''}. Se localiza el nervio en la escotadura escapular y se posiciona ${electrodo}. ${tests||'Test de estimulación con reproducción de parestesias en territorio concordante. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
     case 'hombro-capsular-bloqueo':
-      return `${opening} ${atb}Se realiza bloqueo de ramas capsulares del hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localizan las ramas capsulares anterior y posterior. Se administra${S.sust?` ${S.sust}`:' la mezcla terapéutica'}. Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramas capsulares del hombro${lat?`, ${lat}`:''}. Se localizan las ramas capsulares anteriores y posteriores bajo control ecográfico y se procede al bloqueo con ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-capsular-rf':
-      return `${opening} ${atb}Se realiza radiofrecuencia de ramas capsulares del hombro${lat?`, ${lat}`:''}  bajo ${img}. Se localizan las ramas y se posiciona ${electrodo}. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia de ramas capsulares del hombro${lat?`, ${lat}`:''}. Se localizan las ramas nerviosas capsulares y se posiciona ${electrodo}. ${tests||'Tests de estimulación adecuados. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
     case 'rodilla-intraarticular':
-      return `${opening} ${atb}Se realiza infiltración intraarticular de rodilla${lat?`, ${lat}`:''}  bajo ${img}. Se accede al espacio articular confirmando posición. Se administra${S.sust?` ${S.sust}`:' la sustancia terapéutica'}. Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular de rodilla${lat?`, ${lat}`:''}. Se accede al compartimento articular confirmando posición intraarticular de la aguja. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'rodilla-perirodilla':
-      return `${opening} ${atb}Se realiza infiltración periarticular de rodilla${lat?`, ${lat}`:''}  bajo ${img}. Se identifican las estructuras periarticulares diana y se realizan las infiltraciones según pauta. Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza infiltración periarticular de rodilla${lat?`, ${lat}`:''}. Se identifican las estructuras periarticulares diana bajo visión ecográfica y se realizan las infiltraciones según pauta establecida. ${fin}`;
     case 'sacroiliaca-bloqueo':
-      return `${opening} ${atb}Se realiza infiltración de la articulación sacroilíaca${lat?`, ${lat}`:''}  bajo ${img}. Se localiza la interlínea articular en su tercio inferior. Se accede al espacio articular confirmando posición${contr}. Se administra${S.sust?` ${S.sust}`:' la mezcla terapéutica'}. Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza infiltración de la articulación sacroilíaca${lat?`, ${lat}`:''}. Se localiza la interlínea articular en su tercio inferior y se accede al interior articular. Se confirma posición${contr?` con contraste radiológico, con patrón articular característico`:''}. Se administra ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'sacroiliaca-rf':
-      return `${opening} ${atb}Se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():''} de la articulación sacroilíaca${lat?`, ${lat}`:''}  bajo ${img}. Se posiciona ${electrodo} cubriendo los ramos dorsales S1-S3. ${tests}${rfparams?`Se realiza la lesión ${rfparams}. `:''}Procedimiento sin incidencias.`;
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():''} de la articulación sacroilíaca${lat?`, ${lat}`:''}. Se posicionan ${electrodo} a lo largo de la interlínea sacroilíaca posterior, cubriendo los ramos dorsales S1-S3. ${tests||'Tests de estimulación sensitiva y motora realizados. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
     default:return opening;
   }
 }
@@ -1100,6 +1108,25 @@ function copyReport(){
 // ════════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════════
+// ── Tema claro/oscuro ────────────────────────────────────────
+function applyTheme(mode){
+  document.documentElement.classList.toggle('light', mode==='light');
+  const btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent = mode==='light' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const isLight=document.documentElement.classList.contains('light');
+  const newMode=isLight?'dark':'light';
+  localStorage.setItem('tc-theme',newMode);
+  applyTheme(newMode);
+}
+// Aplica tema guardado o preferencia del sistema
+(function(){
+  const saved=localStorage.getItem('tc-theme');
+  const prefersDark=window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark?'dark':'light'));
+})();
+
 initSplash();
 </script>
 </body>
