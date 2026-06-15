@@ -173,12 +173,12 @@ textarea::placeholder{color:var(--text2)}
 .reg-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 10px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .18s;font-size:12px;font-weight:600;color:var(--text2);position:relative}
 .reg-btn .rb-icon{font-size:22px;line-height:1}
 .reg-btn .rb-ray{position:absolute;top:-8px;right:-6px;font-size:16px;opacity:0;transform:scale(.4) rotate(-20deg);transition:all .2s}
-.reg-btn[data-reg="cerv"]{border-color:#3b82f680}
-.reg-btn[data-reg="tor"]{border-color:#f59e0b80}
-.reg-btn[data-reg="lumb"]{border-color:#10b98180}
-.reg-btn[data-reg="cerv"].sel{background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa}
-.reg-btn[data-reg="tor"].sel{background:rgba(245,158,11,.12);border-color:#f59e0b;color:#fbbf24}
-.reg-btn[data-reg="lumb"].sel{background:rgba(16,185,129,.12);border-color:#10b981;color:#34d399}
+.reg-btn[data-reg="cerv"]{border-color:#3b82f6;color:#60a5fa}
+.reg-btn[data-reg="tor"]{border-color:#f59e0b;color:#fbbf24}
+.reg-btn[data-reg="lumb"]{border-color:#10b981;color:#34d399}
+.reg-btn[data-reg="cerv"].sel{background:rgba(59,130,246,.22);box-shadow:0 0 12px rgba(59,130,246,.35)}
+.reg-btn[data-reg="tor"].sel{background:rgba(245,158,11,.18);box-shadow:0 0 12px rgba(245,158,11,.35)}
+.reg-btn[data-reg="lumb"].sel{background:rgba(16,185,129,.18);box-shadow:0 0 12px rgba(16,185,129,.35)}
 .reg-btn.sel .rb-ray{opacity:1;transform:scale(1) rotate(0deg)}
 .reg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
 
@@ -328,12 +328,12 @@ const QUOTES = [
 ];
 
 const CATEGORIES = [
-  {id:'epidural',    name:'Epidural',        icon:'💉', desc:'Interlaminar · Transforaminal · Caudal · Parasagital'},
   {id:'facetas',     name:'Facetas',          icon:'⚡', desc:'Bloqueo · Radiofrecuencia — Cervical · Torácico · Lumbar'},
-  {id:'botox',       name:'Botox',            icon:'💊', desc:'Toxina botulínica tipo A'},
-  {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Intraarticular · Periarticular · RF · Ramas capsulares'},
-  {id:'rodilla',     name:'Rodilla',          icon:'🦵', desc:'Intraarticular · Perirodilla'},
-  {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Bloqueo · Radiofrecuencia'},
+  {id:'epidural',    name:'Epidural',        icon:'💉', desc:'Próximamente',disabled:true},
+  {id:'botox',       name:'Botox',            icon:'💊', desc:'Próximamente',disabled:true},
+  {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Próximamente',disabled:true},
+  {id:'rodilla',     name:'Rodilla',          icon:'🦵', desc:'Próximamente',disabled:true},
+  {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Próximamente',disabled:true},
   {id:'estimuladores',name:'Estimuladores',   icon:'🔋', desc:'Próximamente',disabled:true},
   {id:'simpatico',   name:'Simpático',        icon:'🌡️', desc:'Próximamente',disabled:true},
   {id:'infusiones',  name:'Infusiones',       icon:'💧', desc:'Próximamente',disabled:true},
