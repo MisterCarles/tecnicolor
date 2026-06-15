@@ -635,11 +635,20 @@ function genMacro(id){
     }
     case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':{
       const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
-      const bm=gv('blq-mezcla')||'la mezcla terapéutica';
+      const bm=mezcla||gv('blq-mezcla')||'la mezcla terapéutica';
       const bv=gv('blq-vol');
-      let t=`${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramos mediales ${reg}`;
-      if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
-      t+=`. Previa anestesia local, se localiza la posición anatómica del ramo medial en cada nivel bajo control radioscópico. Se administra ${bm}${bv?' ('+bv+' por punto)':''}. ${fin}`;
+      // Build ramos text: natBranches() already handles "ramo posterior de L5" via BRANCH_LBL
+      const ramosDesc=br||latBrDesc;
+      let t=`${opening} ${atb}Se realiza bloqueo diagnóstico para dolor facetario ${reg}.`;
+      t+=` Mediante ${img}`;
+      if(ramosDesc) t+=`, se identifican y alcanzan las zonas correspondientes al paso de ${ramosDesc}`;
+      else t+=', se identifican los ramos mediales diana';
+      const mezclaTxt=bv?`${bm} (${bv} ml por punto)`:`${bm}`;
+      t+=`, procediendo a la inyección de ${mezclaTxt} en cada punto.`;
+      if(S.imagen&&S.imagen.includes('fluoroscopia')){
+        t+=` Se descarta malposición de aguja mediante inyección de contraste radiológico, sin evidencia de distribución vascular ni subaracnoidea.`;
+      }
+      t+=` Se guardan imágenes del procedimiento. ${fin}`;
       return t;
     }
     case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':{
