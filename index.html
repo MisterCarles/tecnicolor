@@ -169,6 +169,19 @@ textarea::placeholder{color:var(--text2)}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:inline-block}
 .legend-dot.sel{background:var(--accent);border-color:var(--accent)}
 
+/* ── Region selector (multi) ────────────────────────────── */
+.reg-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 10px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .18s;font-size:12px;font-weight:600;color:var(--text2);position:relative}
+.reg-btn .rb-icon{font-size:22px;line-height:1}
+.reg-btn .rb-ray{position:absolute;top:-8px;right:-6px;font-size:16px;opacity:0;transform:scale(.4) rotate(-20deg);transition:all .2s}
+.reg-btn[data-reg="cerv"]{border-color:#3b82f680}
+.reg-btn[data-reg="tor"]{border-color:#f59e0b80}
+.reg-btn[data-reg="lumb"]{border-color:#10b98180}
+.reg-btn[data-reg="cerv"].sel{background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa}
+.reg-btn[data-reg="tor"].sel{background:rgba(245,158,11,.12);border-color:#f59e0b;color:#fbbf24}
+.reg-btn[data-reg="lumb"].sel{background:rgba(16,185,129,.12);border-color:#10b981;color:#34d399}
+.reg-btn.sel .rb-ray{opacity:1;transform:scale(1) rotate(0deg)}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+
 /* ── Faceta big cards ───────────────────────────────────── */
 .faceta-choice{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
 .faceta-card{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 16px;border-radius:14px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .18s;text-align:center}
@@ -648,11 +661,10 @@ function genMacro(id){
       return t;
     }
     case 'facetas-bloqueo':{
-      const reg=S.facetReg.length?S.facetReg.join(' y '):'medulares';
       const bm=mezcla||gv('blq-mezcla')||'la mezcla terapéutica';
       const bv=gv('blq-vol');
       const ramosDesc=br||latBrDesc;
-      let t=`${opening} ${atb}Se realiza bloqueo diagnóstico para dolor facetario ${reg}.`;
+      let t=`${opening} ${atb}Realizamos bloqueo diagnóstico para valoración de probable origen facetario del dolor.`;
       t+=` Mediante ${img}`;
       if(ramosDesc) t+=`, se identifican y alcanzan las zonas correspondientes al paso de ${ramosDesc}`;
       else t+=', se identifican los ramos mediales diana';
@@ -665,9 +677,10 @@ function genMacro(id){
       return t;
     }
     case 'facetas-rf':{
-      const reg=S.facetReg.length?S.facetReg.join(' y '):'medulares';
+      const natReg=(arr)=>{if(!arr.length)return'';if(arr.length===1)return arr[0];return arr.slice(0,-1).join(', ')+' y '+arr[arr.length-1];};
+      const reg=natReg(S.facetReg);
       const modal=S.rfTipo?S.rfTipo.toLowerCase():'';
-      let t=`${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg}`;
+      let t=`${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales${reg?' '+reg:''}`;
       if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
       t+=`. Previa anestesia local, se posicionan ${electrodo} en la localización anatómica del ramo medial de cada nivel bajo visión fluoroscópica. `;
       if(tests) t+=tests;
@@ -906,10 +919,10 @@ const BKSUST=sec('Sustancia infiltrada',`
     <div class="field"><div class="field-label">Producto / marca</div><input type="text" id="sust-marca" placeholder="Opcional..."></div>
   </div>`);
 
-const BKFACETAS_REG=sec('Región',`<div class="grid-3 mt1">
-  <button class="opt" data-a="facetReg" data-v="cervicales"><span class="o-icon">🔝</span><span class="o-label">Cervical</span></button>
-  <button class="opt" data-a="facetReg" data-v="torácicos"><span class="o-icon">🫁</span><span class="o-label">Torácico</span></button>
-  <button class="opt" data-a="facetReg" data-v="lumbares"><span class="o-icon">⬇️</span><span class="o-label">Lumbar</span></button>
+const BKFACETAS_REG=sec('Región',`<div class="reg-grid">
+  <button class="reg-btn" data-a="facetReg" data-v="cervicales" data-reg="cerv"><span class="rb-icon">🔵</span>Cervical<span class="rb-ray">⚡</span></button>
+  <button class="reg-btn" data-a="facetReg" data-v="torácicos" data-reg="tor"><span class="rb-icon">🟠</span>Torácico<span class="rb-ray">⚡</span></button>
+  <button class="reg-btn" data-a="facetReg" data-v="lumbares" data-reg="lumb"><span class="rb-icon">🟢</span>Lumbar<span class="rb-ray">⚡</span></button>
 </div>`);
 const BKFACETAS_LOC=sec('Localización',bkLat()+`<div class="mt3"><div class="field-label">Ramos mediales — selecciona en el diagrama</div>${buildSpineDiagram()}</div>`);
 
