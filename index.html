@@ -169,6 +169,18 @@ textarea::placeholder{color:var(--text2)}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:inline-block}
 .legend-dot.sel{background:var(--accent);border-color:var(--accent)}
 
+/* ── Faceta big cards ───────────────────────────────────── */
+.faceta-choice{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.faceta-card{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 16px;border-radius:14px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .18s;text-align:center}
+.faceta-card:hover{border-color:var(--accent);background:var(--surface);transform:translateY(-2px);box-shadow:0 6px 20px rgba(155,109,255,.2)}
+.fc-icon{font-size:36px;line-height:1}
+.fc-name{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.02em}
+.fc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+.faceta-card:first-child{border-color:rgba(76,175,125,.4)}
+.faceta-card:first-child:hover{border-color:#4caf7d;box-shadow:0 6px 20px rgba(76,175,125,.2)}
+.faceta-card:last-child{border-color:rgba(155,109,255,.4)}
+.faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
+
 /* ── Generate btn ───────────────────────────────────────── */
 .btn-generate{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;border:none;padding:14px 36px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.05em;box-shadow:0 4px 24px rgba(155,109,255,.5);transition:all .2s;z-index:50;white-space:nowrap}
 .btn-generate:hover{background:#8559e8;box-shadow:0 6px 28px rgba(155,109,255,.7);transform:translateX(-50%) translateY(-2px)}
@@ -179,7 +191,7 @@ textarea::placeholder{color:var(--text2)}
 .modal-head{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .modal-title{font-size:14px;font-weight:700}
 .modal-body{flex:1;overflow-y:auto;padding:20px}
-.report-textarea{width:100%;background:#111;border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:13px;line-height:1.75;color:var(--text);resize:vertical;min-height:320px}
+.report-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:13px;line-height:1.75;color:var(--text);resize:vertical;min-height:320px}
 .report-textarea:focus{outline:none;border-color:var(--accent)}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px}
 .modal-btn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);transition:all .15s}
@@ -320,12 +332,8 @@ const TECHNIQUES = [
   {id:'epi-transforaminal',      name:'Epidural transforaminal',         cat:'epidural',    aliases:['transforaminal','tf','foraminal','tranforaminal']},
   {id:'epi-caudal',              name:'Epidural caudal',                 cat:'epidural',    aliases:['caudal','epidural caudal','sacra','hiato']},
   {id:'epi-parasagital',         name:'Epidural parasagital',            cat:'epidural',    aliases:['parasagital','parasagittal','parasajital']},
-  {id:'facetas-bloqueo-cerv',    name:'Bloqueo facetas cervicales',      cat:'facetas',     aliases:['facetas cervical','bloqueo facetas cervical','ramos mediales cervicales']},
-  {id:'facetas-rf-cerv',         name:'RF facetas cervicales',           cat:'facetas',     aliases:['radiofrecuencia cervical','rf facetas cervicales','rf cervical']},
-  {id:'facetas-bloqueo-tor',     name:'Bloqueo facetas torácicas',       cat:'facetas',     aliases:['facetas toracicas','bloqueo toracico','ramos mediales toracicos']},
-  {id:'facetas-rf-tor',          name:'RF facetas torácicas',            cat:'facetas',     aliases:['radiofrecuencia toracica','rf facetas toracicas','rf toracico']},
-  {id:'facetas-bloqueo-lumb',    name:'Bloqueo facetas lumbares',        cat:'facetas',     aliases:['facetas lumbares','bloqueo lumbar','ramos mediales lumbares']},
-  {id:'facetas-rf-lumb',         name:'RF facetas lumbares',             cat:'facetas',     aliases:['radiofrecuencia lumbar','rf facetas lumbares','rf lumbar']},
+  {id:'facetas-bloqueo', name:'Bloqueo facetario',    cat:'facetas', icon:'💉', desc:'Inyección diagnóstica de ramos mediales', aliases:['bloqueo facetas','bloqueo facetario','ramos mediales','bloqueo diagnostico facetas','facetas bloqueo','facetas cervical','bloqueo facetas cervical','facetas toracicas','bloqueo toracico','facetas lumbares','bloqueo lumbar']},
+  {id:'facetas-rf',      name:'Radiofrecuencia',      cat:'facetas', icon:'⚡', desc:'Lesión térmica o pulsada de ramos mediales', aliases:['radiofrecuencia facetas','rf facetas','rf ramos mediales','radiofrecuencia cervical','rf cervical','radiofrecuencia lumbar','rf lumbar','rf toracico']},
   {id:'botox',                   name:'Botox',                           cat:'botox',       aliases:['botox','toxina botulinica','botulínica','bótox']},
   {id:'hombro-intraarticular',   name:'Hombro intraarticular',           cat:'hombro',      aliases:['hombro intraarticular','glenohumeral']},
   {id:'hombro-periarticular',    name:'Hombro periarticular',            cat:'hombro',      aliases:['hombro periarticular','subacromio','subdeltoideo']},
@@ -472,8 +480,11 @@ function showCat(catId){
   tv.classList.remove('hidden');
   document.getElementById('tech-cat-icon').textContent=cat.icon+' ';
   document.getElementById('tech-cat-name').textContent=cat.name;
-  document.getElementById('tech-list').innerHTML=TECHNIQUES.filter(t=>t.cat===catId)
-    .map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
+  const techs=TECHNIQUES.filter(t=>t.cat===catId);
+  const big=catId==='facetas';
+  document.getElementById('tech-list').innerHTML=big
+    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')"><span class="fc-icon">${t.icon||''}</span><span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
+    :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
 }
 function showAllCats(){
   document.getElementById('cat-view').classList.remove('hidden');
@@ -488,7 +499,7 @@ function goBack(){
 }
 function selectTechnique(id){
   TECH_ID=id;
-  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null});
+  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:null});
   S.branches=new Set();
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('screen-selector').classList.add('hidden');
@@ -633,26 +644,25 @@ function genMacro(id){
       t+=`. Con proyección oblicua ipsilateral tipo "ojo de escopeta" se identifica el foramen neural diana. Previa anestesia local, se introduce aguja hasta el cuadrante posterosuperior del foramen, en zona de seguridad anatómica. Se confirma posición periradicular${contr?` mediante inyección de contraste, con distribución epidural y sin patrón vascular intravascular`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
-    case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':{
-      const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
+    case 'facetas-bloqueo':{
+      const reg=S.facetReg||'medulares';
       const bm=mezcla||gv('blq-mezcla')||'la mezcla terapéutica';
       const bv=gv('blq-vol');
-      // Build ramos text: natBranches() already handles "ramo posterior de L5" via BRANCH_LBL
       const ramosDesc=br||latBrDesc;
       let t=`${opening} ${atb}Se realiza bloqueo diagnóstico para dolor facetario ${reg}.`;
       t+=` Mediante ${img}`;
       if(ramosDesc) t+=`, se identifican y alcanzan las zonas correspondientes al paso de ${ramosDesc}`;
       else t+=', se identifican los ramos mediales diana';
-      const mezclaTxt=bv?`${bm} (${bv} ml por punto)`:`${bm}`;
-      t+=`, procediendo a la inyección de ${mezclaTxt} en cada punto.`;
+      const mezclaTxt=bv?`${bm} a razón de ${bv} ml por punto`:`${bm}`;
+      t+=`, procediendo a la inyección de ${mezclaTxt}.`;
       if(S.imagen&&S.imagen.includes('fluoroscopia')){
         t+=` Se descarta malposición de aguja mediante inyección de contraste radiológico, sin evidencia de distribución vascular ni subaracnoidea.`;
       }
       t+=` Se guardan imágenes del procedimiento. ${fin}`;
       return t;
     }
-    case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':{
-      const reg={cerv:'cervicales',tor:'torácicos',lumb:'lumbares'}[id.split('-')[2]];
+    case 'facetas-rf':{
+      const reg=S.facetReg||'medulares';
       const modal=S.rfTipo?S.rfTipo.toLowerCase():'';
       let t=`${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg}`;
       if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
@@ -893,6 +903,11 @@ const BKSUST=sec('Sustancia infiltrada',`
     <div class="field"><div class="field-label">Producto / marca</div><input type="text" id="sust-marca" placeholder="Opcional..."></div>
   </div>`);
 
+const BKFACETAS_REG=sec('Región',`<div class="grid-3 mt1">
+  <button class="opt" data-a="facetReg" data-v="cervicales"><span class="o-icon">🔝</span><span class="o-label">Cervical</span></button>
+  <button class="opt" data-a="facetReg" data-v="torácicos"><span class="o-icon">🫁</span><span class="o-label">Torácico</span></button>
+  <button class="opt" data-a="facetReg" data-v="lumbares"><span class="o-icon">⬇️</span><span class="o-label">Lumbar</span></button>
+</div>`);
 const BKFACETAS_LOC=sec('Localización',bkLat()+`<div class="mt3"><div class="field-label">Ramos mediales — selecciona en el diagrama</div>${buildSpineDiagram()}</div>`);
 
 // ════════════════════════════════════════════════════════════
@@ -919,12 +934,12 @@ function buildForm(id){
       return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_EPI))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
     case 'epi-transforaminal':
       return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_TF))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
-    case 'facetas-bloqueo-cerv':case 'facetas-bloqueo-tor':case 'facetas-bloqueo-lumb':
-      return H+BKDATOS+BKMACRO+BKFACETAS_LOC+
+    case 'facetas-bloqueo':
+      return H+BKDATOS+BKMACRO+BKFACETAS_REG+BKFACETAS_LOC+
         sec('Mezcla infiltrada',`<div class="row"><div class="field"><div class="field-label">Volumen por punto</div><input type="text" id="blq-vol" placeholder="p. ej. 1 mL" oninput="regenMacro()"></div><div class="field"><div class="field-label">Mezcla</div><input type="text" id="blq-mezcla" placeholder="AL + corticoide..." oninput="regenMacro()"></div></div>`)+
         BKIMAGEN+BKSED+BKRES+BKNOTAS;
-    case 'facetas-rf-cerv':case 'facetas-rf-tor':case 'facetas-rf-lumb':
-      return H+BKDATOS+BKMACRO+BKFACETAS_LOC+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'facetas-rf':
+      return H+BKDATOS+BKMACRO+BKFACETAS_REG+BKFACETAS_LOC+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
     case 'botox':
       return H+BKDATOS+BKMACRO+
         sec('Infiltración',`
@@ -1053,6 +1068,12 @@ function initHandlers(){
       el.classList.add('sel');
       regenMacro();
     }
+    else if(a==='facetReg'){
+      S.facetReg=v;
+      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
     else if(a==='sust'){
       S.sust=v;
       document.querySelectorAll('[data-a="sust"]').forEach(b=>b.classList.remove('sel'));
@@ -1076,11 +1097,7 @@ const gc=id=>document.getElementById(id)?.checked||false;
 const gsel=sel=>Array.from(document.querySelectorAll(sel)).filter(e=>e.classList.contains('sel')).map(e=>e.textContent.trim());
 
 function generarInforme(){
-  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
   const lines=[];const add=s=>lines.push(s);const br=()=>lines.push('');
-
-  add(`Fecha: ${fecha}`);
-  br();
 
   // Texto clínico directo
   const macro=gv('macro-txt');
