@@ -146,8 +146,11 @@ textarea::placeholder{color:var(--text2)}
 
 /* ── Spine diagram ──────────────────────────────────────── */
 .spine-wrap{background:var(--surface2);border-radius:10px;padding:14px 10px;margin-top:4px;overflow-x:auto}
-.spine-region-hdr{text-align:center;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);padding:8px 0 4px;margin-top:4px}
+.spine-region-hdr{text-align:center;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 0 4px;margin-top:4px}
 .spine-region-hdr:first-child{margin-top:0}
+.spine-region-hdr.rh-C{color:#60a5fa}
+.spine-region-hdr.rh-T{color:#fbbf24}
+.spine-region-hdr.rh-L{color:#34d399}
 .spine-col-hdr{display:grid;grid-template-columns:1fr 90px 1fr;gap:4px;align-items:center;margin-bottom:6px}
 .spine-col-hdr span{font-size:10px;color:var(--text2);text-align:center;font-weight:500}
 .spine-col-hdr .col-l{text-align:right}
@@ -155,19 +158,22 @@ textarea::placeholder{color:var(--text2)}
 .spine-row{display:grid;grid-template-columns:1fr 90px 1fr;gap:4px;align-items:center;margin-bottom:3px;position:relative}
 .spine-row::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--border);transform:translateX(-50%);z-index:0;pointer-events:none}
 .spine-center{position:relative;z-index:1;text-align:center;cursor:pointer;padding:3px 0}
-.spine-center:hover .vert-lb{color:var(--accent2)}
+.spine-center:hover .vert-lb{color:var(--text)}
 .vert-lb{font-size:11px;font-weight:700;font-family:monospace;color:var(--text2);display:block;background:var(--surface);padding:3px 6px;border-radius:4px;border:1px solid var(--border);transition:all .15s}
 .vert-nt{font-size:9px;color:var(--text2);display:block;margin-top:1px;letter-spacing:.03em}
 .spine-side{display:flex;justify-content:flex-end;z-index:1;position:relative}
 .spine-side.r{justify-content:flex-start}
-.bdot{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:monospace;color:var(--text2);transition:all .15s;user-select:none;flex-shrink:0}
-.bdot:hover{border-color:var(--accent2);color:var(--text)}
-.bdot.sel{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 0 8px rgba(155,109,255,.5)}
-.bdot.sel-light{background:rgba(155,109,255,.2);border-color:var(--accent)}
+.bdot{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:var(--surface);cursor:pointer;transition:all .15s;user-select:none;flex-shrink:0}
+.bdot:hover{transform:scale(1.15)}
+.spine-row[data-reg="C"] .bdot.sel{background:#3b82f6;border-color:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.6)}
+.spine-row[data-reg="T"] .bdot.sel{background:#f59e0b;border-color:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.6)}
+.spine-row[data-reg="L"] .bdot.sel{background:#10b981;border-color:#10b981;box-shadow:0 0 8px rgba(16,185,129,.6)}
 .spine-legend{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:11px;color:var(--text2)}
 .spine-legend span{display:flex;align-items:center;gap:5px}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:inline-block}
-.legend-dot.sel{background:var(--accent);border-color:var(--accent)}
+.legend-dot.c{background:#3b82f6;border-color:#3b82f6}
+.legend-dot.t{background:#f59e0b;border-color:#f59e0b}
+.legend-dot.l{background:#10b981;border-color:#10b981}
 
 /* ── Region selector (multi) ────────────────────────────── */
 .reg-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 10px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .18s;font-size:12px;font-weight:600;color:var(--text2);position:relative}
@@ -384,17 +390,18 @@ const SPINE = [
   {r:'L', id:'L2',  lb:'L2',  nt:'r. medial',        showVert:true},
   {r:'L', id:'L3',  lb:'L3',  nt:'r. medial',        showVert:true},
   {r:'L', id:'L4',  lb:'L4',  nt:'r. medial',        showVert:true},
+  {r:'L', id:'L5',  lb:'L5',  nt:'r. posterior',     showVert:true},
 ];
 
 const BRANCH_LBL = {
   C2:'GON (r. dorsal C2)', C3s:'TON (r. medial C3)', C3p:'C3 profundo',
-  C4:'C4 r. medial', C5:'C5 r. medial', C6:'C6 r. medial', C7:'C7 r. medial',
+  C4:'C4', C5:'C5', C6:'C6', C7:'C7',
   T1:'T1', T2:'T2', T3:'T3', T4:'T4', T5:'T5', T6:'T6',
   T7:'T7', T8:'T8', T9:'T9', T10:'T10', T11:'T11', T12:'T12',
-  L1:'L1', L2:'L2', L3:'L3', L4:'L4',
+  L1:'L1', L2:'L2', L3:'L3', L4:'L4', L5:'L5 (r. posterior)',
 };
 
-const SPINE_ORDER = ['C2','C3s','C3p','C4','C5','C6','C7','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4'];
+const SPINE_ORDER = ['C2','C3s','C3p','C4','C5','C6','C7','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5'];
 
 // ════════════════════════════════════════════════════════════
 // STATE
@@ -571,17 +578,23 @@ function natElectrodo(){
   return parts.length?'electrodos '+parts.join(', con '):'los electrodos de radiofrecuencia';
 }
 function natRFParams(){
-  const p1=gv('rf-p1'),t=gv('rf-tiempo');
+  const p1=gv('rf-p1'),t=gv('rf-tiempo'),tandas=gv('rf-tandas');
   const parts=[];
-  if(S.rfTipo==='Pulsada'){if(p1)parts.push(`a ${p1} V`);}else{if(p1)parts.push(`a ${p1} °C`);}
-  if(t)parts.push(`durante ${t} s por punto`);
+  if(S.rfTipo==='Pulsada'){
+    if(p1)parts.push(`a ${p1} V`);
+    if(tandas&&t)parts.push(`en ${tandas} tandas de ${t} s`);
+    else if(t)parts.push(`durante ${t} s por tanda`);
+  } else {
+    if(p1)parts.push(`a ${p1} °C`);
+    if(t)parts.push(`durante ${t} s por punto`);
+  }
   return parts.length?parts.join(', '):'';
 }
 function natTests(){
   const s=gv('rf-sens'),m=gv('rf-motor');
   const parts=[];
-  if(s)parts.push(`test sensitivo a ${s}`);
-  if(m)parts.push(`test motor a ${m} sin contracción muscular indeseada`);
+  if(s)parts.push(`test sensitivo a ${s} V`);
+  if(m)parts.push(`test motor a ${m} V sin contracción muscular indeseada`);
   return parts.length?'Se realizan '+parts.join(' y ')+'. ':'';
 }
 function natAL(){
@@ -737,28 +750,28 @@ function regenMacro(){
 // ════════════════════════════════════════════════════════════
 function buildSpineDiagram(){
   const regions=[
-    {r:'C',label:'Cervical'},
-    {r:'T',label:'Torácico'},
-    {r:'L',label:'Lumbar'},
+    {r:'C',label:'Cervical',cls:'rh-C'},
+    {r:'T',label:'Torácico',cls:'rh-T'},
+    {r:'L',label:'Lumbar',  cls:'rh-L'},
   ];
   let html=`<div class="spine-wrap">`;
-  html+=`<div class="spine-col-hdr"><span class="col-l">← Izquierda</span><span></span><span class="col-r">Derecha →</span></div>`;
+  html+=`<div class="spine-col-hdr"><span class="col-l">← Izq</span><span></span><span class="col-r">Der →</span></div>`;
   regions.forEach(reg=>{
     const levels=SPINE.filter(s=>s.r===reg.r);
-    html+=`<div class="spine-region-hdr">${reg.label}</div>`;
+    html+=`<div class="spine-region-hdr ${reg.cls}">${reg.label}</div>`;
     levels.forEach(s=>{
       const cL=S.branches.has(s.id+'-L')?'sel':'';
       const cR=S.branches.has(s.id+'-R')?'sel':'';
-      const vertContent=s.showVert?`<span class="vert-lb">${s.lb||'·'}</span>`:`<span class="vert-lb" style="opacity:.3">·</span>`;
+      const vertContent=s.showVert?`<span class="vert-lb">${s.lb||'·'}</span>`:`<span class="vert-lb" style="opacity:.35">·</span>`;
       const noteHtml=s.nt?`<span class="vert-nt">${s.nt}</span>`:'';
-      html+=`<div class="spine-row">
+      html+=`<div class="spine-row" data-reg="${reg.r}">
         <div class="spine-side"><button class="bdot ${cL}" data-branch="${s.id}-L" title="${BRANCH_LBL[s.id]||s.id} — izquierdo"></button></div>
         <div class="spine-center" onclick="toggleBothBranches('${s.id}')" title="Clic: bilateral">${vertContent}${noteHtml}</div>
         <div class="spine-side r"><button class="bdot ${cR}" data-branch="${s.id}-R" title="${BRANCH_LBL[s.id]||s.id} — derecho"></button></div>
       </div>`;
     });
   });
-  html+=`<div class="spine-legend"><span><span class="legend-dot"></span>No tratado</span><span><span class="legend-dot sel"></span>Tratado</span><span style="color:var(--text2);font-size:10px">Clic en etiqueta → bilateral</span></div>`;
+  html+=`<div class="spine-legend"><span><span class="legend-dot c"></span>Cervical</span><span><span class="legend-dot t"></span>Torácico</span><span><span class="legend-dot l"></span>Lumbar</span><span style="font-size:10px">· clic etiqueta = bilateral</span></div>`;
   html+=`</div>`;
   return html;
 }
@@ -863,13 +876,14 @@ const BKRF=sec('Radiofrecuencia',`
     <button class="opt" data-a="rftype" data-v="Pulsada"><span class="o-icon">〜</span><span class="o-label">Pulsada</span></button>
   </div>
   <div class="row mt2">
-    <div class="field"><div class="field-label" id="lbl-p1">Temperatura (°C)</div><input type="number" id="rf-p1" placeholder="80" oninput="regenMacro()"></div>
-    <div class="field"><div class="field-label">Tiempo/punto (s)</div><input type="number" id="rf-tiempo" placeholder="90" oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label" id="lbl-p1">Temperatura (°C)</div><input type="number" id="rf-p1" value="80" oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Tiempo/punto (s)</div><input type="number" id="rf-tiempo" value="90" oninput="regenMacro()"></div>
+    <div class="field hidden" id="blk-tandas"><div class="field-label">Tandas</div><input type="number" id="rf-tandas" value="3" oninput="regenMacro()"></div>
   </div>
-  <div class="sub-label mt3">Tests de estimulación <span class="sub-label-opt">(opcional)</span></div>
+  <div class="sub-label mt3">Tests de estimulación</div>
   <div class="row mt1">
-    <div class="field"><div class="field-label">Test sensitivo</div><input type="text" id="rf-sens" placeholder="50 Hz / umbral..." oninput="regenMacro()"></div>
-    <div class="field"><div class="field-label">Test motor</div><input type="text" id="rf-motor" placeholder="2 Hz / umbral..." oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Sensitivo (V)</div><input type="number" id="rf-sens" value="0.5" step="0.1" oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Motor (V)</div><input type="number" id="rf-motor" value="1" step="0.1" oninput="regenMacro()"></div>
   </div>`);
 
 const BKSED=sec('Sedación / analgesia procedimental',`
@@ -924,7 +938,7 @@ const BKFACETAS_REG=sec('Región',`<div class="reg-grid">
   <button class="reg-btn" data-a="facetReg" data-v="torácicos" data-reg="tor"><span class="rb-icon">🟠</span>Torácico<span class="rb-ray">⚡</span></button>
   <button class="reg-btn" data-a="facetReg" data-v="lumbares" data-reg="lumb"><span class="rb-icon">🟢</span>Lumbar<span class="rb-ray">⚡</span></button>
 </div>`);
-const BKFACETAS_LOC=sec('Localización',bkLat()+`<div class="mt3"><div class="field-label">Ramos mediales — selecciona en el diagrama</div>${buildSpineDiagram()}</div>`);
+const BKFACETAS_LOC=sec('Localización',`<div class="field-label">Selecciona los ramos en el diagrama — clic lateral para individual, clic etiqueta para bilateral</div><div class="mt1">${buildSpineDiagram()}</div>`);
 
 // ════════════════════════════════════════════════════════════
 // FORM BUILDER
@@ -1048,7 +1062,20 @@ function initHandlers(){
       el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
       el.classList.add('sel');
       const lbl=document.getElementById('lbl-p1');
-      if(lbl)lbl.textContent=v==='Pulsada'?'Voltaje (V)':'Temperatura (°C)';
+      const p1=document.getElementById('rf-p1');
+      const t=document.getElementById('rf-tiempo');
+      const tandas=document.getElementById('blk-tandas');
+      if(v==='Pulsada'){
+        if(lbl)lbl.textContent='Voltaje (V)';
+        if(p1&&!p1.dataset.usr)p1.value='45';
+        if(t&&!t.dataset.usr)t.value='120';
+        if(tandas)tandas.classList.remove('hidden');
+      } else {
+        if(lbl)lbl.textContent='Temperatura (°C)';
+        if(p1&&!p1.dataset.usr)p1.value='80';
+        if(t&&!t.dataset.usr)t.value='90';
+        if(tandas)tandas.classList.add('hidden');
+      }
       regenMacro();
     }
     else if(a==='rflong'){
