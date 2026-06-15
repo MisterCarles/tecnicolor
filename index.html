@@ -348,41 +348,40 @@ const TECHNIQUES = [
 
 // ── Spine diagram data ──────────────────────────────────────
 const SPINE = [
-  {r:'C', id:'C2',  lb:'C2',  nt:'GON',          showVert:true},
-  {r:'C', id:'C3s', lb:'C3',  nt:'TON (sup.)',    showVert:true},
-  {r:'C', id:'C3p', lb:'',    nt:'C3 profundo',   showVert:false},
-  {r:'C', id:'C4',  lb:'C4',  nt:'',              showVert:true},
-  {r:'C', id:'C5',  lb:'C5',  nt:'',              showVert:true},
-  {r:'C', id:'C6',  lb:'C6',  nt:'',              showVert:true},
-  {r:'C', id:'C7',  lb:'C7',  nt:'',              showVert:true},
-  {r:'T', id:'T1',  lb:'T1',  nt:'',              showVert:true},
-  {r:'T', id:'T2',  lb:'T2',  nt:'',              showVert:true},
-  {r:'T', id:'T3',  lb:'T3',  nt:'',              showVert:true},
-  {r:'T', id:'T4',  lb:'T4',  nt:'',              showVert:true},
-  {r:'T', id:'T5',  lb:'T5',  nt:'',              showVert:true},
-  {r:'T', id:'T6',  lb:'T6',  nt:'',              showVert:true},
-  {r:'T', id:'T7',  lb:'T7',  nt:'',              showVert:true},
-  {r:'T', id:'T8',  lb:'T8',  nt:'',              showVert:true},
-  {r:'T', id:'T9',  lb:'T9',  nt:'',              showVert:true},
-  {r:'T', id:'T10', lb:'T10', nt:'',              showVert:true},
-  {r:'T', id:'T11', lb:'T11', nt:'',              showVert:true},
-  {r:'T', id:'T12', lb:'T12', nt:'',              showVert:true},
-  {r:'L', id:'L1',  lb:'L1',  nt:'',              showVert:true},
-  {r:'L', id:'L2',  lb:'L2',  nt:'',              showVert:true},
-  {r:'L', id:'L3',  lb:'L3',  nt:'',              showVert:true},
-  {r:'L', id:'L4',  lb:'L4',  nt:'',              showVert:true},
-  {r:'L', id:'L5',  lb:'L5',  nt:'r. posterior',  showVert:true},
+  {r:'C', id:'C2',  lb:'C2',  nt:'GON · r.d. C2',   showVert:true},
+  {r:'C', id:'C3s', lb:'C3',  nt:'TON · r.m. C3',   showVert:true},
+  {r:'C', id:'C3p', lb:'C3',  nt:'C3 profundo',      showVert:false},
+  {r:'C', id:'C4',  lb:'C4',  nt:'r. medial',        showVert:true},
+  {r:'C', id:'C5',  lb:'C5',  nt:'r. medial',        showVert:true},
+  {r:'C', id:'C6',  lb:'C6',  nt:'r. medial',        showVert:true},
+  {r:'C', id:'C7',  lb:'C7',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T1',  lb:'T1',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T2',  lb:'T2',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T3',  lb:'T3',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T4',  lb:'T4',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T5',  lb:'T5',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T6',  lb:'T6',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T7',  lb:'T7',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T8',  lb:'T8',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T9',  lb:'T9',  nt:'r. medial',        showVert:true},
+  {r:'T', id:'T10', lb:'T10', nt:'r. medial',        showVert:true},
+  {r:'T', id:'T11', lb:'T11', nt:'r. medial',        showVert:true},
+  {r:'T', id:'T12', lb:'T12', nt:'r. medial',        showVert:true},
+  {r:'L', id:'L1',  lb:'L1',  nt:'r. medial',        showVert:true},
+  {r:'L', id:'L2',  lb:'L2',  nt:'r. medial',        showVert:true},
+  {r:'L', id:'L3',  lb:'L3',  nt:'r. medial',        showVert:true},
+  {r:'L', id:'L4',  lb:'L4',  nt:'r. medial',        showVert:true},
 ];
 
 const BRANCH_LBL = {
-  C2:'C2 (GON)', C3s:'C3 TON', C3p:'C3 profundo',
-  C4:'C4', C5:'C5', C6:'C6', C7:'C7',
+  C2:'GON (r. dorsal C2)', C3s:'TON (r. medial C3)', C3p:'C3 profundo',
+  C4:'C4 r. medial', C5:'C5 r. medial', C6:'C6 r. medial', C7:'C7 r. medial',
   T1:'T1', T2:'T2', T3:'T3', T4:'T4', T5:'T5', T6:'T6',
   T7:'T7', T8:'T8', T9:'T9', T10:'T10', T11:'T11', T12:'T12',
-  L1:'L1', L2:'L2', L3:'L3', L4:'L4', L5:'L5 (ramo dorsal)',
+  L1:'L1', L2:'L2', L3:'L3', L4:'L4',
 };
 
-const SPINE_ORDER = ['C2','C3s','C3p','C4','C5','C6','C7','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5'];
+const SPINE_ORDER = ['C2','C3s','C3p','C4','C5','C6','C7','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4'];
 
 // ════════════════════════════════════════════════════════════
 // STATE
@@ -499,7 +498,7 @@ function goBack(){
 }
 function selectTechnique(id){
   TECH_ID=id;
-  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:null});
+  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[]});
   S.branches=new Set();
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('screen-selector').classList.add('hidden');
@@ -508,6 +507,10 @@ function selectTechnique(id){
   document.getElementById('btn-back').classList.remove('hidden');
   document.getElementById('form-container').innerHTML=buildForm(id);
   initHandlers();
+  if(id.startsWith('facetas')){
+    S.posicion='decúbito prono';
+    document.querySelector('[data-a="posicion"][data-v="decúbito prono"]')?.classList.add('sel');
+  }
   const mt=document.getElementById('macro-txt');
   if(mt) mt.value=genMacro(id);
   window.scrollTo({top:0,behavior:'smooth'});
@@ -645,7 +648,7 @@ function genMacro(id){
       return t;
     }
     case 'facetas-bloqueo':{
-      const reg=S.facetReg||'medulares';
+      const reg=S.facetReg.length?S.facetReg.join(' y '):'medulares';
       const bm=mezcla||gv('blq-mezcla')||'la mezcla terapéutica';
       const bv=gv('blq-vol');
       const ramosDesc=br||latBrDesc;
@@ -662,7 +665,7 @@ function genMacro(id){
       return t;
     }
     case 'facetas-rf':{
-      const reg=S.facetReg||'medulares';
+      const reg=S.facetReg.length?S.facetReg.join(' y '):'medulares';
       const modal=S.rfTipo?S.rfTipo.toLowerCase():'';
       let t=`${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${modal?' '+modal:''} de ramos mediales ${reg}`;
       if(latBrDesc) t+=`, tratando los siguientes ramos: ${latBrDesc}`;
@@ -1069,9 +1072,9 @@ function initHandlers(){
       regenMacro();
     }
     else if(a==='facetReg'){
-      S.facetReg=v;
-      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
-      el.classList.add('sel');
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel')){if(!S.facetReg.includes(v))S.facetReg.push(v);}
+      else S.facetReg=S.facetReg.filter(x=>x!==v);
       regenMacro();
     }
     else if(a==='sust'){
