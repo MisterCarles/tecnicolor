@@ -342,7 +342,7 @@ const QUOTES = [
 ];
 
 // Portadas: añade imágenes a /portadas/ numeradas (1.jpg, 2.jpg...) y actualiza este número
-const PORTADAS_N = 0;
+const PORTADAS_N = 1;
 
 const CATEGORIES = [
   {id:'facetas',     name:'Facetas',          icon:'⚡', desc:'Bloqueo · Radiofrecuencia — Cervical · Torácico · Lumbar'},
@@ -437,7 +437,7 @@ function initSplash(){
   if(PORTADAS_N>0){
     const n=Math.floor(Math.random()*PORTADAS_N)+1;
     const img=document.getElementById('sp-portada');
-    img.src=`portadas/${n}.jpg`;
+    img.src=`portadas/portada${n}.png`;
     img.style.display='block';
   }
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('splash').classList.add('ready')));
