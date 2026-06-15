@@ -20,16 +20,19 @@ html.light {
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16.5px;transition:background .25s,color .25s}
 
 /* ── Splash ─────────────────────────────────────────────── */
-#splash{position:fixed;inset:0;z-index:1000;background:var(--splash-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;cursor:pointer;opacity:1;transition:opacity .7s ease}
+#splash{position:fixed;inset:0;z-index:1000;background:var(--splash-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;cursor:pointer;opacity:1;transition:opacity .7s ease;overflow:hidden}
 #splash.fade-out{opacity:0;pointer-events:none}
-.sp-logo{height:110px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .1s}
+.sp-portada{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;opacity:0;transition:opacity 1s ease .1s}
+#splash.ready .sp-portada{opacity:1}
+.sp-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.5) 100%)}
+.sp-logo{position:relative;z-index:2;height:110px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .2s;filter:drop-shadow(0 2px 16px rgba(0,0,0,.6))}
 #splash.ready .sp-logo{opacity:1}
-.sp-q{max-width:580px;text-align:center;font-size:clamp(21px,3.5vw,32px);font-weight:300;line-height:1.6;color:var(--text);font-style:italic;opacity:0;transform:translateY(16px);transition:opacity .9s ease .2s,transform .9s ease .2s}
+.sp-q{position:relative;z-index:2;max-width:580px;text-align:center;font-size:clamp(18px,3vw,28px);font-weight:300;line-height:1.6;color:#fff;font-style:italic;opacity:0;transform:translateY(16px);transition:opacity .9s ease .3s,transform .9s ease .3s;text-shadow:0 1px 8px rgba(0,0,0,.7)}
 #splash.ready .sp-q{opacity:1;transform:translateY(0)}
-.sp-a{margin-top:28px;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .9s ease .6s}
+.sp-a{position:relative;z-index:2;margin-top:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;opacity:0;transition:opacity .9s ease .7s}
 #splash.ready .sp-a{opacity:1}
-.sp-hint{position:absolute;bottom:32px;font-size:11px;color:var(--text2);opacity:0;transition:opacity .6s ease 1.2s}
-#splash.ready .sp-hint{opacity:.35}
+.sp-hint{position:absolute;bottom:32px;z-index:2;font-size:11px;color:rgba(255,255,255,.4);opacity:0;transition:opacity .6s ease 1.3s}
+#splash.ready .sp-hint{opacity:1}
 
 /* ── Header ─────────────────────────────────────────────── */
 .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
@@ -242,6 +245,8 @@ textarea::placeholder{color:var(--text2)}
 
 <!-- SPLASH -->
 <div id="splash" onclick="dismissSplash()">
+  <img id="sp-portada" class="sp-portada" src="" alt="" style="display:none">
+  <div class="sp-overlay"></div>
   <img src="logo.png" alt="Tecnicolor" class="sp-logo">
   <div class="sp-q" id="sq"></div>
   <div class="sp-a" id="sa"></div>
@@ -316,27 +321,28 @@ textarea::placeholder{color:var(--text2)}
 // ════════════════════════════════════════════════════════════
 
 const QUOTES = [
-  {q:"Solo sé que no sé nada.",a:"Sócrates"},
-  {q:"Todo fluye, nada permanece.",a:"Heráclito"},
-  {q:"El infierno son los demás.",a:"Jean-Paul Sartre"},
-  {q:"Dios ha muerto. Y nosotros lo hemos matado.",a:"Friedrich Nietzsche"},
-  {q:"Pienso, luego existo.",a:"René Descartes"},
-  {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
-  {q:"El hombre está condenado a ser libre.",a:"Jean-Paul Sartre"},
-  {q:"Lo que no me destruye me hace más fuerte.",a:"Friedrich Nietzsche"},
-  {q:"En medio del invierno, encontré en mí un verano invencible.",a:"Albert Camus"},
-  {q:"Atrévete a saber.",a:"Immanuel Kant"},
-  {q:"La vida no examinada no merece ser vivida.",a:"Sócrates"},
-  {q:"Ser o no ser: esa es la cuestión.",a:"William Shakespeare"},
-  {q:"Todo lo sólido se desvanece en el aire.",a:"Karl Marx"},
-  {q:"Hay una grieta en todo. Así es como entra la luz.",a:"Leonard Cohen"},
-  {q:"Prefiero preguntas sin respuesta que respuestas sin pregunta.",a:"Richard Feynman"},
-  {q:"No existe viento favorable para el que no sabe a qué puerto se dirige.",a:"Séneca"},
-  {q:"Lo esencial es invisible a los ojos.",a:"Antoine de Saint-Exupéry"},
-  {q:"El coraje es saber a qué no hay que tener miedo.",a:"Platón"},
-  {q:"No cuentes los días; haz que los días cuenten.",a:"Muhammad Ali"},
-  {q:"La filosofía es un combate contra el embrujo de nuestro entendimiento.",a:"Ludwig Wittgenstein"},
+  {q:"Estos son mis principios. Si no le gustan, tengo otros.",a:"Groucho Marx"},
+  {q:"El secreto del éxito es la honestidad. Si puedes fingirla, lo tienes conseguido.",a:"Groucho Marx"},
+  {q:"Me he pasado la noche bebiendo whisky y jugando a las cartas con Balzac. Balzac tramposo.",a:"Groucho Marx"},
+  {q:"Hay momentos en la vida en que la muerte sería un alivio. Como cuando me sacan una muela.",a:"Groucho Marx"},
+  {q:"Soy un hombre de principios. Claro que si no le gustan, los cambio.",a:"Groucho Marx"},
+  {q:"Nunca olvidaré mis primeras palabras cuando entré al quirófano: ¿por qué está todo tan blanco?",a:"Groucho Marx"},
+  {q:"Un niño de cinco años podría entender esto. ¡Alguien que me traiga a un niño de cinco años!",a:"Groucho Marx"},
+  {q:"Me gustan los gatos. Los perros se creen que eres fantástico. Los gatos quieren ver tus papeles.",a:"Groucho Marx"},
+  {q:"No me gusta pertenecer a ningún club que me acepte como miembro.",a:"Groucho Marx"},
+  {q:"He tenido una tarde maravillosa. Pero esta no ha sido una de ellas.",a:"Groucho Marx"},
+  {q:"La política es el arte de buscar problemas, encontrarlos, hacer un diagnóstico falso y aplicar después los remedios equivocados.",a:"Groucho Marx"},
+  {q:"El matrimonio es la principal causa del divorcio.",a:"Groucho Marx"},
+  {q:"Si no puedes vencerles, únete a ellos. Y si no puedes unirte a ellos, cómprales.",a:"Groucho Marx"},
+  {q:"Detrás de todo gran hombre hay una mujer. Y detrás de ella, su mujer.",a:"Groucho Marx"},
+  {q:"Los médicos son iguales que los abogados, salvo que los abogados solo te roban el dinero.",a:"Groucho Marx"},
+  {q:"Trabajo a menudo. No me gusta, pero prefiero eso a pensar.",a:"Groucho Marx"},
+  {q:"Salí a buscar el sentido de la vida y no encontré aparcamiento.",a:"Groucho Marx"},
+  {q:"He disfrutado mucho de esta tarde. Y también hubo momentos agradables.",a:"Groucho Marx"},
 ];
+
+// Portadas: añade imágenes a /portadas/ numeradas (1.jpg, 2.jpg...) y actualiza este número
+const PORTADAS_N = 0;
 
 const CATEGORIES = [
   {id:'facetas',     name:'Facetas',          icon:'⚡', desc:'Bloqueo · Radiofrecuencia — Cervical · Torácico · Lumbar'},
@@ -428,8 +434,14 @@ function initSplash(){
   const item=QUOTES[Math.floor(Math.random()*QUOTES.length)];
   document.getElementById('sq').textContent=`"${item.q}"`;
   document.getElementById('sa').textContent=`— ${item.a}`;
+  if(PORTADAS_N>0){
+    const n=Math.floor(Math.random()*PORTADAS_N)+1;
+    const img=document.getElementById('sp-portada');
+    img.src=`portadas/${n}.jpg`;
+    img.style.display='block';
+  }
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('splash').classList.add('ready')));
-  splashTimer=setTimeout(dismissSplash,4500);
+  splashTimer=setTimeout(dismissSplash,5500);
 }
 function dismissSplash(){
   clearTimeout(splashTimer);
