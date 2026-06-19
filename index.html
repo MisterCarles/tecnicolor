@@ -207,24 +207,29 @@ textarea::placeholder{color:var(--text2)}
 .faceta-card:first-child:hover{border-color:#4caf7d;box-shadow:0 6px 20px rgba(76,175,125,.2)}
 .faceta-card:last-child{border-color:rgba(155,109,255,.4)}
 .faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
+.fc-img{width:80px;height:80px;object-fit:cover;border-radius:10px;margin-bottom:2px}
 
 /* ── Nivel epi diagram ──────────────────────────────────── */
-.niv-epi-strip{display:flex;flex-direction:column;gap:3px;margin-top:8px}
-.niv-epi-sep{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;border-radius:5px;margin-top:6px}
+.niv-epi-strip{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.niv-epi-sep{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:3px 6px;border-radius:4px;margin-top:5px}
 .niv-epi-sep:first-child{margin-top:0}
-.niv-C-sep{color:#60a5fa;background:rgba(59,130,246,.12)}
-.niv-T-sep{color:#fbbf24;background:rgba(245,158,11,.12)}
-.niv-L-sep{color:#34d399;background:rgba(16,185,129,.12)}
-.niv-S-sep{color:#f87171;background:rgba(244,114,114,.12)}
-.niv-epi-row{padding:5px 6px;border-radius:6px;border:1.5px solid var(--border);font-size:11px;font-weight:700;font-family:monospace;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);user-select:none}
-.niv-epi-row.niv-C{border-color:#3b82f660;color:#60a5fa;background:rgba(59,130,246,.06)}
-.niv-epi-row.niv-T{border-color:#f59e0b60;color:#fbbf24;background:rgba(245,158,11,.06)}
-.niv-epi-row.niv-L{border-color:#10b98160;color:#34d399;background:rgba(16,185,129,.06)}
-.niv-epi-row.niv-S{border-color:#f4737360;color:#f87171;background:rgba(244,114,114,.06)}
-.niv-epi-row.sel.niv-C{background:#3b82f6;color:white;border-color:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.5)}
-.niv-epi-row.sel.niv-T{background:#f59e0b;color:white;border-color:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.5)}
-.niv-epi-row.sel.niv-L{background:#10b981;color:white;border-color:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}
-.niv-epi-row.sel.niv-S{background:#ef4444;color:white;border-color:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.5)}
+.niv-C-sep{color:#60a5fa;background:rgba(59,130,246,.1)}
+.niv-T-sep{color:#fbbf24;background:rgba(245,158,11,.1)}
+.niv-L-sep{color:#34d399;background:rgba(16,185,129,.1)}
+.niv-S-sep{color:#f87171;background:rgba(244,114,114,.1)}
+.niv-epi-row{padding:3px 8px;border-radius:5px;border:1.5px solid transparent;font-size:11px;font-weight:600;font-family:monospace;cursor:pointer;transition:all .12s;color:var(--text2);user-select:none}
+.niv-epi-row.niv-C{color:#93c5fd;background:rgba(59,130,246,.05)}
+.niv-epi-row.niv-T{color:#fcd34d;background:rgba(245,158,11,.05)}
+.niv-epi-row.niv-L{color:#6ee7b7;background:rgba(16,185,129,.05)}
+.niv-epi-row.niv-S{color:#fca5a5;background:rgba(244,114,114,.05)}
+.niv-epi-row:hover.niv-C{border-color:#3b82f660;background:rgba(59,130,246,.1)}
+.niv-epi-row:hover.niv-T{border-color:#f59e0b60;background:rgba(245,158,11,.1)}
+.niv-epi-row:hover.niv-L{border-color:#10b98160;background:rgba(16,185,129,.1)}
+.niv-epi-row:hover.niv-S{border-color:#ef444460;background:rgba(244,114,114,.1)}
+.niv-epi-row.sel.niv-C{background:#3b82f6;color:white;border-color:#3b82f6}
+.niv-epi-row.sel.niv-T{background:#f59e0b;color:white;border-color:#f59e0b}
+.niv-epi-row.sel.niv-L{background:#10b981;color:white;border-color:#10b981}
+.niv-epi-row.sel.niv-S{background:#ef4444;color:white;border-color:#ef4444}
 /* ── Sedation drug rows ──────────────────────────────────── */
 .sed-drug-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .sed-drug-row{display:flex;align-items:center;gap:10px}
@@ -654,7 +659,7 @@ function showCat(catId){
   const techs=TECHNIQUES.filter(t=>t.cat===catId);
   const big=catId==='facetas'||catId==='epidural';
   document.getElementById('tech-list').innerHTML=big
-    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
+    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.img?`<img src="${t.img}" class="fc-img" alt="${t.name}">`:t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
     :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
 }
 function showAllCats(){
@@ -1416,9 +1421,9 @@ function initHandlers(){
       regenMacro();
     }
     else if(a==='nivel-epi'){
-      S.niveles=[v];
-      document.querySelectorAll('[data-a="nivel-epi"]').forEach(b=>b.classList.remove('sel'));
-      el.classList.add('sel');
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel')){if(!S.niveles.includes(v))S.niveles.push(v);}
+      else S.niveles=S.niveles.filter(n=>n!==v);
       regenMacro();
     }
     else if(a==='aguja'){
