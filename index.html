@@ -209,7 +209,13 @@ textarea::placeholder{color:var(--text2)}
 .faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
 
 /* ── Nivel epi diagram ──────────────────────────────────── */
-.niv-epi-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:5px;margin-top:8px}
+.niv-epi-cols{display:flex;gap:8px;margin-top:8px;overflow-x:auto}
+.niv-epi-col{display:flex;flex-direction:column;gap:4px;min-width:72px}
+.niv-epi-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 6px;border-radius:4px;text-align:center;margin-bottom:2px}
+.niv-epi-col-label.niv-C{color:#60a5fa;background:rgba(59,130,246,.12)}
+.niv-epi-col-label.niv-T{color:#fbbf24;background:rgba(245,158,11,.12)}
+.niv-epi-col-label.niv-L{color:#34d399;background:rgba(16,185,129,.12)}
+.niv-epi-col-label.niv-S{color:#f87171;background:rgba(244,114,114,.12)}
 .niv-epi-row{padding:5px 6px;border-radius:6px;border:1.5px solid var(--border);font-size:11px;font-weight:700;font-family:monospace;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);user-select:none}
 .niv-epi-row.niv-C{border-color:#3b82f660;color:#60a5fa;background:rgba(59,130,246,.06)}
 .niv-epi-row.niv-T{border-color:#f59e0b60;color:#fbbf24;background:rgba(245,158,11,.06)}
@@ -579,6 +585,8 @@ function selectTechnique(id){
     S.alPrinc='Levobupivacaína';
     S.alVehiculo='suero salino 0,9%';
     S.cort='Betametasona 12 mg';
+    // regenerar macro con los defaults de S ya fijados
+    setTimeout(()=>regenMacro(),0);
   }
   const mt=document.getElementById('macro-txt');
   if(mt) mt.value=genMacro(id);
@@ -859,10 +867,22 @@ function natMezclaEpi(){
 
 function buildNivelesEpi(lista){
   const getC=(n)=>n.startsWith('C')?'niv-C':n.startsWith('T')?'niv-T':n.startsWith('L')?'niv-L':'niv-S';
-  let html='<div class="niv-epi-wrap">';
+  // agrupar por región para hacer columnas separadas
+  const regs={C:[],T:[],L:[],S:[]};
   lista.forEach(n=>{
-    const sel=S.niveles.includes(n)?'sel':'';
-    html+=`<div class="niv-epi-row ${getC(n)} ${sel}" data-a="nivel-epi" data-v="${n}">${n}</div>`;
+    const r=n.startsWith('C')?'C':n.startsWith('T')?'T':n.startsWith('L')?'L':'S';
+    regs[r].push(n);
+  });
+  let html='<div class="niv-epi-cols">';
+  [['C','Cervical'],['T','Torácico'],['L','Lumbar'],['S','Sacro']].forEach(([r,label])=>{
+    if(!regs[r].length)return;
+    html+=`<div class="niv-epi-col">`;
+    html+=`<div class="niv-epi-col-label niv-${r}">${label}</div>`;
+    regs[r].forEach(n=>{
+      const sel=S.niveles.includes(n)?'sel':'';
+      html+=`<div class="niv-epi-row niv-${r} ${sel}" data-a="nivel-epi" data-v="${n}">${n}</div>`;
+    });
+    html+=`</div>`;
   });
   html+='</div>';
   return html;
