@@ -209,13 +209,13 @@ textarea::placeholder{color:var(--text2)}
 .faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
 
 /* ── Nivel epi diagram ──────────────────────────────────── */
-.niv-epi-cols{display:flex;gap:8px;margin-top:8px;overflow-x:auto}
-.niv-epi-col{display:flex;flex-direction:column;gap:4px;min-width:72px}
-.niv-epi-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 6px;border-radius:4px;text-align:center;margin-bottom:2px}
-.niv-epi-col-label.niv-C{color:#60a5fa;background:rgba(59,130,246,.12)}
-.niv-epi-col-label.niv-T{color:#fbbf24;background:rgba(245,158,11,.12)}
-.niv-epi-col-label.niv-L{color:#34d399;background:rgba(16,185,129,.12)}
-.niv-epi-col-label.niv-S{color:#f87171;background:rgba(244,114,114,.12)}
+.niv-epi-strip{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.niv-epi-sep{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;border-radius:5px;margin-top:6px}
+.niv-epi-sep:first-child{margin-top:0}
+.niv-C-sep{color:#60a5fa;background:rgba(59,130,246,.12)}
+.niv-T-sep{color:#fbbf24;background:rgba(245,158,11,.12)}
+.niv-L-sep{color:#34d399;background:rgba(16,185,129,.12)}
+.niv-S-sep{color:#f87171;background:rgba(244,114,114,.12)}
 .niv-epi-row{padding:5px 6px;border-radius:6px;border:1.5px solid var(--border);font-size:11px;font-weight:700;font-family:monospace;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);user-select:none}
 .niv-epi-row.niv-C{border-color:#3b82f660;color:#60a5fa;background:rgba(59,130,246,.06)}
 .niv-epi-row.niv-T{border-color:#f59e0b60;color:#fbbf24;background:rgba(245,158,11,.06)}
@@ -383,15 +383,118 @@ const CATEGORIES = [
 
 const TECHNIQUES = [
   {id:'epi-interlaminar',   name:'Interlaminar',    cat:'epidural', desc:'Tuohy · línea media',        aliases:['epidural interlaminar','interlaminar','epidrual','epirdual'],
-    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="6" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="28" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="50" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="21" x2="48" y2="21" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="12" y1="43" x2="48" y2="43" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="30" y1="0" x2="30" y2="43" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="43" r="3.5" fill="#9b6dff"/></svg>`},
+    svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
+  <!-- Cuerpos vertebrales (vista lateral, 3 vértebras) -->
+  <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="38" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="70" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <!-- Discos intervertebrales -->
+  <rect x="5" y="26" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <rect x="5" y="58" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <!-- Canal espinal / espacio epidural -->
+  <rect x="38" y="6" width="10" height="84" rx="3" fill="rgba(155,109,255,.08)" stroke="rgba(155,109,255,.35)" stroke-width="1"/>
+  <!-- Apófisis espinosas -->
+  <rect x="50" y="8"  width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="40" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="72" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <!-- Ligamento amarillo (punto amarillo en los espacios interespinosos) -->
+  <circle cx="50" cy="35" r="3" fill="#fbbf24" opacity=".8"/>
+  <circle cx="50" cy="67" r="3" fill="#fbbf24" opacity=".8"/>
+  <!-- Aguja interlaminar - midline posterior -->
+  <line x1="80" y1="32" x2="49" y2="47" stroke="#9b6dff" stroke-width="2.8" stroke-linecap="round"/>
+  <polygon points="49,44 44,52 54,50" fill="#9b6dff"/>
+</svg>`},
   {id:'epi-parasagital',   name:'Parasagital',     cat:'epidural', desc:'Tuohy · abordaje lateral',   aliases:['parasagital','parasagittal','parasajital'],
-    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="6" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="28" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="50" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="21" x2="48" y2="21" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="12" y1="43" x2="48" y2="43" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="40" y1="0" x2="35" y2="43" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="35" cy="43" r="3.5" fill="#9b6dff"/></svg>`},
+    svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
+  <!-- Cuerpos vertebrales -->
+  <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="38" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="70" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <!-- Discos -->
+  <rect x="5" y="26" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <rect x="5" y="58" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <!-- Canal espinal -->
+  <rect x="38" y="6" width="10" height="84" rx="3" fill="rgba(155,109,255,.08)" stroke="rgba(155,109,255,.35)" stroke-width="1"/>
+  <!-- Apófisis espinosas -->
+  <rect x="50" y="8"  width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="40" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="72" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <!-- Aguja parasagital - entra lateral pero más angulada -->
+  <line x1="80" y1="18" x2="46" y2="47" stroke="#9b6dff" stroke-width="2.8" stroke-linecap="round"/>
+  <polygon points="46,44 40,51 51,52" fill="#9b6dff"/>
+  <!-- Indicador lateral (línea discontinua de referencia) -->
+  <line x1="38" y1="47" x2="50" y2="47" stroke="rgba(155,109,255,.4)" stroke-width="1" stroke-dasharray="2,2"/>
+</svg>`},
   {id:'epi-transforaminal', name:'Transforaminal',  cat:'epidural', desc:'22G · abordaje oblicuo',     aliases:['transforaminal','tf','foraminal','tranforaminal'],
-    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="8" y="6" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="28" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="50" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="42" y="14" width="10" height="8" rx="2" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="42" y="36" width="10" height="8" rx="2" stroke="currentColor" stroke-width="1.2" opacity=".5"/><line x1="58" y1="4" x2="43" y2="38" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="43" cy="38" r="3.5" fill="#9b6dff"/></svg>`},
+    svg:`<svg viewBox="0 0 88 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:66px;height:72px">
+  <!-- Vista axial de vértebra lumbar -->
+  <!-- Cuerpo vertebral (óvalo anterior) -->
+  <ellipse cx="38" cy="68" rx="26" ry="18" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <!-- Canal espinal (círculo posterior al cuerpo) -->
+  <ellipse cx="38" cy="42" rx="13" ry="11" fill="rgba(155,109,255,.08)" stroke="rgba(155,109,255,.4)" stroke-width="1.2"/>
+  <!-- Saco dural -->
+  <ellipse cx="38" cy="42" rx="8" ry="7" fill="rgba(155,109,255,.12)" stroke="rgba(155,109,255,.6)" stroke-width="1"/>
+  <!-- Pedículos -->
+  <rect x="14" y="54" width="12" height="16" rx="3" fill="rgba(148,163,210,.22)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="52" y="54" width="12" height="16" rx="3" fill="rgba(148,163,210,.22)" stroke="currentColor" stroke-width="1.3"/>
+  <!-- Láminas -->
+  <path d="M20 54 Q10 38 38 32 Q66 38 56 54" fill="rgba(148,163,210,.14)" stroke="currentColor" stroke-width="1.3"/>
+  <!-- Apófisis espinosa -->
+  <rect x="34" y="12" width="8" height="20" rx="2" fill="rgba(148,163,210,.22)" stroke="currentColor" stroke-width="1.2"/>
+  <!-- Foramen (derecho) -->
+  <ellipse cx="66" cy="52" rx="7" ry="9" fill="rgba(251,191,36,.1)" stroke="rgba(251,191,36,.6)" stroke-width="1.2"/>
+  <!-- Raíz nerviosa en foramen -->
+  <circle cx="66" cy="52" r="3.5" fill="rgba(251,191,36,.25)" stroke="rgba(251,191,36,.8)" stroke-width="1"/>
+  <!-- Aguja oblicua desde posterolateral derecho -->
+  <line x1="88" y1="14" x2="67" y2="50" stroke="#9b6dff" stroke-width="2.8" stroke-linecap="round"/>
+  <polygon points="67,47 61,54 72,55" fill="#9b6dff"/>
+</svg>`},
   {id:'epi-caudal',        name:'Caudal',          cat:'epidural', desc:'22G · hiato sacro',           aliases:['caudal','epidural caudal','sacra','hiato'],
-    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><polygon points="10,10 50,10 30,72" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="22" y1="63" x2="38" y2="63" stroke="currentColor" stroke-width="2"/><line x1="30" y1="84" x2="30" y2="63" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="63" r="3.5" fill="#9b6dff"/><text x="30" y="36" text-anchor="middle" font-size="7" fill="currentColor" opacity=".6">sacro</text></svg>`},
+    svg:`<svg viewBox="0 0 72 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:54px;height:72px">
+  <!-- Vista lateral del sacro -->
+  <!-- Cuerpo del sacro (trapezoide/pirámide) -->
+  <path d="M12,6 L60,6 L50,70 L22,70 Z" fill="rgba(148,163,210,.16)" stroke="currentColor" stroke-width="1.5"/>
+  <!-- Canal sacro (interior) -->
+  <path d="M24,10 L48,10 L42,64 L30,64 Z" fill="rgba(155,109,255,.1)" stroke="rgba(155,109,255,.4)" stroke-width="1"/>
+  <!-- Líneas segmentarias del sacro -->
+  <line x1="21" y1="24" x2="51" y2="24" stroke="currentColor" stroke-width=".8" opacity=".4"/>
+  <line x1="20" y1="38" x2="52" y2="38" stroke="currentColor" stroke-width=".8" opacity=".4"/>
+  <line x1="22" y1="52" x2="50" y2="52" stroke="currentColor" stroke-width=".8" opacity=".4"/>
+  <!-- Hiato sacro (apertura inferior) -->
+  <path d="M30,64 L42,64 L40,72 L32,72 Z" fill="rgba(52,211,153,.2)" stroke="rgba(52,211,153,.7)" stroke-width="1.2"/>
+  <!-- Cornetes sacros -->
+  <circle cx="29" cy="70" r="3.5" fill="rgba(148,163,210,.3)" stroke="currentColor" stroke-width="1.2"/>
+  <circle cx="43" cy="70" r="3.5" fill="rgba(148,163,210,.3)" stroke="currentColor" stroke-width="1.2"/>
+  <!-- Aguja desde inferior a través del hiato -->
+  <line x1="36" y1="96" x2="36" y2="68" stroke="#9b6dff" stroke-width="2.8" stroke-linecap="round"/>
+  <polygon points="36,65 31,73 41,73" fill="#9b6dff"/>
+</svg>`},
   {id:'epi-parche',        name:'Parche hemático',  cat:'epidural', desc:'Tuohy · sangre autóloga',    aliases:['parche hemático','parche','blood patch','autólogo'],
-    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="20" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="42" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="35" x2="48" y2="35" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="30" y1="0" x2="30" y2="35" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="35" r="3.5" fill="#e53935"/><circle cx="30" cy="35" r="6" stroke="#e53935" stroke-width="1.2" fill="none" opacity=".5"/><text x="30" y="72" text-anchor="middle" font-size="7" fill="#e53935">🩸</text></svg>`},
+    svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
+  <!-- Cuerpos vertebrales -->
+  <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="38" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="2" y="70" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
+  <!-- Discos -->
+  <rect x="5" y="26" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <rect x="5" y="58" width="30" height="12" rx="3" fill="rgba(52,211,153,.14)" stroke="rgba(52,211,153,.5)" stroke-width="1"/>
+  <!-- Canal espinal -->
+  <rect x="38" y="6" width="10" height="84" rx="3" fill="rgba(239,68,68,.07)" stroke="rgba(239,68,68,.3)" stroke-width="1"/>
+  <!-- Sangre en espacio epidural (parche) -->
+  <ellipse cx="43" cy="47" rx="7" ry="10" fill="rgba(239,68,68,.25)" stroke="rgba(239,68,68,.6)" stroke-width="1.2"/>
+  <!-- Apófisis espinosas -->
+  <rect x="50" y="8"  width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="40" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="50" y="72" width="22" height="14" rx="3" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.3"/>
+  <!-- Ligamento amarillo -->
+  <circle cx="50" cy="35" r="3" fill="#fbbf24" opacity=".8"/>
+  <circle cx="50" cy="67" r="3" fill="#fbbf24" opacity=".8"/>
+  <!-- Aguja -->
+  <line x1="80" y1="32" x2="49" y2="45" stroke="#9b6dff" stroke-width="2.8" stroke-linecap="round"/>
+  <polygon points="49,42 44,50 54,49" fill="#9b6dff"/>
+  <!-- Gota de sangre -->
+  <path d="M43,38 Q46,32 43,26 Q40,32 43,38Z" fill="#ef4444" opacity=".9"/>
+</svg>`},
   {id:'facetas-bloqueo', name:'Bloqueo facetario',    cat:'facetas', icon:'💉', desc:'Inyección diagnóstica de ramos mediales', aliases:['bloqueo facetas','bloqueo facetario','ramos mediales','bloqueo diagnostico facetas','facetas bloqueo','facetas cervical','bloqueo facetas cervical','facetas toracicas','bloqueo toracico','facetas lumbares','bloqueo lumbar']},
   {id:'facetas-rf',      name:'Radiofrecuencia',      cat:'facetas', icon:'⚡', desc:'Lesión térmica o pulsada de ramos mediales', aliases:['radiofrecuencia facetas','rf facetas','rf ramos mediales','radiofrecuencia cervical','rf cervical','radiofrecuencia lumbar','rf lumbar','rf toracico']},
   {id:'botox',                   name:'Botox',                           cat:'botox',       aliases:['botox','toxina botulinica','botulínica','bótox']},
@@ -866,23 +969,18 @@ function natMezclaEpi(){
 }
 
 function buildNivelesEpi(lista){
-  const getC=(n)=>n.startsWith('C')?'niv-C':n.startsWith('T')?'niv-T':n.startsWith('L')?'niv-L':'niv-S';
-  // agrupar por región para hacer columnas separadas
-  const regs={C:[],T:[],L:[],S:[]};
+  const getR=(n)=>n.startsWith('C')?'C':n.startsWith('T')?'T':n.startsWith('L')?'L':'S';
+  let html='<div class="niv-epi-strip">';
+  let lastR='';
   lista.forEach(n=>{
-    const r=n.startsWith('C')?'C':n.startsWith('T')?'T':n.startsWith('L')?'L':'S';
-    regs[r].push(n);
-  });
-  let html='<div class="niv-epi-cols">';
-  [['C','Cervical'],['T','Torácico'],['L','Lumbar'],['S','Sacro']].forEach(([r,label])=>{
-    if(!regs[r].length)return;
-    html+=`<div class="niv-epi-col">`;
-    html+=`<div class="niv-epi-col-label niv-${r}">${label}</div>`;
-    regs[r].forEach(n=>{
-      const sel=S.niveles.includes(n)?'sel':'';
-      html+=`<div class="niv-epi-row niv-${r} ${sel}" data-a="nivel-epi" data-v="${n}">${n}</div>`;
-    });
-    html+=`</div>`;
+    const r=getR(n);
+    if(r!==lastR){
+      const labels={C:'Cervical',T:'Torácico',L:'Lumbar',S:'Sacro'};
+      html+=`<div class="niv-epi-sep niv-${r}-sep">${labels[r]}</div>`;
+      lastR=r;
+    }
+    const sel=S.niveles.includes(n)?'sel':'';
+    html+=`<div class="niv-epi-row niv-${r} ${sel}" data-a="nivel-epi" data-v="${n}">${n}</div>`;
   });
   html+='</div>';
   return html;
