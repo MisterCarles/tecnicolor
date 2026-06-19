@@ -208,6 +208,24 @@ textarea::placeholder{color:var(--text2)}
 .faceta-card:last-child{border-color:rgba(155,109,255,.4)}
 .faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
 
+/* ── Nivel epi diagram ──────────────────────────────────── */
+.niv-epi-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:5px;margin-top:8px}
+.niv-epi-row{padding:5px 6px;border-radius:6px;border:1.5px solid var(--border);font-size:11px;font-weight:700;font-family:monospace;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);user-select:none}
+.niv-epi-row.niv-C{border-color:#3b82f660;color:#60a5fa;background:rgba(59,130,246,.06)}
+.niv-epi-row.niv-T{border-color:#f59e0b60;color:#fbbf24;background:rgba(245,158,11,.06)}
+.niv-epi-row.niv-L{border-color:#10b98160;color:#34d399;background:rgba(16,185,129,.06)}
+.niv-epi-row.niv-S{border-color:#f4737360;color:#f87171;background:rgba(244,114,114,.06)}
+.niv-epi-row.sel.niv-C{background:#3b82f6;color:white;border-color:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.5)}
+.niv-epi-row.sel.niv-T{background:#f59e0b;color:white;border-color:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.5)}
+.niv-epi-row.sel.niv-L{background:#10b981;color:white;border-color:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}
+.niv-epi-row.sel.niv-S{background:#ef4444;color:white;border-color:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.5)}
+/* ── Sedation drug rows ──────────────────────────────────── */
+.sed-drug-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.sed-drug-row{display:flex;align-items:center;gap:10px}
+.sed-drug-name{flex:1;font-size:13px;color:var(--text)}
+.sed-dose-input{width:120px;padding:5px 8px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;font-family:inherit;transition:border-color .15s}
+.sed-dose-input:focus{outline:none;border-color:var(--accent)}
+.sed-dose-input::placeholder{color:var(--text2);font-size:11px}
 /* ── Generate btn ───────────────────────────────────────── */
 .btn-generate{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;border:none;padding:14px 36px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.05em;box-shadow:0 4px 24px rgba(155,109,255,.5);transition:all .2s;z-index:50;white-space:nowrap}
 .btn-generate:hover{background:#8559e8;box-shadow:0 6px 28px rgba(155,109,255,.7);transform:translateX(-50%) translateY(-2px)}
@@ -358,10 +376,16 @@ const CATEGORIES = [
 ];
 
 const TECHNIQUES = [
-  {id:'epi-interlaminar',        name:'Epidural interlaminar',           cat:'epidural',    aliases:['epidural interlaminar','interlaminar','epidrual','epirdual']},
-  {id:'epi-transforaminal',      name:'Epidural transforaminal',         cat:'epidural',    aliases:['transforaminal','tf','foraminal','tranforaminal']},
-  {id:'epi-caudal',              name:'Epidural caudal',                 cat:'epidural',    aliases:['caudal','epidural caudal','sacra','hiato']},
-  {id:'epi-parasagital',         name:'Epidural parasagital',            cat:'epidural',    aliases:['parasagital','parasagittal','parasajital']},
+  {id:'epi-interlaminar',   name:'Interlaminar',    cat:'epidural', desc:'Tuohy · línea media',        aliases:['epidural interlaminar','interlaminar','epidrual','epirdual'],
+    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="6" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="28" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="50" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="21" x2="48" y2="21" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="12" y1="43" x2="48" y2="43" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="30" y1="0" x2="30" y2="43" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="43" r="3.5" fill="#9b6dff"/></svg>`},
+  {id:'epi-parasagital',   name:'Parasagital',     cat:'epidural', desc:'Tuohy · abordaje lateral',   aliases:['parasagital','parasagittal','parasajital'],
+    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="6" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="28" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="50" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="21" x2="48" y2="21" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="12" y1="43" x2="48" y2="43" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="40" y1="0" x2="35" y2="43" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="35" cy="43" r="3.5" fill="#9b6dff"/></svg>`},
+  {id:'epi-transforaminal', name:'Transforaminal',  cat:'epidural', desc:'22G · abordaje oblicuo',     aliases:['transforaminal','tf','foraminal','tranforaminal'],
+    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="8" y="6" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="28" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="50" width="32" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="42" y="14" width="10" height="8" rx="2" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="42" y="36" width="10" height="8" rx="2" stroke="currentColor" stroke-width="1.2" opacity=".5"/><line x1="58" y1="4" x2="43" y2="38" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="43" cy="38" r="3.5" fill="#9b6dff"/></svg>`},
+  {id:'epi-caudal',        name:'Caudal',          cat:'epidural', desc:'22G · hiato sacro',           aliases:['caudal','epidural caudal','sacra','hiato'],
+    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><polygon points="10,10 50,10 30,72" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="22" y1="63" x2="38" y2="63" stroke="currentColor" stroke-width="2"/><line x1="30" y1="84" x2="30" y2="63" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="63" r="3.5" fill="#9b6dff"/><text x="30" y="36" text-anchor="middle" font-size="7" fill="currentColor" opacity=".6">sacro</text></svg>`},
+  {id:'epi-parche',        name:'Parche hemático',  cat:'epidural', desc:'Tuohy · sangre autóloga',    aliases:['parche hemático','parche','blood patch','autólogo'],
+    svg:`<svg viewBox="0 0 60 84" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:70px"><rect x="12" y="20" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="42" width="36" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="35" x2="48" y2="35" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,2"/><line x1="30" y1="0" x2="30" y2="35" stroke="#9b6dff" stroke-width="2.5" stroke-linecap="round"/><circle cx="30" cy="35" r="3.5" fill="#e53935"/><circle cx="30" cy="35" r="6" stroke="#e53935" stroke-width="1.2" fill="none" opacity=".5"/><text x="30" y="72" text-anchor="middle" font-size="7" fill="#e53935">🩸</text></svg>`},
   {id:'facetas-bloqueo', name:'Bloqueo facetario',    cat:'facetas', icon:'💉', desc:'Inyección diagnóstica de ramos mediales', aliases:['bloqueo facetas','bloqueo facetario','ramos mediales','bloqueo diagnostico facetas','facetas bloqueo','facetas cervical','bloqueo facetas cervical','facetas toracicas','bloqueo toracico','facetas lumbares','bloqueo lumbar']},
   {id:'facetas-rf',      name:'Radiofrecuencia',      cat:'facetas', icon:'⚡', desc:'Lesión térmica o pulsada de ramos mediales', aliases:['radiofrecuencia facetas','rf facetas','rf ramos mediales','radiofrecuencia cervical','rf cervical','radiofrecuencia lumbar','rf lumbar','rf toracico']},
   {id:'botox',                   name:'Botox',                           cat:'botox',       aliases:['botox','toxina botulinica','botulínica','bótox']},
@@ -424,6 +448,8 @@ const S = {
   imagen:[], alList:[], cort:null,
   rfTipo:null, rfLong:null, rfTip:null,
   resultado:null, eva:null, sust:null,
+  facetReg:[],
+  aguja:null, alPiel:null, alPrinc:null, alVehiculo:null,
 };
 
 // ════════════════════════════════════════════════════════════
@@ -517,9 +543,9 @@ function showCat(catId){
   document.getElementById('tech-cat-icon').textContent=cat.icon+' ';
   document.getElementById('tech-cat-name').textContent=cat.name;
   const techs=TECHNIQUES.filter(t=>t.cat===catId);
-  const big=catId==='facetas';
+  const big=catId==='facetas'||catId==='epidural';
   document.getElementById('tech-list').innerHTML=big
-    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')"><span class="fc-icon">${t.icon||''}</span><span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
+    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
     :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
 }
 function showAllCats(){
@@ -535,7 +561,7 @@ function goBack(){
 }
 function selectTechnique(id){
   TECH_ID=id;
-  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[]});
+  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null});
   S.branches=new Set();
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('screen-selector').classList.add('hidden');
@@ -544,9 +570,15 @@ function selectTechnique(id){
   document.getElementById('btn-back').classList.remove('hidden');
   document.getElementById('form-container').innerHTML=buildForm(id);
   initHandlers();
-  if(id.startsWith('facetas')){
+  if(id.startsWith('facetas')||id.startsWith('epi')){
     S.posicion='decúbito prono';
     document.querySelector('[data-a="posicion"][data-v="decúbito prono"]')?.classList.add('sel');
+  }
+  if(id.startsWith('epi')){
+    S.alPiel='Lidocaína 2%';
+    S.alPrinc='Levobupivacaína';
+    S.alVehiculo='suero salino 0,9%';
+    S.cort='Betametasona 12 mg';
   }
   const mt=document.getElementById('macro-txt');
   if(mt) mt.value=genMacro(id);
@@ -690,25 +722,46 @@ function genMacro(id){
 
   switch(id){
     case 'epi-interlaminar':{
+      const {pielTxt,mezcla:mez}=natMezclaEpi();
+      const contrMl=gv('contr-ml');
+      const contrTxt=contr?` mediante inyección de ${contrMl?contrMl+' mL de ':''}contraste radiológico bajo visión fluoroscópica, confirmando distribución epidural sin patrón vascular ni subaracnoideo`:'';
       let t=`${opening} ${atb}Bajo ${img}, se procede a infiltración epidural interlaminar`;
       if(niv) t+=` a nivel ${niv}`;
-      t+=`. Previa anestesia local de la piel y tejido celular subcutáneo, se introduce aguja de Tuohy y se avanza hasta el espacio epidural mediante técnica de pérdida de resistencia, con sensación característica de entrada en dicho espacio. Se confirma posición epidural correcta${contr?` mediante inyección de contraste radiológico bajo visión fluoroscópica, sin distribución vascular ni subaracnoidea`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
+      t+=`. ${pielTxt}Se introduce aguja ${S.aguja||'de Tuohy'} y se avanza hasta el espacio epidural mediante técnica de pérdida de resistencia. Se confirma posición epidural${contrTxt}. Se administra ${mez||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-parasagital':{
+      const {pielTxt,mezcla:mez}=natMezclaEpi();
+      const contrMl=gv('contr-ml');
+      const contrTxt=contr?` con ${contrMl?contrMl+' mL de ':''}contraste radiológico, sin patrón vascular ni subaracnoideo`:'';
       let t=`${opening} ${atb}Bajo ${img}, se procede a infiltración epidural por abordaje parasagital`;
       if(latNiv) t+=` ${latNiv}`;
-      t+=`. Con angulación lateral respecto a la línea media y proyección parasagital, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Este abordaje permite una distribución preferencial ipsilateral del fármaco. Se confirma posición epidural${contr?` con contraste radiológico, sin patrón vascular ni subaracnoideo`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
+      t+=`. ${pielTxt}Con angulación lateral respecto a la línea media, se introduce aguja ${S.aguja||'de Tuohy'} hasta el espacio epidural mediante técnica de pérdida de resistencia, con distribución preferencial ipsilateral del fármaco. Se confirma posición epidural${contrTxt}. Se administra ${mez||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-caudal':{
-      let t=`${opening} ${atb}Bajo ${img}, se realiza infiltración epidural caudal. Se identifica y confirma el hiato sacro mediante palpación y control radioscópico. Previa anestesia local, se introduce aguja a través del ligamento sacrococcígeo hasta el canal sacro. Se confirma posición intracanalicular${contr?` con contraste radiológico, constatando distribución epidural sin patrón vascular ni subaracnoideo`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
+      const {pielTxt,mezcla:mez}=natMezclaEpi();
+      const contrMl=gv('contr-ml');
+      const contrTxt=contr?` con ${contrMl?contrMl+' mL de ':''}contraste radiológico, constatando distribución epidural sin patrón vascular ni subaracnoideo`:'';
+      let t=`${opening} ${atb}Bajo guía ecográfica se identifica el hiato sacro y se confirma la localización correcta de la aguja ${S.aguja||'22G'} a través del ligamento sacrococcígeo hacia el canal sacro, con control fluoroscópico lateral complementario. Se confirma posición intracanalicular${contrTxt}. ${pielTxt}Se administra ${mez||'la mezcla terapéutica'}. ${fin}`;
       return t;
     }
     case 'epi-transforaminal':{
+      const {pielTxt,mezcla:mez}=natMezclaEpi();
+      const contrMl=gv('contr-ml');
+      const contrTxt=contr?` mediante inyección de ${contrMl?contrMl+' mL de ':''}contraste, con distribución periradicular epidural y sin patrón vascular intravascular`:'';
       let t=`${opening} ${atb}Bajo ${img}, se realiza infiltración transforaminal`;
       if(latNiv) t+=` ${latNiv}`;
-      t+=`. Con proyección oblicua ipsilateral tipo "ojo de escopeta" se identifica el foramen neural diana. Previa anestesia local, se introduce aguja hasta el cuadrante posterosuperior del foramen, en zona de seguridad anatómica. Se confirma posición periradicular${contr?` mediante inyección de contraste, con distribución epidural y sin patrón vascular intravascular`:''}. Se administra ${mezcla||'la mezcla terapéutica'}. ${fin}`;
+      t+=`. Se realiza secuencia fluoroscópica con proyección AP corregida, oblicua ipsilateral tipo "ojo de escopeta" para identificación del foramen diana, proyección lateral para profundidad de aguja y vuelta a AP para confirmación final. ${pielTxt}Se introduce aguja ${S.aguja||'22G punta recta'} hasta el cuadrante posterosuperior del foramen en zona de seguridad anatómica. Se confirma posición periradicular${contrTxt}. Se administra ${mez||'la mezcla terapéutica'}. ${fin}`;
+      return t;
+    }
+    case 'epi-parche':{
+      const contrMl=gv('contr-ml');
+      const contrTxt=contr?` con ${contrMl?contrMl+' mL de ':''}contraste, verificando distribución epidural`:'';
+      const vol=gv('parche-vol')||'hasta 20';
+      let t=`${opening} ${atb}Bajo ${img}, se realiza parche hemático epidural`;
+      if(niv) t+=` a nivel ${niv}`;
+      t+=`. Previa anestesia local de piel y tejido celular subcutáneo, se introduce aguja de Tuohy hasta el espacio epidural mediante técnica de pérdida de resistencia. Se confirma posición epidural${contrTxt}. En condiciones de asepsia y esterilidad estrictas, se obtiene sangre autóloga del paciente por punción venosa y se inyectan ${vol} mL de forma lenta e incremental en el espacio epidural, deteniéndose ante dolor o resistencia. ${fin}`;
       return t;
     }
     case 'facetas-bloqueo':{
@@ -782,6 +835,60 @@ function genMacro(id){
 function regenMacro(){
   const mt=document.getElementById('macro-txt');
   if(mt)mt.value=genMacro(TECH_ID);
+}
+
+// ════════════════════════════════════════════════════════════
+// EPIDURAL HELPERS
+// ════════════════════════════════════════════════════════════
+function natMezclaEpi(){
+  const piel=S.alPiel&&S.alPiel!=='Ninguna'?S.alPiel:null;
+  const princ=S.alPrinc||'';
+  const mg=gv('al-mg');
+  const vehiculo=S.alVehiculo||'';
+  const voltotal=gv('al-voltotal');
+  const cort=S.cort&&S.cort!=='—'?S.cort:'';
+  const pielTxt=piel?`Previa anestesia local superficial con ${piel}. `:'Previa anestesia local de piel y tejido celular subcutáneo. ';
+  const parts=[];
+  if(princ&&mg)parts.push(`${princ} ${mg} mg`);
+  else if(princ)parts.push(princ);
+  if(vehiculo)parts.push(`en ${vehiculo}`);
+  if(voltotal)parts.push(`(${voltotal} mL volumen total)`);
+  if(cort)parts.push(cort);
+  return{pielTxt, mezcla:parts.join(', ')};
+}
+
+function buildNivelesEpi(lista){
+  const getC=(n)=>n.startsWith('C')?'niv-C':n.startsWith('T')?'niv-T':n.startsWith('L')?'niv-L':'niv-S';
+  let html='<div class="niv-epi-wrap">';
+  lista.forEach(n=>{
+    const sel=S.niveles.includes(n)?'sel':'';
+    html+=`<div class="niv-epi-row ${getC(n)} ${sel}" data-a="nivel-epi" data-v="${n}">${n}</div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function bkAgujaEpi(def){
+  S.aguja=def;
+  const opts=['Tuohy','22G punta recta'];
+  return sec('Tipo de aguja',`<div class="tags mt1">${opts.map(a=>`<span class="nivel${a===def?' sel':''}" data-a="aguja" data-v="${a}">${a}</span>`).join('')}</div>`);
+}
+
+function bkImagenEpi(defaults){
+  S.imagen=[...defaults];
+  return sec('Guía de imagen',`
+    <div class="grid-3">
+      <button class="opt${defaults.includes('fluoroscopia')?' sel':''}" data-a="imagen" data-v="fluoroscopia"><span class="o-icon">🔬</span><span class="o-label">Fluoroscopia / Rx</span></button>
+      <button class="opt${defaults.includes('ecografia')?' sel':''}" data-a="imagen" data-v="ecografia"><span class="o-icon">📡</span><span class="o-label">Ecografía</span></button>
+      <button class="opt" data-a="imagen" data-v="ninguna"><span class="o-icon">👁️</span><span class="o-label">Sin guía</span></button>
+    </div>
+    <div class="div"></div>
+    <div class="toggle-row"><span class="toggle-label">🧪 Contraste radioopaco</span>
+      <label class="toggle"><input type="checkbox" id="chk-contraste" checked onchange="regenMacro()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="row mt2" id="blk-contr-ml">
+      <div class="field"><div class="field-label">Volumen contraste (mL)</div><input type="number" id="contr-ml" value="1.5" step="0.5" oninput="regenMacro()"></div>
+    </div>`);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -925,13 +1032,43 @@ const BKRF=sec('Radiofrecuencia',`
     <div class="field"><div class="field-label">Motor (V)</div><input type="number" id="rf-motor" value="1" step="0.1" oninput="regenMacro()"></div>
   </div>`);
 
+const BKALCORT_EPI=sec('Fármacos',`
+  <div class="sub-label">Piel <span class="sub-label-opt">(AL superficial)</span></div>
+  <div class="tags mt1">
+    <span class="nivel sel" data-a="al-piel" data-v="Lidocaína 2%">Lidocaína 2%</span>
+    <span class="nivel" data-a="al-piel" data-v="Mepivacaína 1%">Mepivacaína 1%</span>
+    <span class="nivel" data-a="al-piel" data-v="Ninguna">Sin AL piel</span>
+  </div>
+  <div class="sub-label mt3">Anestésico principal</div>
+  <div class="grid-auto mt1">${['Levobupivacaína','Bupivacaína','Ropivacaína','Lidocaína'].map(al=>`<button class="opt${al==='Levobupivacaína'?' sel':''}" data-a="al-princ" data-v="${al}"><span class="o-label">${al}</span></button>`).join('')}</div>
+  <div class="row mt2">
+    <div class="field"><div class="field-label">Dosis total (mg)</div><input type="number" id="al-mg" value="15" step="2.5" oninput="regenMacro()"></div>
+    <div class="field"><div class="field-label">Vehículo</div><div class="tags mt1">
+      <span class="nivel sel" data-a="al-vehiculo" data-v="suero salino 0,9%">SSF 0,9%</span>
+      <span class="nivel" data-a="al-vehiculo" data-v="agua para inyección">API</span>
+    </div></div>
+    <div class="field"><div class="field-label">Volumen total (mL)</div><input type="number" id="al-voltotal" placeholder="mL" step="1" oninput="regenMacro()"></div>
+  </div>
+  <div class="sub"><div class="sub-label">Corticoide</div>
+    <div class="grid-auto mt1">${['Betametasona 12 mg','Betametasona 6 mg','Triamcinolona 40 mg','Triamcinolona 80 mg','Dexametasona 8 mg','Metilprednisolona 40 mg','Sin corticoide'].map(c=>`<button class="opt${c==='Betametasona 12 mg'?' sel':''}" data-a="cort" data-v="${c==='Sin corticoide'?'—':c}"><span class="o-label">${c}</span></button>`).join('')}</div>
+  </div>`);
+
+const SED_DRUGS=[
+  {name:'Midazolam',        unit:'mg',  ph:'2'},
+  {name:'Propofol',         unit:'mg',  ph:'20-50'},
+  {name:'Fentanilo',        unit:'mcg', ph:'25'},
+  {name:'Ketamina',         unit:'mg',  ph:'0.5/kg'},
+  {name:'Dexmedetomidina',  unit:'mcg', ph:'0.5/kg'},
+  {name:'Paracetamol iv',   unit:'mg',  ph:'1000'},
+  {name:'Nolotil iv',       unit:'mg',  ph:'2000'},
+];
 const BKSED=sec('Sedación / analgesia procedimental',`
   <div class="toggle-row"><span class="toggle-label">Se realizó sedación o analgesia</span>
     <label class="toggle"><input type="checkbox" id="chk-sed" onchange="tog('blk-sed',this.checked)"><span class="toggle-slider"></span></label>
   </div>
   <div id="blk-sed" class="hidden mt2">
-    <div class="tags">${['Midazolam','Propofol','Fentanilo','Ketamina','Dexmedetomidina','Paracetamol iv','Nolotil iv'].map(f=>`<span class="tag" data-a="tgtog">${f}</span>`).join('')}</div>
-    <textarea id="sed-obs" class="mt2" rows="2" placeholder="Dosis, vía, detalles..."></textarea>
+    <div class="sed-drug-list">${SED_DRUGS.map(d=>`<div class="sed-drug-row"><span class="sed-drug-name">${d.name}</span><input type="text" class="sed-dose-input" data-drug="${d.name}" data-unit="${d.unit}" placeholder="${d.ph} ${d.unit}" oninput="regenMacro()"></div>`).join('')}</div>
+    <textarea id="sed-obs" class="mt2" rows="1" placeholder="Notas adicionales..."></textarea>
   </div>`);
 
 const BKRES=sec('Resultado',`
@@ -996,13 +1133,17 @@ function buildForm(id){
   const locEpi=(body)=>sec('Localización',body);
   switch(id){
     case 'epi-interlaminar':
-      return H+BKDATOS+BKMACRO+locEpi(bkNivEpi(NIVELES_EPI))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
-    case 'epi-caudal':
-      return H+BKDATOS+BKMACRO+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+BKMACRO+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
     case 'epi-parasagital':
-      return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_EPI))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+BKMACRO+locEpi(bkLat()+buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
     case 'epi-transforaminal':
-      return H+BKDATOS+BKMACRO+locEpi(bkLat()+bkNivEpi(NIVELES_TF))+BKIMAGEN+BKALCORT+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+BKMACRO+locEpi(bkLat()+buildNivelesEpi(NIVELES_TF))+bkAgujaEpi('22G punta recta')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+    case 'epi-caudal':
+      return H+BKDATOS+BKMACRO+bkAgujaEpi('22G punta recta')+bkImagenEpi(['ecografia','fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+    case 'epi-parche':
+      return H+BKDATOS+BKMACRO+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+
+        sec('Parche hemático',`<div class="row"><div class="field"><div class="field-label">Volumen sangre autóloga (mL)</div><input type="number" id="parche-vol" value="15" max="20" step="1" oninput="regenMacro()"></div></div>`)+
+        BKSED+BKRES+BKNOTAS;
     case 'facetas-bloqueo':
       return H+BKDATOS+BKMACRO+BKFACETAS_REG+BKFACETAS_LOC+
         sec('Mezcla infiltrada',`<div class="row"><div class="field"><div class="field-label">Volumen por punto</div><input type="text" id="blq-vol" placeholder="p. ej. 1 mL" oninput="regenMacro()"></div><div class="field"><div class="field-label">Mezcla</div><input type="text" id="blq-mezcla" placeholder="AL + corticoide..." oninput="regenMacro()"></div></div>`)+
@@ -1156,6 +1297,36 @@ function initHandlers(){
       else S.facetReg=S.facetReg.filter(x=>x!==v);
       regenMacro();
     }
+    else if(a==='nivel-epi'){
+      S.niveles=[v];
+      document.querySelectorAll('[data-a="nivel-epi"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='aguja'){
+      S.aguja=v;
+      el.closest('.tags').querySelectorAll('[data-a="aguja"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='al-piel'){
+      S.alPiel=v;
+      el.closest('.tags').querySelectorAll('[data-a="al-piel"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='al-princ'){
+      S.alPrinc=v;
+      el.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
+    else if(a==='al-vehiculo'){
+      S.alVehiculo=v;
+      el.closest('.tags').querySelectorAll('[data-a="al-vehiculo"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      regenMacro();
+    }
     else if(a==='sust'){
       S.sust=v;
       document.querySelectorAll('[data-a="sust"]').forEach(b=>b.classList.remove('sel'));
@@ -1187,9 +1358,14 @@ function generarInforme(){
 
   // Sedación (si aplica), integrada al final del bloque narrativo
   if(gc('chk-sed')){
-    const sf=gsel('[data-a="tgtog"]'),so=gv('sed-obs');
+    const drugs=[];
+    document.querySelectorAll('.sed-dose-input').forEach(inp=>{
+      const dose=inp.value.trim();
+      if(dose)drugs.push(`${inp.dataset.drug} ${dose} ${inp.dataset.unit}`);
+    });
+    const so=gv('sed-obs');
     let sed='Se realizó sedación / analgesia procedimental';
-    if(sf.length)sed+=` con ${sf.join(', ')}`;
+    if(drugs.length)sed+=` con ${drugs.join(', ')}`;
     if(so)sed+=`. ${so}`;
     br();add(sed+'.');
   }
