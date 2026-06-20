@@ -207,7 +207,7 @@ textarea::placeholder{color:var(--text2)}
 .faceta-card:first-child:hover{border-color:#4caf7d;box-shadow:0 6px 20px rgba(76,175,125,.2)}
 .faceta-card:last-child{border-color:rgba(155,109,255,.4)}
 .faceta-card:last-child:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(155,109,255,.25)}
-.fc-img{width:86px;height:86px;border-radius:10px;margin-bottom:2px;background-size:200% 200%;background-repeat:no-repeat;flex-shrink:0}
+.fc-img{width:90px;height:90px;object-fit:cover;object-position:center;border-radius:12px;margin-bottom:4px;flex-shrink:0;display:block}
 
 /* ── Nivel epi diagram ──────────────────────────────────── */
 .niv-epi-strip{display:flex;flex-direction:column;gap:2px;margin-top:8px}
@@ -388,7 +388,7 @@ const CATEGORIES = [
 
 const TECHNIQUES = [
   {id:'epi-interlaminar',   name:'Interlaminar',    cat:'epidural', desc:'Tuohy · línea media',        aliases:['epidural interlaminar','interlaminar','epidrual','epirdual'],
-    svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
+    img:'epidurales/interlaminar.png', svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
   <!-- Cuerpos vertebrales (vista lateral, 3 vértebras) -->
   <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
   <rect x="2" y="38" width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
@@ -410,6 +410,7 @@ const TECHNIQUES = [
   <polygon points="49,44 44,52 54,50" fill="#9b6dff"/>
 </svg>`},
   {id:'epi-parasagital',   name:'Parasagital',     cat:'epidural', desc:'Tuohy · abordaje lateral',   aliases:['parasagital','parasagittal','parasajital'],
+    img:'epidurales/parasagital.png',
     svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
   <!-- Cuerpos vertebrales -->
   <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
@@ -431,6 +432,7 @@ const TECHNIQUES = [
   <line x1="38" y1="47" x2="50" y2="47" stroke="rgba(155,109,255,.4)" stroke-width="1" stroke-dasharray="2,2"/>
 </svg>`},
   {id:'epi-transforaminal', name:'Transforaminal',  cat:'epidural', desc:'22G · abordaje oblicuo',     aliases:['transforaminal','tf','foraminal','tranforaminal'],
+    img:'epidurales/transforaminal.png',
     svg:`<svg viewBox="0 0 88 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:66px;height:72px">
   <!-- Vista axial de vértebra lumbar -->
   <!-- Cuerpo vertebral (óvalo anterior) -->
@@ -455,6 +457,7 @@ const TECHNIQUES = [
   <polygon points="67,47 61,54 72,55" fill="#9b6dff"/>
 </svg>`},
   {id:'epi-caudal',        name:'Caudal',          cat:'epidural', desc:'22G · hiato sacro',           aliases:['caudal','epidural caudal','sacra','hiato'],
+    img:'epidurales/caudal.png',
     svg:`<svg viewBox="0 0 72 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:54px;height:72px">
   <!-- Vista lateral del sacro -->
   <!-- Cuerpo del sacro (trapezoide/pirámide) -->
@@ -475,6 +478,7 @@ const TECHNIQUES = [
   <polygon points="36,65 31,73 41,73" fill="#9b6dff"/>
 </svg>`},
   {id:'epi-parche',        name:'Parche hemático',  cat:'epidural', desc:'Tuohy · sangre autóloga',    aliases:['parche hemático','parche','blood patch','autólogo'],
+    img:'epidurales/parche.png',
     svg:`<svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60px;height:72px">
   <!-- Cuerpos vertebrales -->
   <rect x="2" y="6"  width="36" height="20" rx="4" fill="rgba(148,163,210,.18)" stroke="currentColor" stroke-width="1.4"/>
@@ -659,7 +663,7 @@ function showCat(catId){
   const techs=TECHNIQUES.filter(t=>t.cat===catId);
   const big=catId==='facetas'||catId==='epidural';
   document.getElementById('tech-list').innerHTML=big
-    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.img?`<div class="fc-img" style="background-image:url('${t.img.src}');background-position:${t.img.pos}"></div>`:t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
+    ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.img?`<img class="fc-img" src="${t.img}" alt="${t.name}">`:t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
     :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
 }
 function showAllCats(){
