@@ -246,10 +246,13 @@ textarea::placeholder{color:var(--text2)}
 .tend-name{font-size:12px;font-weight:600;color:var(--text)}
 .tend-row.sel .tend-name{color:var(--accent)}
 .tend-hint{font-size:10px;color:var(--text2);font-style:italic}
-.tend-fields{display:none;gap:8px;margin-top:8px}
-.tend-row.sel .tend-fields{display:flex}
-.tend-sust{flex:1;font-size:11px;padding:5px 8px}
-.tend-vol{width:64px;font-size:11px;padding:5px 8px}
+.tend-fields{display:none;gap:8px;margin-top:8px;align-items:flex-end}
+.tend-field-wrap{display:flex;flex-direction:column;gap:3px}
+.tend-vol-wrap{width:72px;flex-shrink:0}
+.tend-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.tend-sust{font-size:11px;padding:5px 8px;flex:1;user-select:text}
+.tend-vol{font-size:11px;padding:5px 8px;width:100%;user-select:text}
+.tend-field-wrap:first-child{flex:1}
 /* ── Sedation drug rows ──────────────────────────────────── */
 .sed-drug-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .sed-drug-row{display:flex;align-items:center;gap:10px}
@@ -1011,60 +1014,71 @@ function genMacro(id){
     }
     case 'hombro-tendinosa':{
       const selected=TENDONES_HOMBRO.filter(t=>S.tendones.has(t.id));
-      if(!selected.length) return `${opening} ${atb}Bajo ${img}, se realizan infiltraciones en tendones y/o bursas del hombro${lat?` ${lat}`:''}. ${fin}`;
-      const dianas=selected.map(t=>{
+      if(!selected.length) return `${opening} ${atb}Bajo guía ecográfica, se procede a la infiltración de tendones y bursas del hombro${lat?` ${lat}`:''}. ${fin}`;
+      const partes=selected.map(t=>{
         const vol=document.querySelector(`.tend-vol[data-tend="${t.id}"]`)?.value?.trim();
         const sust=document.querySelector(`.tend-sust[data-tend="${t.id}"]`)?.value?.trim();
-        let d=t.label; if(sust)d+=` con ${sust}`; if(vol)d+=` (${vol} mL)`;
-        return d;
-      }).join('; ');
-      return `${opening} ${atb}Bajo ${img}, se realizan las siguientes infiltraciones en hombro${lat?` ${lat}`:''}. Se procede a: ${dianas}. Abordaje ecoguiado en todos los puntos, confirmando posición correcta de la aguja antes de cada inyección. ${fin}`;
+        let frase=`Se infiltra ${t.prose} (${t.abordaje})`;
+        if(sust&&vol) frase+=`: ${vol} mL de ${sust}`;
+        else if(vol) frase+=`: ${vol} mL`;
+        else if(sust) frase+=` con ${sust}`;
+        frase+='.';
+        return frase;
+      });
+      const intro=`${opening} ${atb}Bajo guía ecográfica, con técnica aséptica, se realizan las siguientes infiltraciones en hombro${lat?` ${lat}`:''}. `;
+      return intro+partes.join(' ')+` En todos los puntos se verifica la posición correcta de la aguja antes de la inyección. ${fin}`;
     }
     case 'hombro-nervios':{
       const hasSupra=S.nerviosHombro.has('supra');
       const hasCirc=S.nerviosHombro.has('circunflejo');
       const isRF=S.rfTipo;
-      const tipoTrat=isRF?`radiofrecuencia ${S.rfTipo.toLowerCase()}`:'bloqueo';
+      const sustN=gv('sust-nervios')||'la mezcla anestésica';
+      const volS=gv('sust-vol');
+      const volTxt=volS?` (${volS} mL)`:'';
       const nervNames=[];
-      if(hasSupra)nervNames.push('nervio supraescapular');
-      if(hasCirc)nervNames.push('nervio circunflejo (axilar)');
-      let t=`${opening} ${atb}Bajo ${img}, se realiza ${tipoTrat} `;
-      t+=(nervNames.length?`del ${nervNames.join(' y del ')}`:'de nervios periarticulares del hombro')+(lat?` ${lat}`:'')+'. ';
+      if(hasSupra) nervNames.push('nervio supraescapular');
+      if(hasCirc) nervNames.push('nervio circunflejo (axilar)');
+      const nervStr=nervNames.length?`del ${nervNames.join(' y del ')}`:'de nervios periarticulares del hombro';
+      const tipoTrat=isRF?`radiofrecuencia ${S.rfTipo.toLowerCase()}`:'bloqueo';
+      let t=`${opening} ${atb}Bajo guía ecográfica, con el paciente en decúbito lateral, se realiza ${tipoTrat} ${nervStr}${lat?` ${lat}`:''}. `;
       if(hasSupra){
-        if(isRF) t+=`Para el nervio supraescapular: con el paciente en decúbito lateral, abordaje en plano en la foseta supraespinosa. Se localiza el nervio en el surco supraescapular profundo al ligamento transverso superior de la escápula y se posiciona ${electrodo} en contacto perineural. `;
-        else t+=`Para el nervio supraescapular: con el paciente en decúbito lateral, abordaje en plano en la foseta supraespinosa. Se localiza el nervio en el surco supraescapular y se confirma posición perineural previa a la administración de la mezcla anestésica. `;
+        t+=`Nervio supraescapular: se posiciona el transductor sobre la foseta supraespinosa en eje largo y se localiza el nervio en el surco supraescapular, profundo al ligamento transverso superior de la escápula, medialmente a la escotadura. Abordaje en plano desde lateral. `;
+        if(isRF) t+=`Se posiciona ${electrodo} en contacto perineural. `;
+        else t+=`Se confirma posición perineural y se depositan${volTxt} de ${sustN}. `;
       }
       if(hasCirc){
-        if(isRF) t+=`Para el nervio circunflejo: abordaje posterior en el espacio cuadrilátero (límites: redondo menor superior, redondo mayor inferior, cabeza larga del tríceps medial, húmero lateral). Se localiza el nervio axilar junto a la arteria circunfleja humeral posterior y se posiciona ${electrodo} en contacto perineural. `;
-        else t+=`Para el nervio circunflejo: abordaje posterior localizando el espacio cuadrilátero. Se identifica el nervio axilar junto a la arteria circunfleja humeral posterior y se confirma posición perineural previa a la inyección. `;
+        t+=`Nervio circunflejo (axilar): se identifica el espacio cuadrilátero posterior, delimitado por el redondo menor superiormente, el redondo mayor inferiormente, la cabeza larga del tríceps medialmente y el húmero lateralmente. Se localiza el nervio axilar junto a la arteria circunfleja humeral posterior. Abordaje en plano desde posteromedial. `;
+        if(isRF) t+=`Se posiciona ${electrodo} en contacto perineural. `;
+        else t+=`Se confirma posición perineural y se depositan${volTxt} de ${sustN}. `;
       }
       if(isRF){
-        t+=tests||'Test sensitivo con parestesias concordantes en territorio glenohumeral/deltoides. Test motor sin contracción del deltoides ni manguito rotador. ';
-        if(rfparams) t+=`Lesión por radiofrecuencia ${rfparams}. `;
-      } else {
-        const sustN=gv('sust-nervios')||S.sust||'la mezcla anestésica';
-        const volS=gv('sust-vol');
-        t+=`Se administra ${sustN}${volS?` (${volS} mL por punto)`:''}. `;
+        t+=tests||'Test sensitivo: parestesias concordantes en territorio glenohumeral y deltoides (>0,5 V). Test motor: ausencia de contracción del deltoides y manguito rotador (>1 V). ';
+        if(rfparams) t+=`Se procede a la lesión por radiofrecuencia ${rfparams} en cada diana. `;
       }
       t+=fin; return t;
     }
     case 'hombro-capsular':{
-      const ramas=natRamasHombro();
+      const ramasSelec=RAMAS_HOMBRO.filter(r=>S.ramasHombro.has(r.id));
       const mod=S.capsularMod||'rf-termica';
       const isCryo=mod==='crioablacion', isBlq=mod==='bloqueo';
-      const modLabel=isCryo?'crioablación':isBlq?'bloqueo diagnóstico':`radiofrecuencia ${mod==='rf-pulsada'?'pulsada':'térmica'}`;
-      const modo=S.rfMode==='bipolar'?'en modalidad bipolar':'en modalidad monopolar';
-      let t=`${opening} ${atb}Bajo ${img}, se realiza ${modLabel} de ramos capsulares del hombro${lat?` ${lat}`:''}`;
-      if(ramas) t+=`, tratando: ${ramas}`;
-      t+='. ';
-      if(!isBlq){
-        t+=`Procedimiento realizado ${modo}. Se posiciona ${isCryo?'la criosonda':electrodo} sobre cada diana en contacto pericapsular. `;
-        t+=tests||'Se realizan tests de estimulación sensitiva en cada punto, verificando respuesta concordante en territorio glenohumeral sin contracción motora de deltoides ni manguito rotador. ';
-        if(!isCryo&&rfparams) t+=`Lesión por radiofrecuencia ${rfparams} en cada electrodo. `;
+      const modLabel=isCryo?'crioablación':isBlq?'bloqueo diagnóstico de ramos capsulares':`radiofrecuencia ${mod==='rf-pulsada'?'pulsada':'térmica'} de ramos capsulares`;
+      const modo=S.rfMode==='bipolar'?'bipolar':'monopolar';
+      const volS=gv('sust-vol');
+      let t=`${opening} ${atb}Bajo guía ecográfica, se procede a ${modLabel} del hombro${lat?` ${lat}`:''}. `;
+      if(ramasSelec.length){
+        t+=`Se tratan las siguientes ramas: `;
+        const ramDesc=ramasSelec.map(r=>`${r.label} (${r.abordaje})`).join('; ');
+        t+=ramDesc+'. ';
+      }
+      if(isBlq){
+        t+=`Se deposita anestésico local en cada receso capsular${volS?` (${volS} mL por punto)`:''}. `;
+      } else if(isCryo){
+        t+=`Se posiciona la criosonda sobre cada diana en contacto pericapsular. `;
+        t+=tests||'Se verifican parestesias concordantes en territorio glenohumeral (test sensitivo) y ausencia de contracción de deltoides ni manguito rotador (test motor) previo al ciclo de congelación. ';
       } else {
-        t+=`Se localizan los ramos articulares en sus recesos capsulares y se administra anestésico local en cada punto. `;
-        const volS=gv('sust-vol');
-        if(volS) t+=`Volumen por punto: ${volS} mL. `;
+        t+=`Procedimiento realizado en modalidad ${modo}. Se posiciona ${electrodo} sobre cada diana en contacto pericapsular. `;
+        t+=tests||'Test sensitivo: respuesta concordante glenohumeral. Test motor: ausencia de contracción del deltoides y manguito rotador previo a la lesión. ';
+        if(rfparams) t+=`Se procede a la lesión por radiofrecuencia ${rfparams} en cada electrodo. `;
       }
       t+=fin; return t;
     }
@@ -1383,12 +1397,18 @@ function techHeader(id){
 }
 
 const RAMAS_HOMBRO=[
-  {id:'rama-acromial',   label:'Rama acromial SSN',      desc:'glenoides anterosuperior · lat. a escotadura'},
-  {id:'rama-supra-sup',  label:'Rama superior SSN',       desc:'glenoides posterosuperior · foseta supraespinosa'},
-  {id:'rama-supra-inf',  label:'Rama inferior SSN',       desc:'glenoides posterior · foseta infraespinosa'},
-  {id:'rama-pectoral',   label:'N. pectoral lateral',     desc:'espacio coracoclavicular · bursa subacromial'},
-  {id:'rama-subscap',    label:'N. subescapular',         desc:'glenoides anterior superior · plano subescapular'},
-  {id:'rama-axilar',     label:'N. axilar (rama ant.)',   desc:'glenoides anterior inferior · cuadrante inf.'},
+  {id:'rama-acromial',   label:'Rama acromial SSN',      desc:'glenoides anterosuperior · lat. a escotadura',
+   abordaje:'lateralmente a la escotadura supraescapular, cápsula glenohumeral anterosuperior'},
+  {id:'rama-supra-sup',  label:'Rama superior SSN',       desc:'glenoides posterosuperior · foseta supraespinosa',
+   abordaje:'foseta supraespinosa, cápsula posterosuperior'},
+  {id:'rama-supra-inf',  label:'Rama inferior SSN',       desc:'glenoides posterior · foseta infraespinosa',
+   abordaje:'foseta infraespinosa, cápsula posterior'},
+  {id:'rama-pectoral',   label:'N. pectoral lateral',     desc:'espacio coracoclavicular · bursa subacromial',
+   abordaje:'espacio coracoclavicular, región anterosuperior de la cápsula'},
+  {id:'rama-subscap',    label:'N. subescapular',         desc:'glenoides anterior superior · plano subescapular',
+   abordaje:'plano subescapular, cápsula glenohumeral anterior'},
+  {id:'rama-axilar',     label:'N. axilar (rama ant.)',   desc:'glenoides anterior inferior · cuadrante inf.',
+   abordaje:'receso axilar, cuadrante anteroinferior de la cápsula'},
 ];
 
 function bkRamasHombro(){
@@ -1405,28 +1425,42 @@ function natRamasHombro(){
 }
 
 const TENDONES_HOMBRO=[
-  {id:'supra',     label:'Supraespinoso',                  hint:'peri/intratendinoso'},
-  {id:'infra',     label:'Infraespinoso',                  hint:'peritendinoso'},
-  {id:'redondo',   label:'Redondo menor',                  hint:'peritendinoso'},
-  {id:'subscap',   label:'Subescapular',                   hint:'peritendinoso'},
-  {id:'plb',       label:'PLB (porción larga del bíceps)', hint:'vaina tendinosa'},
-  {id:'bursa-sad', label:'Bursa subacromial-subdeltoidea', hint:'infiltración bursa'},
-  {id:'bursa-sub', label:'Bursa subcoracoidea',            hint:'infiltración bursa'},
-  {id:'ac',        label:'Articulación acromioclavicular', hint:'intraarticular'},
+  {id:'supra',     label:'Supraespinoso',                  hint:'peri/intratendinoso',
+   prose:'el tendón del supraespinoso', abordaje:'abordaje peritendinoso en eje largo sobre la huella distal del supraespinoso en la tuberosidad mayor'},
+  {id:'infra',     label:'Infraespinoso',                  hint:'peritendinoso',
+   prose:'el tendón del infraespinoso', abordaje:'abordaje peritendinoso posterior en su inserción en la tuberosidad mayor'},
+  {id:'redondo',   label:'Redondo menor',                  hint:'peritendinoso',
+   prose:'el tendón del redondo menor', abordaje:'abordaje peritendinoso posteroinferior en su inserción humeral'},
+  {id:'subscap',   label:'Subescapular',                   hint:'peritendinoso',
+   prose:'el tendón del subescapular', abordaje:'abordaje peritendinoso anterior en la tuberosidad menor'},
+  {id:'plb',       label:'PLB (porción larga del bíceps)', hint:'vaina tendinosa bicipital',
+   prose:'el tendón de la PLB', abordaje:'acceso intrasynovial en la vaina tendinosa bicipital dentro de la corredera bicipital'},
+  {id:'bursa-sad', label:'Bursa subacromial-subdeltoidea', hint:'infiltración intrabursaria',
+   prose:'la bursa subacromial-subdeltoidea', abordaje:'confirmando posición intrabursaria antes de la inyección'},
+  {id:'bursa-sub', label:'Bursa subcoracoidea',            hint:'infiltración intrabursaria',
+   prose:'la bursa subcoracoidea', abordaje:'abordaje anterior subcoracoideo'},
+  {id:'ac',        label:'Articulación acromioclavicular', hint:'intraarticular',
+   prose:'la articulación acromioclavicular', abordaje:'accediendo al espacio articular acromioclavicular por su cara superior'},
 ];
 
 function bkTendinosHombro(){
   const rows=TENDONES_HOMBRO.map(t=>{
-    const sel=S.tendones.has(t.id)?'sel':'';
+    const sel=S.tendones.has(t.id);
     return`<div class="tend-row${sel?' sel':''}" data-a="tend-hombro" data-v="${t.id}">
       <div class="tend-main"><span class="tend-name">${t.label}</span><span class="tend-hint">${t.hint}</span></div>
-      <div class="tend-fields">
-        <input type="text" class="tend-sust" data-tend="${t.id}" placeholder="sustancia" oninput="regenMacro()">
-        <input type="text" class="tend-vol" data-tend="${t.id}" placeholder="mL" oninput="regenMacro()">
+      <div class="tend-fields" style="display:${sel?'flex':'none'}">
+        <div class="tend-field-wrap">
+          <label class="tend-lbl">Sustancia</label>
+          <input type="text" class="tend-sust" data-tend="${t.id}" placeholder="p.ej. bupivacaína + betametasona" onclick="event.stopPropagation()" oninput="regenMacro()">
+        </div>
+        <div class="tend-field-wrap tend-vol-wrap">
+          <label class="tend-lbl">mL</label>
+          <input type="number" class="tend-vol" data-tend="${t.id}" placeholder="—" step="0.5" onclick="event.stopPropagation()" oninput="regenMacro()">
+        </div>
       </div>
     </div>`;
   }).join('');
-  return sec('Dianas',`<div class="tend-list">${rows}</div>`);
+  return sec('Dianas',`<div class="tend-list">${rows}</div><div class="field-label mt2" style="font-size:10px;color:var(--text2)">Selecciona una diana para introducir la sustancia y el volumen</div>`);
 }
 
 function bkNerviosHombro(){
@@ -1702,8 +1736,10 @@ function initHandlers(){
       regenMacro();
     }
     else if(a==='tend-hombro'){
-      if(e.target.tagName==='INPUT')return;
+      if(e.target.tagName==='INPUT'||e.target.tagName==='LABEL')return;
       el.classList.toggle('sel');
+      const fields=el.querySelector('.tend-fields');
+      if(fields) fields.style.display=el.classList.contains('sel')?'flex':'none';
       if(el.classList.contains('sel'))S.tendones.add(v);
       else S.tendones.delete(v);
       regenMacro();
