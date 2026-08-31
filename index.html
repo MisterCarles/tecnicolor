@@ -230,6 +230,14 @@ textarea::placeholder{color:var(--text2)}
 .niv-epi-row.sel.niv-T{background:#f59e0b;color:white;border-color:#f59e0b}
 .niv-epi-row.sel.niv-L{background:#10b981;color:white;border-color:#10b981}
 .niv-epi-row.sel.niv-S{background:#ef4444;color:white;border-color:#ef4444}
+/* ── Hombro ramas selector ──────────────────────────────── */
+.hombro-ramas{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.hombro-rama{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;transition:all .12s;user-select:none}
+.hombro-rama:hover{border-color:var(--accent);background:rgba(155,109,255,.06)}
+.hombro-rama.sel{border-color:var(--accent);background:rgba(155,109,255,.14)}
+.hombro-rama.sel .hr-label{color:var(--accent)}
+.hr-label{font-size:12px;font-weight:600;color:var(--text)}
+.hr-desc{font-size:11px;color:var(--text2)}
 /* ── Sedation drug rows ──────────────────────────────────── */
 .sed-drug-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .sed-drug-row{display:flex;align-items:center;gap:10px}
@@ -571,6 +579,7 @@ const S = {
   resultado:null, eva:null, sust:null,
   facetReg:[],
   aguja:null, alPiel:null, alPrinc:null, alVehiculo:null,
+  ramasHombro: new Set(), rfMode:null,
 };
 
 // ════════════════════════════════════════════════════════════
@@ -682,7 +691,8 @@ function goBack(){
 }
 function selectTechnique(id){
   TECH_ID=id;
-  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null});
+  Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null,rfMode:null});
+  S.ramasHombro=new Set();
   S.branches=new Set();
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('screen-selector').classList.add('hidden');
@@ -700,8 +710,26 @@ function selectTechnique(id){
     S.alPrinc='Levobupivacaína';
     S.alVehiculo='suero salino 0,9%';
     S.cort='Betametasona 12 mg';
-    // regenerar macro con los defaults de S ya fijados
     setTimeout(()=>regenMacro(),0);
+  }
+  if(id==='hombro-capsular-rf'){
+    S.rfTipo='Térmica'; S.rfMode='monopolar';
+    setTimeout(()=>{
+      const p1=document.getElementById('rf-p1');if(p1)p1.value='80';
+      const t=document.getElementById('rf-tiempo');if(t)t.value='60';
+      document.querySelector('[data-a="rftype"][data-v="Térmica"]')?.classList.add('sel');
+      regenMacro();
+    },0);
+  }
+  if(id==='hombro-supra-rf'||id==='hombro-circunflejo-rf'){
+    S.rfTipo='Pulsada';
+    setTimeout(()=>{
+      const p1=document.getElementById('rf-p1');if(p1)p1.value='45';
+      const t=document.getElementById('rf-tiempo');if(t)t.value='120';
+      document.querySelector('[data-a="rftype"][data-v="Pulsada"]')?.classList.add('sel');
+      document.getElementById('blk-tandas')?.classList.remove('hidden');
+      regenMacro();
+    },0);
   }
   const mt=document.getElementById('macro-txt');
   if(mt) mt.value=genMacro(id);
@@ -942,20 +970,20 @@ function genMacro(id){
       return `${opening} ${atb}Bajo ${img}, se procede al bloqueo del nervio circunflejo (axilar)${lat?` ${lat}`:''}. Se identifica el espacio cuadrilátero posterior mediante ecografía, localizando el nervio circunflejo en su trayecto junto a la arteria circunfleja humeral posterior. Previa anestesia local, se introduce aguja hasta posición perineural. Se confirma localización y se administra ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-circunflejo-rf':
       return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio circunflejo (axilar)${lat?` ${lat}`:''}. Se identifica el espacio cuadrilátero ecográficamente y se localiza el nervio circunflejo acompañando a la arteria circunfleja humeral posterior. Se posiciona ${electrodo} en contacto perineural. ${tests||'Test de estimulación sensitiva con parestesias en territorio del deltoides y cápsula glenohumeral posteroinferior. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams}. `:''}${fin}`;
-    case 'hombro-capsular-bloqueo':
-      return `${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramos capsulares del hombro${lat?` ${lat}`:''}. Se localizan los ramos articulares terminales del nervio supraescapular (receso posterosuperior), del nervio circunflejo (receso posteroinferior) y del nervio subescapular (receso anterior) mediante ecografía. Se procede al bloqueo con ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
-    case 'hombro-capsular-rf':
-      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} de ramos capsulares del hombro${lat?` ${lat}`:''}. Se identifican y se posiciona ${electrodo} sobre los ramos articulares terminales de los nervios supraescapular, circunflejo y subescapular en sus respectivos recesos capsulares. ${tests||'Tests de estimulación sensitiva con respuesta concordante en cada punto. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams}. `:''}${fin}`;
+    case 'hombro-capsular-bloqueo':{
+      const ramas=natRamasHombro();
+      return `${opening} ${atb}Bajo ${img}, se realiza bloqueo diagnóstico de ramos capsulares del hombro${lat?` ${lat}`:''}. ${ramas?`Se localizan y bloquean las siguientes ramas articulares: ${ramas}.`:' Se localizan los ramos articulares terminales del nervio supraescapular (acromial, superior e inferior), del nervio pectoral lateral (espacio coracoclavicular), del nervio subescapular y de la rama anterior del nervio axilar en sus respectivos recesos capsulares.'} Cada diana recibe ${S.sust||'anestésico local'}${gv('sust-vol')?` (${gv('sust-vol')} mL por punto)`:''}. ${fin}`;
+    }
+    case 'hombro-capsular-rf':{
+      const ramas=natRamasHombro();
+      const modo=S.rfMode==='bipolar'?'en modalidad bipolar':'en modalidad monopolar';
+      const tipoRf=S.rfTipo?' '+S.rfTipo.toLowerCase():' térmica';
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${tipoRf} de ramos capsulares del hombro${lat?` ${lat}`:''}${ramas?`, tratando: ${ramas}`:''}. Procedimiento realizado ${modo}. Se posiciona ${electrodo} sobre cada diana en contacto pericapsular. ${tests||'Se realizan tests de estimulación sensitiva en cada punto, verificando respuesta concordante en territorio glenohumeral sin contracción motora de deltoides ni manguito rotador. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams} en cada electrodo. `:''}${fin}`;
+    }
     case 'hombro-intraarticular':
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular glenohumeral${lat?` ${lat}`:''}. Se localiza el espacio articular y se confirma posición intraarticular correcta. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-periarticular':
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración periarticular de hombro${lat?`, ${lat}`:''}. Se identifica el espacio subdeltoideo/subacromial y se confirma posición correcta de la aguja. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
-    case 'hombro-rf-supra':
-      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio supraescapular${lat?`, ${lat}`:''}. Se localiza el nervio en la escotadura escapular y se posiciona ${electrodo}. ${tests||'Test de estimulación con reproducción de parestesias en territorio concordante. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
-    case 'hombro-capsular-bloqueo':
-      return `${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramas capsulares del hombro${lat?`, ${lat}`:''}. Se localizan las ramas capsulares anteriores y posteriores bajo control ecográfico y se procede al bloqueo con ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
-    case 'hombro-capsular-rf':
-      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia de ramas capsulares del hombro${lat?`, ${lat}`:''}. Se localizan las ramas nerviosas capsulares y se posiciona ${electrodo}. ${tests||'Tests de estimulación adecuados. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
     case 'rodilla-intraarticular':
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular de rodilla${lat?`, ${lat}`:''}. Se accede al compartimento articular confirmando posición intraarticular de la aguja. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'rodilla-perirodilla':
@@ -1270,6 +1298,35 @@ function techHeader(id){
   return`<div class="form-tech-header"><span class="form-tech-icon">${c?.icon||'·'}</span><div><div class="form-tech-cat">${c?.name||''}</div><div class="form-tech-name">${t?.name||''}</div></div></div>`;
 }
 
+const RAMAS_HOMBRO=[
+  {id:'rama-acromial',   label:'Rama acromial SSN',      desc:'glenoides anterosuperior · lat. a escotadura'},
+  {id:'rama-supra-sup',  label:'Rama superior SSN',       desc:'glenoides posterosuperior · foseta supraespinosa'},
+  {id:'rama-supra-inf',  label:'Rama inferior SSN',       desc:'glenoides posterior · foseta infraespinosa'},
+  {id:'rama-pectoral',   label:'N. pectoral lateral',     desc:'espacio coracoclavicular · bursa subacromial'},
+  {id:'rama-subscap',    label:'N. subescapular',         desc:'glenoides anterior superior · plano subescapular'},
+  {id:'rama-axilar',     label:'N. axilar (rama ant.)',   desc:'glenoides anterior inferior · cuadrante inf.'},
+];
+
+function bkRamasHombro(){
+  const html=RAMAS_HOMBRO.map(r=>{
+    const sel=S.ramasHombro.has(r.id)?'sel':'';
+    return`<div class="hombro-rama ${sel}" data-a="rama-hombro" data-v="${r.id}"><span class="hr-label">${r.label}</span><span class="hr-desc">${r.desc}</span></div>`;
+  }).join('');
+  return sec('Ramas a tratar',`<div class="hombro-ramas">${html}</div>`);
+}
+
+function natRamasHombro(){
+  if(!S.ramasHombro.size)return null;
+  return RAMAS_HOMBRO.filter(r=>S.ramasHombro.has(r.id)).map(r=>r.label).join(', ');
+}
+
+function bkRfModo(){
+  return`<div class="sub-label mt2">Modo</div><div class="tags mt1">
+    <span class="nivel${S.rfMode==='bipolar'?'':' sel'}" data-a="rfmode" data-v="monopolar">Monopolar</span>
+    <span class="nivel${S.rfMode==='bipolar'?' sel':''}" data-a="rfmode" data-v="bipolar">Bipolar</span>
+  </div>`;
+}
+
 function buildForm(id){
   const H=techHeader(id);
   const locEpi=(body)=>sec('Localización',body);
@@ -1307,11 +1364,18 @@ function buildForm(id){
             <span class="tag" data-a="tg1-veh">Anestésico local</span>
           </div></div>`)+
         BKRES+BKNOTAS;
-    case 'hombro-supra-bloqueo':case 'hombro-circunflejo-bloqueo':case 'hombro-capsular-bloqueo':
+    case 'hombro-supra-bloqueo':
+    case 'hombro-circunflejo-bloqueo':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'hombro-capsular-bloqueo':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+bkRamasHombro()+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
     case 'hombro-intraarticular':case 'hombro-periarticular':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
-    case 'hombro-supra-rf':case 'hombro-circunflejo-rf':case 'hombro-capsular-rf':
+    case 'hombro-supra-rf':case 'hombro-circunflejo-rf':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+    case 'hombro-capsular-rf':
+      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+bkRamasHombro()+
+        sec('Modo RF',bkRfModo())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
     case 'rodilla-intraarticular':case 'rodilla-perirodilla':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
     case 'sacroiliaca-bloqueo':
@@ -1438,6 +1502,18 @@ function initHandlers(){
       el.classList.toggle('sel');
       if(el.classList.contains('sel')){if(!S.facetReg.includes(v))S.facetReg.push(v);}
       else S.facetReg=S.facetReg.filter(x=>x!==v);
+      regenMacro();
+    }
+    else if(a==='rama-hombro'){
+      el.classList.toggle('sel');
+      if(el.classList.contains('sel'))S.ramasHombro.add(v);
+      else S.ramasHombro.delete(v);
+      regenMacro();
+    }
+    else if(a==='rfmode'){
+      S.rfMode=v;
+      el.closest('.tags').querySelectorAll('[data-a="rfmode"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
       regenMacro();
     }
     else if(a==='nivel-epi'){
