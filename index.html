@@ -73,14 +73,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cie10-search-box input{flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--text);font-family:inherit}
 .cie10-search-box input::placeholder{color:var(--text2)}
 #cie10-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.cie10-row{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s}
+.cie10-row{display:flex;align-items:baseline;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s}
 .cie10-row:hover{background:var(--surface2)}
 .cie10-row+.cie10-row{border-top:1px solid var(--border)}
-.cie10-code{font-size:12px;font-weight:700;color:#3b82f6;flex-shrink:0;font-family:monospace;min-width:56px;margin-top:1px}
-.cie10-body{flex:1}
-.cie10-desc{font-size:13px;color:var(--text);display:block}
-.cie10-techs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.cie10-tech-tag{font-size:10px;background:rgba(155,109,255,.15);color:var(--accent2);padding:2px 6px;border-radius:4px}
+.cie10-code{font-size:11px;font-weight:700;color:#3b82f6;flex-shrink:0;font-family:monospace;min-width:58px}
+.cie10-desc{font-size:13px;color:var(--text)}
 .cie10-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);padding:6px 10px;border-radius:8px;margin-top:4px}
 .cie10-badge-code{font-size:12px;font-weight:700;color:#3b82f6;font-family:monospace}
 .cie10-badge-desc{font-size:13px;color:var(--text)}
@@ -2012,154 +2009,306 @@ function copyReport(){
 let S_CIE = {code:null, desc:null};
 
 const CIE10=[
-  // ── Columna cervical ──────────────────────────────────────
-  {c:'M50.10',d:'Radiculopatía cervical (hernia discal cervical)',
-   a:['radiculopatia cervical','hernia cervical','hernia disco cervical','cervicobranquialgia','compresion raiz cervical','dolor cervical brazo','adormecimiento brazo','parestesias brazo']},
-  {c:'M50.20',d:'Degeneración del disco cervical',
-   a:['degeneracion disco cervical','discopatia cervical','artrosis cervical disco','cervicoartrosis','disco desgastado cervical']},
-  {c:'M54.2',d:'Cervicalgia',
-   a:['cervicalgia','dolor cervical','dolor cuello','contractura cervical','rigidez cuello','cervicalgias']},
-  {c:'M47.812',d:'Espondiloartrosis cervical con radiculopatía',
-   a:['espondilosis cervical','artrosis cervical','espondiloartrosis cervical','osteofito cervical','estenosis foraminal cervical']},
-  {c:'M48.02',d:'Estenosis del canal cervical',
-   a:['estenosis canal cervical','mielopatia cervical','estenosis cervical']},
-  {c:'M53.0',d:'Síndrome cervicocraneal (cefalea cervicogénica)',
-   a:['cefalea cervicogenica','cervicogenica','dolor cabeza cuello','neuralgia occipital','occipital']},
-  // ── Columna torácica ─────────────────────────────────────
-  {c:'M54.6',d:'Dolor en columna torácica (dorsalgia)',
-   a:['dorsalgia','dolor dorsal','dolor toracico columna','dolor interescapular','dolor espalda alta','dolor toracico musculoesqueletico']},
-  {c:'M47.814',d:'Espondiloartrosis torácica',
-   a:['espondilosis toracica','artrosis toracica','facetas toracicas']},
-  {c:'M54.14',d:'Radiculopatía torácica',
-   a:['radiculopatia toracica','hernia disco toracico','neuralgia intercostal','dolor intercostal']},
-  // ── Columna lumbar ───────────────────────────────────────
-  {c:'M51.16',d:'Hernia de disco lumbar con radiculopatía',
-   a:['hernia lumbar','hernia disco lumbar','radiculopatia lumbar','lumbociatalgia','lumbociatalgas','dolor lumbar pierna','hernia l4 l5','hernia l5 s1']},
-  {c:'M54.50',d:'Lumbago (dolor lumbar bajo)',
-   a:['lumbalgia','lumbago','dolor lumbar','dolor espalda baja','low back pain','dolor cintura','dolor lumbar cronico']},
-  {c:'M54.42',d:'Lumbago con ciática',
-   a:['lumbociatalgia','lumboradiculopatia','dolor lumbar y pierna','ciatica lumbar','ciatalgia lumbar']},
-  {c:'M54.3',d:'Ciática',
-   a:['ciatica','ciatalgia','dolor irradiado pierna','nervio ciatico','glutalgia','dolor gluteo pierna']},
-  {c:'M47.816',d:'Espondiloartrosis lumbar con radiculopatía',
-   a:['espondilosis lumbar','artrosis lumbar','espondiloartrosis lumbar','osteofito lumbar','estenosis foraminal lumbar']},
-  {c:'M48.061',d:'Estenosis del canal lumbar',
-   a:['estenosis canal lumbar','estenosis lumbar','claudicacion neurogena','canal estrecho lumbar']},
-  {c:'M47.816',d:'Síndrome facetario lumbar',
-   a:['sindrome facetario','dolor facetario','facetas lumbares','articulaciones facetarias','ramos mediales','ramos mediales lumbar']},
-  {c:'M53.3',d:'Trastornos sacrococcígeos / coccigodinia',
-   a:['coccigodinia','coccix','dolor coccix','sacrococcigeo','dolor sacro']},
-  {c:'M54.89',d:'Síndrome de cirugía fallida de columna (FBSS)',
-   a:['cirugia fallida columna','fbss','failed back surgery','dolor postquirurgico columna','epidural fibrosis']},
-  // ── Articulación sacroilíaca ─────────────────────────────
-  {c:'M46.18',d:'Sacroileítis',
-   a:['sacroileitis','articulacion sacroiliaca','dolor sacroiliaco','sacro','dolor sacro iliaco','sacroileitis']},
-  {c:'M54.59',d:'Dolor sacroilíaco',
-   a:['dolor sacroiliaco','disfuncion sacroiliaca','sacroiliaca','dolor pelvis posterior']},
-  // ── Hombro ───────────────────────────────────────────────
-  {c:'M75.0',d:'Capsulitis adhesiva del hombro (hombro congelado)',
-   a:['capsulitis adhesiva','hombro congelado','frozen shoulder','rigidez hombro','hombro rigido','periartritis hombro']},
-  {c:'M75.1',d:'Síndrome del manguito rotador',
-   a:['manguito rotador','rotura manguito','tendinitis manguito','impingement','sindrome pinzamiento','pinzamiento hombro','rotura tendon hombro']},
-  {c:'M75.2',d:'Tendinitis bicipital',
-   a:['tendinitis biceps','tendinitis bicipital','plb','porcion larga biceps','dolor biceps hombro']},
-  {c:'M75.3',d:'Tendinitis calcificante del hombro',
-   a:['tendinitis calcificante','calcificacion hombro','calcinosis hombro','deposito calcio hombro']},
-  {c:'M75.5',d:'Bursitis del hombro',
-   a:['bursitis subacromial','bursitis hombro','bursa subacromial','bursa subdeltoidea']},
-  {c:'M19.019',d:'Artrosis glenohumeral',
-   a:['artrosis hombro','glenohumeral','osteoartrosis hombro','artrosis glenohumeral']},
-  {c:'M19.011',d:'Artrosis acromioclavicular',
-   a:['artrosis acromioclavicular','ac joint','dolor acromioclavicular','articulacion ac']},
-  // ── Rodilla ──────────────────────────────────────────────
-  {c:'M17.11',d:'Gonartrosis primaria',
-   a:['artrosis rodilla','gonartrosis','osteoartrosis rodilla','dolor rodilla','gonalgia','condropatia rotula']},
-  {c:'M17.31',d:'Gonartrosis postraumática',
-   a:['artrosis rodilla posttraumatica','gonartrosis traumatica']},
-  {c:'M22.41',d:'Condromalacia rotuliana',
-   a:['condromalacia','condropatia rotula','rodilla anterior','dolor anterior rodilla']},
-  {c:'M79.671',d:'Dolor en rodilla',
-   a:['dolor rodilla','rodilla','gonalgia cronica']},
-  // ── Cadera / coxofemoral ─────────────────────────────────
-  {c:'M16.11',d:'Coxartrosis primaria',
-   a:['coxartrosis','artrosis cadera','osteoartrosis cadera','dolor cadera','coxalgia']},
-  // ── Neuropático ──────────────────────────────────────────
-  {c:'G89.29',d:'Dolor crónico no especificado',
-   a:['dolor cronico','dolor persistente','dolor neuropatico','dolor refractario','dolor cronic']},
-  {c:'G89.3',d:'Síndrome de dolor regional complejo (SDRC/CRPS)',
-   a:['sdrc','crps','dolor regional complejo','algodistrofia','sudeck','allodynia','alodinia']},
-  {c:'M79.2',d:'Neuralgia y neuritis no especificada',
-   a:['neuralgia','neuritis','dolor quemante','ardor','neuralgias','dolor neuropatico periferico']},
-  {c:'G54.2',d:'Radiculopatía cervical (raíz nerviosa)',
-   a:['radiculopatia cervical','raiz cervical','compresion raiz']},
-  {c:'G54.4',d:'Radiculopatía lumbosacra',
-   a:['radiculopatia lumbar','raiz lumbar','radiculopatia sacra','nervio lumbar comprimido']},
-  {c:'G57.0',d:'Lesión del nervio ciático',
-   a:['lesion nervio ciatico','atrapamiento ciatico','neuropatia ciatica']},
-  {c:'G57.10',d:'Meralgia parestésica (nervio femorocutáneo)',
-   a:['meralgia parestesica','femorocutaneo','dolor lateral muslo','hormigueo muslo externo']},
-  // ── Cefalea ──────────────────────────────────────────────
-  {c:'G43.909',d:'Migraña crónica',
-   a:['migrana','jaqueca','cefalea migrañosa','migraña cronica','hemicranea']},
-  {c:'G44.309',d:'Cefalea en racimos (cluster)',
-   a:['cefalea racimos','cluster headache','cefalea hortoniana']},
-  {c:'G44.209',d:'Cefalea tensional crónica',
-   a:['cefalea tension','cefalea tensional','cefalea tipo tension','contractura cervical cefalea']},
-  {c:'G44.52',d:'Cefalea nueva diaria persistente',
-   a:['cefalea diaria','cefalea nueva diaria','ndph']},
-  // ── Fibromialgia / sensibilización ────────────────────────
-  {c:'M79.7',d:'Fibromialgia',
-   a:['fibromialgia','fibromyalgia','dolor difuso','sensibilizacion central','dolor generalizado']},
-  // ── Otros ────────────────────────────────────────────────
-  {c:'M79.1',d:'Mialgia / contractura muscular',
-   a:['mialgia','contractura','contractura muscular','dolor muscular','espasmo muscular','tension muscular']},
-  {c:'M48.50',d:'Fractura vertebral osteoporótica',
-   a:['fractura vertebral','fractura osteoporotica','aplastamiento vertebral','vertebra aplastada','cifoplastia']},
-  {c:'C79.51',d:'Metástasis óseas (dolor oncológico)',
-   a:['metastasis osea','dolor oncologico','cancer columna','vertebra metastasica']},
-  {c:'G43.E0',d:'Migraña crónica con aura',
-   a:['migrana con aura','aura migraña']},
-  {c:'M54.1',d:'Radiculopatía (inespecífica)',
-   a:['radiculopatia','sindrome radicular','dolor irradiado','compresion radicular']},
-  {c:'R52',d:'Dolor crónico no clasificado',
-   a:['dolor cronico no especificado','dolor inexplicado','dolor funcional']},
-];
+  // ── Artritis infecciosas (M00-M02) ──────────────────────
+  {c:'M00.9',d:'Artritis piógena, no especificada',a:['artritis septica','artritis infecciosa','artritis bacteriana','infeccion articular','pioartritis']},
+  {c:'M01.3',d:'Artritis en enfermedad de Lyme',a:['artritis lyme','borrelia artritis','artritis lyme']},
+  {c:'M02.30',d:'Artritis reactiva',a:['artritis reactiva','sindrome reiter','artritis postviral','artritis postinfecciosa','artritis uretritica']},
 
-// Mapeo código → técnicas sugeridas
-const CIE10_TECH={
-  'M50':['facetas-bloqueo','facetas-rf','epi-interlaminar','epi-parasagital','epi-transforaminal'],
-  'M54.2':['facetas-bloqueo','facetas-rf'],
-  'M47.812':['facetas-bloqueo','facetas-rf'],
-  'M48.02':['epi-interlaminar','epi-parasagital'],
-  'M53.0':['facetas-bloqueo','facetas-rf'],
-  'M54.6':['facetas-bloqueo','facetas-rf','epi-interlaminar'],
-  'M47.814':['facetas-bloqueo','facetas-rf'],
-  'M54.14':['epi-transforaminal','facetas-bloqueo'],
-  'M51.16':['epi-transforaminal','epi-parasagital','epi-interlaminar'],
-  'M54.50':['facetas-bloqueo','facetas-rf','epi-interlaminar'],
-  'M54.42':['epi-transforaminal','epi-parasagital'],
-  'M54.3':['epi-transforaminal'],
-  'M47.816':['facetas-bloqueo','facetas-rf'],
-  'M48.061':['epi-caudal','epi-transforaminal','epi-interlaminar'],
-  'M54.89':['epi-caudal','epi-interlaminar','facetas-rf'],
-  'M46.18':['sacroiliaca-bloqueo','sacroiliaca-rf'],
-  'M54.59':['sacroiliaca-bloqueo','sacroiliaca-rf'],
-  'M53.3':['sacroiliaca-bloqueo'],
-  'M75.0':['hombro-intraarticular','hombro-capsular'],
-  'M75.1':['hombro-tendinosa','hombro-intraarticular'],
-  'M75.2':['hombro-tendinosa'],
-  'M75.3':['hombro-tendinosa'],
-  'M75.5':['hombro-tendinosa','hombro-intraarticular'],
-  'M19.019':['hombro-intraarticular'],
-  'M17.11':['rodilla-intraarticular'],
-  'M17.31':['rodilla-intraarticular'],
-  'G89.3':['hombro-nervios','hombro-capsular'],
-  'M79.7':['botox'],
-  'G43.909':['botox'],
-  'G44.209':['botox','facetas-bloqueo'],
-  'G54.2':['epi-transforaminal','facetas-bloqueo'],
-  'G54.4':['epi-transforaminal'],
-};
+  // ── Artritis reumatoide y poliartritis inflamatoria (M05-M14) ───
+  {c:'M05.79',d:'Artritis reumatoide seropositiva con afectación de múltiples articulaciones',a:['artritis reumatoide','ar seropositiva','poliartritis reumatoide','factor reumatoide positivo','artritis reumatoide seropositiva']},
+  {c:'M06.00',d:'Artritis reumatoide seronegativa',a:['artritis reumatoide seronegativa','ar seronegativa','poliartritis inflamatoria seronegativa']},
+  {c:'M06.9',d:'Artritis reumatoide no especificada',a:['artritis reumatoide','ar','poliartritis reumatoide','reumatoide']},
+  {c:'M07.60',d:'Artropatía psoriásica',a:['artritis psoriasica','artropatia psoriasica','artritis psoriasis','psoriasis articular','artritis con psoriasis']},
+  {c:'M08.00',d:'Artritis reumatoide juvenil seropositiva',a:['artritis juvenil','ar juvenil','artritis reumatoide infantil','artritis idiopatica juvenil']},
+  {c:'M10.00',d:'Gota idiopática, articulación no especificada',a:['gota','artritis gotosa','ataque gota','hiperuricemia articular','tofos','deposito urato']},
+  {c:'M10.071',d:'Gota idiopática, tobillo y pie',a:['gota tobillo','gota pie','gota primer dedo','artritis gotosa pie','podagra']},
+  {c:'M10.061',d:'Gota idiopática, rodilla',a:['gota rodilla','artritis gotosa rodilla']},
+  {c:'M11.20',d:'Condrocalcinosis (artropatía por pirofosfato cálcico)',a:['condrocalcinosis','pirofosfato calcico','pseudogota','calcificacion menisco','deposito calcio articular','cppd']},
+  {c:'M12.50',d:'Artropatía traumática',a:['artropatia traumatica','artritis postraumatica','artritis trauma']},
+  {c:'M13.10',d:'Monoartritis no clasificada en otro lugar',a:['monoartritis','artritis una articulacion','artritis monoarticular']},
+  {c:'M13.00',d:'Poliartritis no especificada',a:['poliartritis','artritis multiple','artritis varias articulaciones','poliarticular']},
+
+  // ── Artrosis (M15-M19) ──────────────────────────────────
+  {c:'M15.0',d:'Artrosis primaria generalizada',a:['artrosis generalizada','poliartrosis','osteoartrosis generalizada','artrosis multiple']},
+  {c:'M15.1',d:'Nódulos de Heberden',a:['nodulos heberden','artrosis dedos distales','nodulos ifd','artrosis interfalangica distal mano']},
+  {c:'M15.2',d:'Nódulos de Bouchard',a:['nodulos bouchard','artrosis dedos ifd proximal','artrosis ifp','nodulos ifp']},
+  {c:'M15.4',d:'Artrosis erosiva',a:['artrosis erosiva','artrosis inflamatoria','osteoartrosis erosiva dedos']},
+  {c:'M16.11',d:'Coxartrosis primaria unilateral',a:['coxartrosis','artrosis cadera','osteoartrosis cadera','coxalgia','dolor ingle artrosis','desgaste cadera','artrosis coxofemoral']},
+  {c:'M16.5',d:'Coxartrosis secundaria unilateral',a:['coxartrosis secundaria','artrosis cadera secundaria','displasia cadera artrosis','artrosis postdisplasia']},
+  {c:'M17.11',d:'Gonartrosis primaria unilateral',a:['gonartrosis','artrosis rodilla','osteoartrosis rodilla','desgaste rodilla','gonalgia artrosis','rodilla artrosis','condropatia rodilla']},
+  {c:'M17.31',d:'Gonartrosis postraumática unilateral',a:['gonartrosis postraumatica','artrosis rodilla traumatica','artrosis rodilla postmeniscectomia']},
+  {c:'M17.5',d:'Gonartrosis secundaria',a:['gonartrosis secundaria','artrosis rodilla secundaria']},
+  {c:'M18.10',d:'Artrosis primaria de la primera articulación carpometacarpiana',a:['artrosis cmc','rizartrosis','artrosis pulgar','artrosis trapecio','artrosis base pulgar','rizartrosis pulgar']},
+  {c:'M19.011',d:'Artrosis primaria de hombro',a:['artrosis hombro','osteoartrosis hombro','artrosis glenohumeral','glenohumeral artrosis']},
+  {c:'M19.021',d:'Artrosis primaria de codo',a:['artrosis codo','osteoartrosis codo','epicondilosis artrosis','codo artrosis']},
+  {c:'M19.031',d:'Artrosis primaria de muñeca',a:['artrosis muneca','osteoartrosis muneca','artrosis carpo','muneca artrosis']},
+  {c:'M19.041',d:'Artrosis primaria de manos/dedos',a:['artrosis manos','osteoartrosis manos','artrosis dedos','artrosis interfalangica','dedos artrosis']},
+  {c:'M19.071',d:'Artrosis primaria de tobillo',a:['artrosis tobillo','osteoartrosis tobillo','artrosis tibioperonea astragalina','tobillo artrosis']},
+  {c:'M19.9',d:'Artrosis no especificada',a:['artrosis','osteoartrosis','degeneracion articular','desgaste articular']},
+
+  // ── Otras artropatías (M20-M25) ─────────────────────────
+  {c:'M20.1',d:'Hallux valgus',a:['hallux valgus','juanete','valgus pulgar pie','bunion','desviacion primer dedo']},
+  {c:'M20.2',d:'Hallux rigidus',a:['hallux rigidus','rigidez primer dedo','artrosis primera mtp','metatarsofalangica rigida']},
+  {c:'M20.3',d:'Otras deformidades del hallux',a:['hallux varus','deformidad primer dedo']},
+  {c:'M20.4',d:'Otros dedos en martillo',a:['dedos en martillo','hammertoe','dedo martillo','dedos en garra']},
+  {c:'M21.06',d:'Pie plano (pes planus)',a:['pie plano','pes planus','pie plano adquirido','valgo pie','valgus pie plano']},
+  {c:'M21.11',d:'Valgo de rodilla (genu valgum)',a:['genu valgum','rodillas juntas','valgo rodilla']},
+  {c:'M21.16',d:'Valgo de tobillo',a:['valgo tobillo','tobillo en valgo']},
+  {c:'M21.21',d:'Varo de rodilla (genu varum)',a:['genu varum','piernas arqueadas','varo rodilla']},
+  {c:'M22.41',d:'Condromalacia de la rótula',a:['condromalacia rotula','condropatia rotuliana','dolor anterior rodilla','sindrome dolor patelofemoral','rodilla anterior']},
+  {c:'M23.200',d:'Lesión del menisco interno',a:['rotura menisco interno','menisco medial','lesion menisco medial','desgarro menisco interno']},
+  {c:'M23.201',d:'Lesión del menisco externo',a:['rotura menisco externo','menisco lateral','lesion menisco lateral','desgarro menisco externo']},
+  {c:'M23.40',d:'Cuerpo libre en articulación de rodilla',a:['cuerpo libre rodilla','raton articular','osteocondromatosis','fragmento libre rodilla']},
+  {c:'M23.50',d:'Inestabilidad crónica de rodilla',a:['inestabilidad rodilla','laxitud rodilla','inestabilidad ligamentosa rodilla','lesion ligamento cruzado cronico']},
+  {c:'M24.00',d:'Cuerpo libre en articulación',a:['cuerpo libre','raton articular','osteocondroma libre']},
+  {c:'M24.11',d:'Otros trastornos del cartílago articular',a:['condral','lesion cartilago','condromalacia','defecto condral']},
+  {c:'M24.20',d:'Trastorno de los ligamentos',a:['lesion ligamento','insuficiencia ligamentosa','laxitud ligamentosa']},
+  {c:'M24.40',d:'Contractura articular',a:['contractura articular','rigidez articular','perdida movilidad articular']},
+  {c:'M24.50',d:'Anquilosis articular',a:['anquilosis','fusion articular','articulacion rigida anquilosada']},
+  {c:'M25.011',d:'Hemartros de hombro',a:['hemartros hombro','sangre articulacion hombro']},
+  {c:'M25.061',d:'Hemartros de rodilla',a:['hemartros rodilla','sangre rodilla','hemartrosis rodilla']},
+  {c:'M25.30',d:'Otras inestabilidades articulares',a:['inestabilidad articular','laxitud articular']},
+  {c:'M25.511',d:'Dolor en hombro',a:['dolor hombro','omalgia','hombro doloroso','dolor articulacion hombro']},
+  {c:'M25.521',d:'Dolor en codo',a:['dolor codo','codo doloroso','dolor articulacion codo']},
+  {c:'M25.531',d:'Dolor en muñeca',a:['dolor muneca','muneca dolorosa','dolor articulacion muneca']},
+  {c:'M25.541',d:'Dolor en mano',a:['dolor mano','mano dolorosa','dolor articulacion mano']},
+  {c:'M25.551',d:'Dolor en cadera',a:['dolor cadera','coxalgia','dolor articulacion cadera','dolor ingle articular']},
+  {c:'M25.561',d:'Dolor en rodilla',a:['dolor rodilla','gonalgia','rodilla dolorosa','dolor articulacion rodilla']},
+  {c:'M25.571',d:'Dolor en tobillo y pie',a:['dolor tobillo','dolor pie','tobillo doloroso','tarsalgia']},
+  {c:'M25.60',d:'Rigidez articular no clasificada',a:['rigidez articular','articulacion rigida','movilidad reducida articular']},
+  {c:'M25.70',d:'Osteofitos',a:['osteofitos','espolones oseos','picos de loro','osteofitosis']},
+
+  // ── Trastornos del sistema nervioso en dorsopatías (G54) ─
+  {c:'G54.2',d:'Radiculopatía cervical',a:['radiculopatia cervical','raiz cervical','compresion raiz cervical','cervicobraquialgia','neurologia cervical','hernia cervical neurologia']},
+  {c:'G54.3',d:'Radiculopatía torácica',a:['radiculopatia toracica','raiz toracica','neuralgia intercostal radicular']},
+  {c:'G54.4',d:'Radiculopatía lumbosacra',a:['radiculopatia lumbar','raiz lumbar','radiculopatia sacra','lumbociatalgia radicular','hernia lumbar neurologia','compresion raiz lumbar']},
+
+  // ── Dorsopatías deformantes (M40-M43) ───────────────────
+  {c:'M40.00',d:'Cifosis postural',a:['cifosis','cifosis postural','espalda encorvada','hipercifosis','chepa','cifosis dorsal']},
+  {c:'M40.10',d:'Otras cifosis',a:['cifosis estructural','cifosis toracica','deformidad cifótica']},
+  {c:'M40.20',d:'Lordosis no especificada',a:['lordosis','hiperlordosis','hiperlordosis lumbar','lordosis lumbar','espalda hundida']},
+  {c:'M41.00',d:'Escoliosis idiopática infantil',a:['escoliosis infantil','escoliosis idiopatica infantil']},
+  {c:'M41.10',d:'Escoliosis idiopática juvenil',a:['escoliosis juvenil','escoliosis adolescente','escoliosis idiopatica juvenil']},
+  {c:'M41.20',d:'Otras escoliosis idiopáticas',a:['escoliosis','escoliosis idiopatica','desviacion columna','curvatura lateral columna']},
+  {c:'M41.30',d:'Escoliosis toracolumbar',a:['escoliosis toracolumbar','escoliosis toracica','escoliosis lumbar']},
+  {c:'M41.50',d:'Escoliosis neuromuscular',a:['escoliosis neuromuscular','escoliosis paralítica','escoliosis secundaria']},
+  {c:'M42.00',d:'Osteocondritis espinal juvenil (enfermedad de Scheuermann)',a:['scheuermann','osteocondritis espinal','cifosis scheuermann','dorso redondo juvenil']},
+  {c:'M43.10',d:'Espondilolistesis',a:['espondilolistesis','deslizamiento vertebral','listesis','anterolistesis','retrolistesis','desplazamiento vertebra']},
+  {c:'M43.6',d:'Tortícolis',a:['torticolis','tortícolis','contractura cervical aguda','cuello torcido','tortícolis muscular','rigidez cervical aguda']},
+
+  // ── Espondilopatías (M45-M49) ───────────────────────────
+  {c:'M45.0',d:'Espondilitis anquilosante',a:['espondilitis anquilosante','sacroileitis anquilosante','espondiloartritis axial','enfermedad bechterew','columna bambu','hla b27 espondilitis']},
+  {c:'M46.00',d:'Entesopatía vertebral',a:['entesopatia vertebral','entesis columna','dolor insercion ligamento columna']},
+  {c:'M46.10',d:'Sacroileítis no clasificada en otro lugar',a:['sacroileitis','articulacion sacroiliaca inflamada','sacroileitis no espondiloartritis','dolor sacroiliaco inflamatorio']},
+  {c:'M46.20',d:'Osteomielitis vertebral',a:['osteomielitis vertebral','infeccion vertebra','discitis infecciosa','vertebra infectada']},
+  {c:'M46.30',d:'Infección de los discos intervertebrales',a:['discitis','infeccion disco','disco infectado','espondilodiscitis']},
+  {c:'M46.40',d:'Discitis no especificada',a:['discitis','inflamacion disco','disco inflamado']},
+  {c:'M47.10',d:'Mielopatía por espondilosis',a:['mielopatia cervical','compresion medular cervical','mielopatia espondilotica','espondilosis con mielopatia']},
+  {c:'M47.22',d:'Espondilosis cervical con radiculopatía',a:['espondilosis cervical radiculopatia','espondiloartrosis cervical compresion','osteofito cervical raiz','artosis cervical radicular']},
+  {c:'M47.26',d:'Espondilosis lumbar con radiculopatía',a:['espondilosis lumbar radiculopatia','espondiloartrosis lumbar compresion','osteofito lumbar raiz']},
+  {c:'M47.812',d:'Espondiloartrosis cervical sin radiculopatía ni mielopatía',a:['espondilosis cervical','artrosis cervical','espondiloartrosis cervical','osteofito cervical','cervicoartrosis','degeneracion cervical','artrosis facetas cervicales']},
+  {c:'M47.813',d:'Espondiloartrosis cervicotorácica',a:['espondilosis cervicotoracica','artrosis cervicotoracica']},
+  {c:'M47.814',d:'Espondiloartrosis torácica',a:['espondilosis toracica','artrosis toracica','espondiloartrosis toracica','facetas toracicas artrosis','degeneracion toracica']},
+  {c:'M47.816',d:'Espondiloartrosis lumbar',a:['espondilosis lumbar','artrosis lumbar','espondiloartrosis lumbar','osteofito lumbar','degeneracion lumbar','artrosis facetas lumbares','artropatia facetaria lumbar']},
+  {c:'M47.817',d:'Espondiloartrosis lumbosacra',a:['espondilosis lumbosacra','artrosis lumbosacra','degeneracion l5 s1']},
+  {c:'M47.9',d:'Espondilosis no especificada',a:['espondilosis','artrosis vertebral','degeneracion vertebral','artrosis columna']},
+  {c:'M48.00',d:'Estenosis del canal vertebral, no especificada',a:['estenosis canal','estenosis vertebral','canal estrecho']},
+  {c:'M48.02',d:'Estenosis del canal cervical',a:['estenosis canal cervical','estenosis cervical','canal estrecho cervical','mielopatia estenosis']},
+  {c:'M48.061',d:'Estenosis del canal lumbar',a:['estenosis canal lumbar','estenosis lumbar','canal estrecho lumbar','claudicacion neurogena','marcha neurogena','estenosis foraminal lumbar']},
+  {c:'M48.10',d:'Hiperostosis anquilosante (DISH)',a:['hiperostosis anquilosante','dish','hiperostosis esquelética difusa','forestier']},
+  {c:'M48.50',d:'Fractura vertebral por aplastamiento',a:['fractura vertebral','aplastamiento vertebral','colapso vertebral','fractura osteoporotica columna','cifoplastia vertebroplastia','vertebra aplastada']},
+  {c:'M49.80',d:'Espondilopatías en enfermedades clasificadas en otro lugar',a:['espondilopatia secundaria','afectacion columna enfermedad sistemica']},
+
+  // ── Hernia de disco y otras dorsopatías (M50-M54) ────────
+  {c:'M50.10',d:'Trastorno del disco cervical con radiculopatía',a:['hernia disco cervical','radiculopatia cervical disco','protusion cervical','hernia cervical','cervicobranquialgia','compresion raiz cervical disco','disco cervical radicular']},
+  {c:'M50.20',d:'Otro desplazamiento del disco cervical',a:['protusion cervical','hernia cervical sin radiculopatia','disco cervical desplazado','hernia blanda cervical']},
+  {c:'M50.30',d:'Degeneración del disco cervical',a:['degeneracion disco cervical','discopatia cervical','deshidratacion disco cervical','disco negro cervical','artrosis discal cervical']},
+  {c:'M51.16',d:'Trastorno del disco lumbar con radiculopatía',a:['hernia disco lumbar','radiculopatia lumbar','protusion lumbar','hernia l4l5','hernia l5s1','lumbociatalgia discal','disco lumbar radicular','hernia lumbar pierna']},
+  {c:'M51.17',d:'Trastorno del disco lumbosacro con radiculopatía',a:['hernia lumbosacra','disco l5s1 radiculopatia','radiculopatia l5s1']},
+  {c:'M51.26',d:'Otro desplazamiento del disco lumbar',a:['protusion lumbar','hernia lumbar sin radiculopatia','disco lumbar desplazado','hernia blanda lumbar']},
+  {c:'M51.36',d:'Degeneración del disco lumbar',a:['degeneracion disco lumbar','discopatia lumbar','deshidratacion disco lumbar','disco negro lumbar','artrosis discal lumbar','discopatia degenerativa']},
+  {c:'M51.46',d:'Nódulos de Schmorl',a:['nodulos schmorl','herniacion intraspongiosa','nodulo schmorl']},
+  {c:'M53.0',d:'Síndrome cervicocraneal',a:['cefalea cervicogenica','sindrome cervicocraneal','occipital','neuralgia occipital','cefalea cervical','dolor cabeza cuello origen','cervicogenica']},
+  {c:'M53.1',d:'Síndrome cervicobraquial',a:['sindrome cervicobraquial','cervicobraquialgia','dolor cervical brazo','cervicobranquialgia']},
+  {c:'M53.3',d:'Trastornos sacrococcígeos',a:['coccigodinia','dolor coxis','coccix doloroso','coccidinia','sacrococcigeo','dolor sacrococcigeo','coxis']},
+  {c:'M54.02',d:'Paniculitis cervical',a:['paniculitis cervical','lipoma cervical inflamado']},
+  {c:'M54.1',d:'Radiculopatía',a:['radiculopatia','sindrome radicular','compresion raiz','dolor irradiado radicular','neurologia raiz']},
+  {c:'M54.2',d:'Cervicalgia',a:['cervicalgia','dolor cuello','dolor cervical','contractura cuello','rigidez cuello','cervicalgias','dolor cervical cronico']},
+  {c:'M54.3',d:'Ciática',a:['ciatica','ciatalgia','nervio ciatico','dolor gluteo pierna','ciática','ciatalgia pierna']},
+  {c:'M54.40',d:'Lumbago con ciática',a:['lumbociatalgia','lumboradiculopatia','dolor lumbar pierna','ciática con lumbalgia','ciatica lumbar','dolor lumbar irradiado pierna']},
+  {c:'M54.50',d:'Lumbago',a:['lumbalgia','lumbago','dolor lumbar','dolor espalda baja','low back pain','dolor cintura','dolor lumbar cronico','dorsalgia lumbar']},
+  {c:'M54.59',d:'Otro lumbago',a:['lumbalgia otro','dolor lumbar otro','lumbalgia inespecifica']},
+  {c:'M54.6',d:'Dolor en la columna torácica',a:['dorsalgia','dolor dorsal','dolor toracico columna','dolor interescapular','dolor espalda alta','dorsal','dorsalgia toracica']},
+  {c:'M54.89',d:'Otros síndromes dorsales (FBSS, cirugía fallida de columna)',a:['cirugia fallida columna','fbss','failed back surgery','dolor postquirurgico columna','estenosis postquirurgica','fibrosis epidural','columna operada','reintervencion columna']},
+  {c:'M54.9',d:'Dorsalgia no especificada',a:['dorsalgia','dolor espalda','dolor columna','dolor raquis']},
+
+  // ── Trastornos musculares (M60-M63) ─────────────────────
+  {c:'M60.00',d:'Miositis infecciosa',a:['miositis infecciosa','miositis bacteriana','infeccion muscular']},
+  {c:'M60.10',d:'Miositis intersticial',a:['miositis intersticial','inflamacion muscular cronica']},
+  {c:'M60.9',d:'Miositis no especificada',a:['miositis','inflamacion muscular','miopatia inflamatoria']},
+  {c:'M61.00',d:'Miositis osificante traumática',a:['miositis osificante','calcificacion muscular traumatica','osificacion muscular']},
+  {c:'M62.00',d:'Diastasis muscular',a:['diastasis muscular','separacion muscular','diastasis']},
+  {c:'M62.30',d:'Síndrome de inmovilización',a:['atrofia inmovilizacion','desacondicionamiento muscular','sarcopenia inmovilizacion']},
+  {c:'M62.40',d:'Contractura muscular',a:['contractura muscular','contractura','espasmo muscular','tension muscular','mialgia contractura','contractura cronificada']},
+  {c:'M62.50',d:'Pérdida de masa muscular y atrofia',a:['atrofia muscular','perdida masa muscular','sarcopenia','debilidad muscular atrofia']},
+  {c:'M62.830',d:'Síndrome de los isquiotibiales',a:['sindrome isquiotibiales','isquiotibiales cortos','contractura isquiotibiales','retraccion isquiotibiales']},
+  {c:'M63.80',d:'Trastornos del músculo en enfermedades clasificadas en otro lugar',a:['afectacion muscular','miopatia secundaria']},
+  {c:'M79.1',d:'Mialgia',a:['mialgia','dolor muscular','dolor musculo','mialgia difusa','molestia muscular']},
+  {c:'M79.7',d:'Fibromialgia',a:['fibromialgia','fibromyalgia','dolor difuso','sensibilizacion central','dolor generalizado','sindrome fibromialgia','dolor cronico difuso musculoesqueletico']},
+
+  // ── Trastornos sinoviales y tendinosos (M65-M68) ─────────
+  {c:'M65.00',d:'Tenosinovitis abscedante',a:['tenosinovitis septica','tenosinovitis infecciosa','infeccion tendon vaina']},
+  {c:'M65.10',d:'Otras tenosinovitis infecciosas',a:['tenosinovitis infecciosa','vaina tendinosa infectada']},
+  {c:'M65.30',d:'Dedo en gatillo (tenosinovitis estenosante)',a:['dedo en gatillo','trigger finger','tenosinovitis estenosante','dedo resorte','esternosante flexor dedo','bloqueo dedo flexion']},
+  {c:'M65.311',d:'Dedo en gatillo del pulgar',a:['dedo en gatillo pulgar','trigger thumb','pulgar resorte']},
+  {c:'M65.40',d:'Tenosinovitis de De Quervain',a:['de quervain','tenosinovitis abductor largo','quervain','dolor muneca radial','dolor estiloides radial','tenosinovitis radial muneca']},
+  {c:'M65.811',d:'Tenosinovitis del hombro',a:['tenosinovitis hombro','vaina biceps inflamada','tenosinovitis tendon biceps']},
+  {c:'M65.9',d:'Sinovitis y tenosinovitis no especificadas',a:['sinovitis','tenosinovitis','inflamacion sinovial','inflamacion vaina tendinosa']},
+  {c:'M66.20',d:'Rotura espontánea de tendón extensor',a:['rotura tendon extensor','ruptura espontanea extensor']},
+  {c:'M66.30',d:'Rotura espontánea de tendón flexor',a:['rotura tendon flexor','ruptura espontanea flexor']},
+  {c:'M66.50',d:'Rotura espontánea de otros tendones',a:['rotura tendon espontanea','ruptura tendon','tendon roto']},
+  {c:'M67.00',d:'Cortedad del tendón de Aquiles',a:['tendon aquiles corto','retraccion aquiles','equino tendinoso','acortamiento aquiles']},
+  {c:'M67.40',d:'Ganglión',a:['ganglion','quiste ganglionar','quiste sinovial','bulto muneca','ganglion muneca','ganglion dorso mano']},
+  {c:'M67.50',d:'Quiste poplíteo',a:['quiste popliteo','quiste baker','quiste baker rodilla','quiste corva','bulto detras rodilla']},
+  {c:'M67.9',d:'Trastorno de la sinovial y tendón no especificado',a:['trastorno tendon','trastorno sinovial']},
+
+  // ── Trastornos de tejidos blandos (M70-M79) ──────────────
+  {c:'M70.00',d:'Sinovitis crepitante crónica de mano y muñeca',a:['sinovitis crepitante','crepitacion muneca','tendinitis crepitante muneca']},
+  {c:'M70.10',d:'Bursitis de mano',a:['bursitis mano','bursa mano','bursitis dedos']},
+  {c:'M70.20',d:'Bursitis prepatelar',a:['bursitis prepatelar','rodilla de fregona','bursitis anterior rodilla','bolsa prepatelar']},
+  {c:'M70.30',d:'Otra bursitis de la rodilla',a:['bursitis rodilla','bursitis anserina','bolsa anserina','bursitis pescanero','bursitis infrapatelar']},
+  {c:'M70.40',d:'Bursitis del olécranon',a:['bursitis olecranon','bursitis codo','codazo','bolsa olecranon']},
+  {c:'M70.50',d:'Otra bursitis del codo',a:['bursitis codo','bursa codo','bursitis epicondilar']},
+  {c:'M70.60',d:'Bursitis trocantérea',a:['bursitis trocanterea','bursitis cadera','dolor trocanterica','trocanter','bursitis trocanter mayor','sindrome dolor trocantereo']},
+  {c:'M70.70',d:'Otra bursitis de la cadera',a:['bursitis cadera','bursa cadera','bursitis isquiatoglutea','bursitis iliopsoas']},
+  {c:'M70.9',d:'Trastorno de tejidos blandos no especificado',a:['trastorno tejidos blandos','bursitis no especificada']},
+  {c:'M71.00',d:'Quiste sinovial del hueco poplíteo',a:['quiste popliteo','baker','quiste baker','quiste corva']},
+  {c:'M71.30',d:'Otra bursitis por calcificación',a:['bursitis calcificante','calciticacion bursitis','deposito calcico bursa']},
+  {c:'M72.00',d:'Fibromatosis palmar (contractura de Dupuytren)',a:['dupuytren','contractura dupuytren','fibromatosis palmar','mano dupuytren','contractura palmar','dedos en flexion dupuytren']},
+  {c:'M72.20',d:'Fibromatosis plantar',a:['fibromatosis plantar','nodulo plantar','ledderhose','fibrosis plantar']},
+  {c:'M75.0',d:'Capsulitis adhesiva del hombro',a:['capsulitis adhesiva','hombro congelado','frozen shoulder','rigidez hombro','hombro bloqueado','periartritis hombro','hombro rigido','capsulitis retractil']},
+  {c:'M75.1',d:'Síndrome del manguito rotador',a:['manguito rotador','rotura manguito','tendinitis manguito','impingement','sindrome pinzamiento','pinzamiento hombro','rotura tendon hombro','lesion manguito','tendinopatia manguito']},
+  {c:'M75.2',d:'Tendinitis bicipital',a:['tendinitis biceps','tendinitis bicipital','plb','porcion larga biceps','dolor biceps hombro','tendinopatia bicipital']},
+  {c:'M75.3',d:'Tendinitis calcificante del hombro',a:['tendinitis calcificante hombro','calcificacion hombro','calcinosis hombro','deposito calcio hombro','calcificacion tendon supraespinoso']},
+  {c:'M75.4',d:'Síndrome de abducción dolorosa del hombro',a:['sindrome abduccion dolorosa','arco doloroso hombro','dolor abduccion hombro']},
+  {c:'M75.5',d:'Bursitis del hombro',a:['bursitis subacromial','bursitis hombro','bursa subacromial','bursa subdeltoidea','bolsa subacromial']},
+  {c:'M75.8',d:'Otras lesiones del hombro',a:['lesion hombro','lesion acromion','lesion glenohumeral','hombro doloroso']},
+  {c:'M76.00',d:'Tendinitis del glúteo',a:['tendinitis gluteo','tendinopatia glutea','dolor gluteo insercional','dolor trocanter tendinopatia']},
+  {c:'M76.10',d:'Tendinitis del psoas',a:['tendinitis psoas','tendinopatia psoas','dolor psoas','chasquido cadera psoas','cadera resorte psoas']},
+  {c:'M76.20',d:'Espolón de la cresta iliaca',a:['espolon iliaco','cresta iliaca dolor','entesopatia cresta iliaca']},
+  {c:'M76.30',d:'Síndrome de la banda iliotibial',a:['sindrome banda iliotibial','rodilla corredor','it band','cintilla iliotibial','dolor lateral rodilla corredor']},
+  {c:'M76.40',d:'Bursitis tibial colateral',a:['bursitis tibial colateral','pellegrini stieda']},
+  {c:'M76.50',d:'Tendinitis rotuliana',a:['tendinitis rotuliana','rodilla saltador','tendinopatia rotuliana','dolor tendon rotuliano','jumper knee']},
+  {c:'M76.60',d:'Tendinitis aquílea',a:['tendinitis aquiles','tendinopatia aquiles','aquilodinia','dolor aquiles','tendinosis aquiles','aquiles doloroso']},
+  {c:'M76.61',d:'Bursitis de la bolsa del tendón de Aquiles',a:['bursitis aquiles','haglund','bolsa retrocalcanea','bursitis retrocalcanea']},
+  {c:'M76.70',d:'Tendinitis peroneal',a:['tendinitis peroneo','tendinopatia peroneal','dolor lateral tobillo tendon']},
+  {c:'M76.89',d:'Entesopatías del miembro inferior',a:['entesopatia miembro inferior','dolor insercional pierna','entesopatia rodilla','entesopatia tobillo']},
+  {c:'M77.00',d:'Epicondilitis medial (epitrocleítis)',a:['epitrocleitis','epicondilitis medial','codo golfista','dolor epitroclea','tendinitis flexores codo','dolor medial codo']},
+  {c:'M77.10',d:'Epicondilitis lateral (codo de tenista)',a:['epicondilitis lateral','codo tenista','epicondilalgia','dolor epicondilo','tendinitis extensores','dolor lateral codo']},
+  {c:'M77.20',d:'Periartritis del muñón del pulgar',a:['periartritis pulgar','dolor base pulgar','entesopatia pulgar']},
+  {c:'M77.30',d:'Calcáneo espolón',a:['espolon calcaneo','fasciitis plantar','espolon talon','dolor talon','calcáneo espolon','fascitis plantar','talodinia','dolor planta pie talon']},
+  {c:'M77.40',d:'Metatarsalgia',a:['metatarsalgia','dolor metatarso','dolor planta pie','metatarso doloroso','capsulitis metatarsal']},
+  {c:'M77.50',d:'Otras entesopatías del pie',a:['entesopatia pie','dolor insercional pie','tendinopatia pie']},
+  {c:'M77.9',d:'Entesopatía no especificada',a:['entesopatia','dolor insercional','tendinitis insercional']},
+  {c:'M79.00',d:'Reumatismo no especificado',a:['reumatismo','dolor reumatico','reuma']},
+  {c:'M79.2',d:'Neuralgia y neuritis no especificada',a:['neuralgia','neuritis','dolor quemante','ardor neuropatico','dolor neuropatico periferico','neuralgias']},
+  {c:'M79.3',d:'Paniculitis no especificada',a:['paniculitis','lipoma inflamado','nodulo graso doloroso']},
+  {c:'M79.621',d:'Dolor en brazo derecho',a:['dolor brazo derecho','braquialgia derecha']},
+  {c:'M79.622',d:'Dolor en brazo izquierdo',a:['dolor brazo izquierdo','braquialgia izquierda']},
+  {c:'M79.631',d:'Dolor en antebrazo derecho',a:['dolor antebrazo derecho']},
+  {c:'M79.641',d:'Dolor en mano derecha',a:['dolor mano derecha']},
+  {c:'M79.651',d:'Dolor en pelvis y muslo',a:['dolor muslo','dolor pelvis','meralgia','dolor cara anterior muslo']},
+  {c:'M79.671',d:'Dolor en pie derecho',a:['dolor pie derecho','tarsalgia derecha']},
+
+  // ── Síndromes de atrapamiento nervioso ───────────────────
+  {c:'G56.00',d:'Síndrome del túnel carpiano',a:['tunel carpiano','sindrome tunel carpiano','compresion nervio mediano muneca','hormigueos mano noche','adormecimiento manos noche','stc','carpal tunnel']},
+  {c:'G56.10',d:'Síndrome del canal de Guyon / compresión cubital muñeca',a:['canal guyon','sindrome guyon','compresion cubital muneca','atrapamiento cubital muneca']},
+  {c:'G56.20',d:'Lesión del nervio radial',a:['paralisis radial','neuropatia radial','compresion nervio radial','caida muñeca','paralisis sabado noche']},
+  {c:'G56.30',d:'Lesión del nervio mediano',a:['neuropatia mediano','compresion nervio mediano','lesion nervio mediano']},
+  {c:'G56.40',d:'Síndrome del pronador redondo',a:['sindrome pronador','atrapamiento mediano antebrazo','pronador redondo']},
+  {c:'G57.00',d:'Lesión del nervio ciático',a:['neuropatia ciatica','lesion nervio ciatico','atrapamiento ciatico','piriforme sindrome','sindrome piriforme']},
+  {c:'G57.10',d:'Meralgia parestésica',a:['meralgia parestesica','femorocutaneo','nervio femorecutaneo','dolor lateral muslo','hormigueo muslo externo','quemazón muslo lateral']},
+  {c:'G57.20',d:'Lesión del nervio femoral',a:['neuropatia femoral','lesion nervio femoral','compresion femoral']},
+  {c:'G57.30',d:'Lesión del nervio peroneo',a:['paralisis peroneo','neuropatia peroneo','pie caido','paralisis nervio peroneo','compresion peroneo']},
+  {c:'G57.50',d:'Síndrome del túnel tarsiano',a:['tunel tarsiano','sindrome tunel tarsiano','compresion tibial posterior tobillo','atrapamiento tibial posterior']},
+  {c:'G57.60',d:'Lesión del nervio plantar (neuroma de Morton)',a:['neuroma morton','morton','interdigital neuroma','dolor tercer espacio','neuralgia de morton','metatarsalgia neuromatosa']},
+  {c:'G54.5',d:'Amiotrofia neurálgica (síndrome de Parsonage-Turner)',a:['parsonage turner','amiotrofia neuralgica','neuritis braquial','plexitis braquial aguda','sindrome parsonage turner']},
+  {c:'G55',d:'Compresiones radiculares en trastornos clasificados en otro lugar',a:['compresion radicular','sindrome radicular','radiculopatia compresiva']},
+
+  // ── Trastornos óseos (M80-M94) ──────────────────────────
+  {c:'M80.00XA',d:'Fractura osteoporótica de vértebra',a:['fractura vertebral osteoporosis','aplastamiento osteoporotico','fractura vertebral','vertebroplastia','cifoplastia']},
+  {c:'M80.80',d:'Osteoporosis con fractura patológica',a:['osteoporosis fractura','fractura patologica osteoporosis','fractura por fragilidad']},
+  {c:'M81.0',d:'Osteoporosis primaria',a:['osteoporosis','osteoporosis primaria','densidad mineral osea baja','dexa osteoporosis','huesos fragiles']},
+  {c:'M81.6',d:'Osteoporosis por disuso',a:['osteoporosis disuso','osteoporosis inmovilizacion']},
+  {c:'M83.9',d:'Osteomalacia del adulto',a:['osteomalacia','deficiencia vitamina d hueso','mineralizacion insuficiente hueso']},
+  {c:'M85.00',d:'Displasia fibrosa',a:['displasia fibrosa','lesion osea benigna','displasia fibrosa monoostica']},
+  {c:'M85.40',d:'Quiste oseo solitario',a:['quiste oseo','quiste hueso','quiste oseo simple']},
+  {c:'M85.60',d:'Quiste óseo aneurismático',a:['quiste oseo aneurismatico','qoa','lesion osea quistica']},
+  {c:'M86.9',d:'Osteomielitis no especificada',a:['osteomielitis','infeccion osea','osteitis','hueso infectado']},
+  {c:'M87.00',d:'Necrosis avascular idiopática del fémur',a:['necrosis avascular','osteonecrosis femur','osteonecrosis cabeza femoral','necrosis cabeza femur','necrosis aseptica cadera']},
+  {c:'M87.021',d:'Osteonecrosis rodilla',a:['osteonecrosis rodilla','necrosis avascular condilo','necrosis aseptica rodilla']},
+  {c:'M87.031',d:'Osteonecrosis del húmero',a:['osteonecrosis humero','necrosis avascular humero','necrosis cabeza humeral']},
+  {c:'M88.9',d:'Enfermedad de Paget del hueso',a:['paget','enfermedad paget','osteitis deformante','paget oseo']},
+  {c:'M89.9',d:'Trastorno del hueso no especificado',a:['trastorno oseo','lesion osea','dolor oseo']},
+  {c:'M91.10',d:'Osteocondritis juvenil de la cabeza del fémur (Perthes)',a:['perthes','legg calve perthes','osteocondritis cadera juvenile','epifisiolisis cadera infancia']},
+  {c:'M92.40',d:'Osteocondritis de la rótula (Sinding-Larsen-Johansson)',a:['sinding larsen','osteocondritis rotula','insercion tendón rotuliano adolescente']},
+  {c:'M92.50',d:'Osteocondritis juvenil de la tibia (Osgood-Schlatter)',a:['osgood schlatter','osgood','apofisitis tibia','dolor tuberosidad tibial adolescente','rodilla osgood']},
+  {c:'M93.00',d:'Osteocondrosis de la columna vertebral (Scheuermann)',a:['scheuermann','osteocondritis vertebral','cifosis scheuermann','dorso redondo juvenil']},
+  {c:'M93.91',d:'Osteocondropatía juvenil del hombro',a:['osteocondropatia hombro','kienbock hombro']},
+  {c:'M93.81',d:'Otras osteocondrosis del hombro',a:['osteocondritis disecante hombro','ocd hombro']},
+  {c:'M94.20',d:'Condromalacia',a:['condromalacia','condropatia','cartilago degenerado','lesion cartilago articular']},
+  {c:'M94.3',d:'Condrolisis',a:['condrolisis','destruccion cartilago']},
+
+  // ── Conectivopatías y enfermedades sistémicas (M30-M36) ──
+  {c:'M32.10',d:'Lupus eritematoso sistémico con afectación de órganos',a:['lupus','les','lupus eritematoso','lupus sistemico','artritis lupus']},
+  {c:'M33.10',d:'Polimiositis',a:['polimiositis','inflamacion muscular autoinmune','miopatia inflamatoria']},
+  {c:'M33.20',d:'Dermatomiositis',a:['dermatomiositis','miopatia inflamatoria piel','dermatomiositis adulto']},
+  {c:'M34.9',d:'Esclerosis sistémica (esclerodermia)',a:['esclerodermia','esclerosis sistemica','crest','scl','endurecimiento piel articulaciones']},
+  {c:'M35.00',d:'Síndrome de Sjögren',a:['sjogren','sindrome sjogren','ojo seco boca seca reumatico','artritis sjogren']},
+  {c:'M35.3',d:'Polimialgia reumática',a:['polimialgia reumatica','pmr','cintura escapular dolor inflamatorio','dolor hombros mayores','arteria temporal polimialgia']},
+  {c:'M35.7',d:'Síndrome de hiperlaxitud',a:['hiperlaxitud','hipermovilidad articular','sindrome hiperlaxitud','ehlers danlos hiperlaxitud','articulaciones laxas']},
+  {c:'M36.1',d:'Artropatía paraneoplásica',a:['artritis paraneoplasica','artropatia cancer','artritis tumor']},
+
+  // ── Dolor crónico y neuropático ──────────────────────────
+  {c:'G89.21',d:'Dolor crónico secundario a trauma',a:['dolor cronico postraumatico','dolor secuela traumatismo','dolor cronico trauma']},
+  {c:'G89.29',d:'Otro dolor crónico',a:['dolor cronico','dolor persistente','dolor refractario','dolor cronico no especificado']},
+  {c:'G89.3',d:'Síndrome de dolor regional complejo (SDRC/CRPS)',a:['sdrc','crps','dolor regional complejo','algodistrofia','sudeck','allodynia','alodinia','distrofia simpatica refleja','sdrc tipo i','sdrc tipo ii']},
+  {c:'G89.4',d:'Síndrome de dolor crónico',a:['sindrome dolor cronico','dolor cronico generalizado','sdc']},
+  {c:'R52',d:'Dolor crónico no clasificado en otro lugar',a:['dolor cronico no clasificado','dolor inexplicado','dolor funcional','dolor inespecifico cronico']},
+
+  // ── Lesiones y traumatismos frecuentes ───────────────────
+  {c:'S46.011A',d:'Rotura del manguito rotador',a:['rotura manguito','rotura supraespinoso','rotura tendon hombro','lesion manguito rotador','rotura infraespinoso']},
+  {c:'S83.200A',d:'Desgarro de menisco, no especificado',a:['rotura menisco','desgarro menisco','lesion menisco','menisco roto']},
+  {c:'S83.50',d:'Esguince de ligamento colateral de rodilla',a:['esguince ligamento rodilla','ligamento lateral interno','lci','ligamento colateral medial','lcm','esguince rodilla']},
+  {c:'S83.40',d:'Esguince de ligamento cruzado',a:['rotura ligamento cruzado','cruzado anterior','lca','lcp','ligamento cruzado posterior','esguince cruzado']},
+  {c:'S93.401A',d:'Esguince de tobillo',a:['esguince tobillo','ligamento lateral externo','lesion peroneo astragalino','torcedura tobillo','esguince lateral tobillo']},
+  {c:'M79.4',d:'Hipertrofia de almohadilla grasa',a:['sindrome hoffa','hoffa','grasa infrapatelar','almohadilla grasa infrapatelar','grasa hoffa inflamada']},
+
+  // ── Articulación temporomandibular ───────────────────────
+  {c:'M26.60',d:'Trastorno de la articulación temporomandibular',a:['atm','trastorno atm','disfuncion temporomandibular','dolor atm','articulacion mandibular','bruxismo articular','chasquido mandibula']},
+  {c:'M26.62',d:'Artralgia de la articulación temporomandibular',a:['dolor atm','artralgia atm','dolor mandibula articular']},
+
+  // ── Sacroilíaca y pelvis ─────────────────────────────────
+  {c:'M46.18',d:'Sacroileítis',a:['sacroileitis','inflamacion sacroiliaca','articulacion sacroiliaca inflamada','dolor sacroiliaco inflamatorio','sacroileitis no espoa']},
+  {c:'M53.30',d:'Trastornos sacrococcígeos no clasificados',a:['coccigodinia','dolor coxis','coccix','sacrococcigeo','dolor coxis cronica']},
+  {c:'M43.27',d:'Fusión sacroilíaca',a:['fusion sacroiliaca','anquilosis sacroiliaca']},
+  {c:'M54.59',d:'Dolor sacroilíaco inespecífico',a:['dolor sacroiliaco','disfuncion sacroiliaca','sacroiliaca','dolor pelvis posterior','dolor zona sacra lateral']},
+
+  // ── Hombro (específico) ──────────────────────────────────
+  {c:'M19.011',d:'Artrosis acromioclavicular',a:['artrosis acromioclavicular','ac joint artrosis','articulacion ac artrosis','dolor acromioclavicular artrosis']},
+  {c:'M75.6',d:'Tendinitis del músculo pectoral mayor',a:['tendinitis pectoral','tendinitis pectoral mayor','dolor pectoral insercion hombro']},
+
+  // ── Pie y tobillo específico ─────────────────────────────
+  {c:'M21.61',d:'Pie plano valgo',a:['pie plano valgo','pie plano','pes planovalgus']},
+  {c:'M21.62',d:'Pie cavo',a:['pie cavo','pes cavus','pie alto']},
+  {c:'M77.31',d:'Fascitis plantar',a:['fascitis plantar','fasciitis plantar','espolon calcaneo','dolor talon','talalgia','plantar fasciitis']},
+  {c:'M92.7',d:'Osteocondritis del segundo metatarsiano (Freiberg)',a:['freiberg','osteonecrosis metatarso','osteocondritis metatarsal']},
+
+  // ── Columna cervical específico ─────────────────────────
+  {c:'M48.02',d:'Estenosis del canal cervical',a:['estenosis canal cervical','canal cervical estrecho','estenosis cervical','mielopatia estenosis cervical']},
+  {c:'M47.22',d:'Espondilosis cervical con radiculopatía',a:['espondilosis cervical radicular','artrosis cervical raiz','osteofito cervical raiz','foramen cervical estrecho']},
+  {c:'M50.10',d:'Hernia discal cervical con radiculopatía',a:['hernia cervical c5c6','hernia cervical c6c7','hernia cervical c4c5','hernia cervical radiculopatia','disco cervical herniado']},
+];
 
 function normCIE(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').trim();}
 
@@ -2167,7 +2316,7 @@ function searchCIE10(q){
   if(!q||q.length<2) return[];
   const nq=normCIE(q);
   const words=nq.split(/\s+/).filter(w=>w.length>=2);
-  return CIE10.map(e=>{
+  const results=CIE10.filter(e=>e.c!=='_placeholder').map(e=>{
     const haystack=normCIE([e.d,...e.a].join(' '));
     let score=0;
     if(haystack.includes(nq)) score+=200;
@@ -2176,28 +2325,27 @@ function searchCIE10(q){
       else{
         haystack.split(/\s+/).forEach(hw=>{
           if(hw.length<2)return;
-          const d=lev(w,hw);
-          if(d===0)score+=60; else if(d===1&&w.length>=4)score+=30; else if(d===2&&w.length>=5)score+=10;
+          const dist=lev(w,hw);
+          if(dist===0)score+=60;
+          else if(dist===1&&w.length>=4)score+=30;
+          else if(dist===2&&w.length>=5)score+=10;
         });
       }
     });
     return{...e,score};
-  }).filter(e=>e.score>0).sort((a,b)=>b.score-a.score).slice(0,7);
+  });
+  return results.filter(e=>e.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 }
 
 function onCIE10Search(q){
   const res=document.getElementById('cie10-results');
   if(!q||q.length<2){res.classList.add('hidden');return;}
   const matches=searchCIE10(q);
-  if(!matches.length){res.innerHTML='<div class="search-empty">Sin resultados</div>';res.classList.remove('hidden');return;}
-  res.innerHTML=matches.map(e=>{
-    const techs=(CIE10_TECH[e.c]||Object.keys(CIE10_TECH).filter(k=>e.c.startsWith(k)).flatMap(k=>CIE10_TECH[k])||[]).slice(0,3);
-    const techHint=techs.map(tid=>{const t=TECHNIQUES.find(x=>x.id===tid);return t?`<span class="cie10-tech-tag">${t.name}</span>`:''}).filter(Boolean).join('');
-    return`<div class="cie10-row" onclick="selectCIE10('${e.c}','${e.d.replace(/'/g,'&apos;')}')">
-      <span class="cie10-code">${e.c}</span>
-      <div class="cie10-body"><span class="cie10-desc">${e.d}</span><div class="cie10-techs">${techHint}</div></div>
-    </div>`;
-  }).join('');
+  if(!matches.length){res.innerHTML='<div class="search-empty">Sin resultados — prueba otro término</div>';res.classList.remove('hidden');return;}
+  res.innerHTML=matches.map(e=>`<div class="cie10-row" onclick="selectCIE10('${e.c}','${e.d.replace(/'/g,'&apos;')}')">
+    <span class="cie10-code">${e.c}</span>
+    <span class="cie10-desc">${e.d}</span>
+  </div>`).join('');
   res.classList.remove('hidden');
 }
 
