@@ -65,6 +65,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .search-item-cat{font-size:11px;color:var(--text2);margin-top:2px}
 .search-empty{padding:16px;text-align:center;color:var(--text2);font-size:13px}
 .selector-hint{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:12px}
+/* ── CIE-10 ─────────────────────────────────────────────── */
+.cie10-section{margin-bottom:20px}
+.cie10-search-wrap{position:relative;margin-bottom:8px}
+.cie10-search-box{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;transition:border-color .2s}
+.cie10-search-box:focus-within{border-color:#3b82f6}
+.cie10-search-box input{flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--text);font-family:inherit}
+.cie10-search-box input::placeholder{color:var(--text2)}
+#cie10-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.cie10-row{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s}
+.cie10-row:hover{background:var(--surface2)}
+.cie10-row+.cie10-row{border-top:1px solid var(--border)}
+.cie10-code{font-size:12px;font-weight:700;color:#3b82f6;flex-shrink:0;font-family:monospace;min-width:56px;margin-top:1px}
+.cie10-body{flex:1}
+.cie10-desc{font-size:13px;color:var(--text);display:block}
+.cie10-techs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.cie10-tech-tag{font-size:10px;background:rgba(155,109,255,.15);color:var(--accent2);padding:2px 6px;border-radius:4px}
+.cie10-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);padding:6px 10px;border-radius:8px;margin-top:4px}
+.cie10-badge-code{font-size:12px;font-weight:700;color:#3b82f6;font-family:monospace}
+.cie10-badge-desc{font-size:13px;color:var(--text)}
+.cie10-clear{background:none;border:none;color:var(--text2);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .cat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 14px;cursor:pointer;text-align:left;transition:all .15s}
 .cat-card:hover:not(.disabled){border-color:var(--accent);background:rgba(155,109,255,.08)}
@@ -323,6 +343,17 @@ textarea::placeholder{color:var(--text2)}
       <button class="search-clear hidden" id="search-clear" onclick="clearSearch()">✕</button>
     </div>
     <div class="search-results hidden" id="search-results"></div>
+  </div>
+  <div class="cie10-section">
+    <div class="selector-hint">diagnóstico CIE-10 (opcional)</div>
+    <div class="cie10-search-wrap">
+      <div class="cie10-search-box">
+        <span class="search-icon">🏥</span>
+        <input type="text" id="cie10-input" placeholder="Escribe el diagnóstico..." oninput="onCIE10Search(this.value)" autocomplete="off">
+      </div>
+      <div class="search-results hidden" id="cie10-results"></div>
+    </div>
+    <div id="cie10-badge-wrap"></div>
   </div>
   <div id="cat-view">
     <div class="selector-hint">o elige por categoría</div>
@@ -665,6 +696,7 @@ function clearSearch(){
 function showSelector(){
   document.getElementById('app-header').classList.remove('hidden');
   document.getElementById('screen-selector').classList.remove('hidden');
+  renderCIE10Badge();
   document.getElementById('screen-form').classList.add('hidden');
   document.getElementById('btn-gen').classList.add('hidden');
   document.getElementById('btn-back').classList.add('hidden');
@@ -1934,6 +1966,9 @@ const gsel=sel=>Array.from(document.querySelectorAll(sel)).filter(e=>e.classList
 function generarInforme(){
   const lines=[];const add=s=>lines.push(s);const br=()=>lines.push('');
 
+  // Diagnóstico CIE-10 (si se seleccionó)
+  if(S_CIE.code){add(`Diagnóstico: ${S_CIE.code} · ${S_CIE.desc}`);br();}
+
   // Texto clínico directo
   const macro=gv('macro-txt');
   if(macro) add(macro);
@@ -1969,6 +2004,223 @@ function copyReport(){
   navigator.clipboard.writeText(document.getElementById('report-out').value).then(()=>{
     const t=document.getElementById('toast');t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2000);
   });
+}
+
+// ════════════════════════════════════════════════════════════
+// CIE-10 BUSCADOR
+// ════════════════════════════════════════════════════════════
+let S_CIE = {code:null, desc:null};
+
+const CIE10=[
+  // ── Columna cervical ──────────────────────────────────────
+  {c:'M50.10',d:'Radiculopatía cervical (hernia discal cervical)',
+   a:['radiculopatia cervical','hernia cervical','hernia disco cervical','cervicobranquialgia','compresion raiz cervical','dolor cervical brazo','adormecimiento brazo','parestesias brazo']},
+  {c:'M50.20',d:'Degeneración del disco cervical',
+   a:['degeneracion disco cervical','discopatia cervical','artrosis cervical disco','cervicoartrosis','disco desgastado cervical']},
+  {c:'M54.2',d:'Cervicalgia',
+   a:['cervicalgia','dolor cervical','dolor cuello','contractura cervical','rigidez cuello','cervicalgias']},
+  {c:'M47.812',d:'Espondiloartrosis cervical con radiculopatía',
+   a:['espondilosis cervical','artrosis cervical','espondiloartrosis cervical','osteofito cervical','estenosis foraminal cervical']},
+  {c:'M48.02',d:'Estenosis del canal cervical',
+   a:['estenosis canal cervical','mielopatia cervical','estenosis cervical']},
+  {c:'M53.0',d:'Síndrome cervicocraneal (cefalea cervicogénica)',
+   a:['cefalea cervicogenica','cervicogenica','dolor cabeza cuello','neuralgia occipital','occipital']},
+  // ── Columna torácica ─────────────────────────────────────
+  {c:'M54.6',d:'Dolor en columna torácica (dorsalgia)',
+   a:['dorsalgia','dolor dorsal','dolor toracico columna','dolor interescapular','dolor espalda alta','dolor toracico musculoesqueletico']},
+  {c:'M47.814',d:'Espondiloartrosis torácica',
+   a:['espondilosis toracica','artrosis toracica','facetas toracicas']},
+  {c:'M54.14',d:'Radiculopatía torácica',
+   a:['radiculopatia toracica','hernia disco toracico','neuralgia intercostal','dolor intercostal']},
+  // ── Columna lumbar ───────────────────────────────────────
+  {c:'M51.16',d:'Hernia de disco lumbar con radiculopatía',
+   a:['hernia lumbar','hernia disco lumbar','radiculopatia lumbar','lumbociatalgia','lumbociatalgas','dolor lumbar pierna','hernia l4 l5','hernia l5 s1']},
+  {c:'M54.50',d:'Lumbago (dolor lumbar bajo)',
+   a:['lumbalgia','lumbago','dolor lumbar','dolor espalda baja','low back pain','dolor cintura','dolor lumbar cronico']},
+  {c:'M54.42',d:'Lumbago con ciática',
+   a:['lumbociatalgia','lumboradiculopatia','dolor lumbar y pierna','ciatica lumbar','ciatalgia lumbar']},
+  {c:'M54.3',d:'Ciática',
+   a:['ciatica','ciatalgia','dolor irradiado pierna','nervio ciatico','glutalgia','dolor gluteo pierna']},
+  {c:'M47.816',d:'Espondiloartrosis lumbar con radiculopatía',
+   a:['espondilosis lumbar','artrosis lumbar','espondiloartrosis lumbar','osteofito lumbar','estenosis foraminal lumbar']},
+  {c:'M48.061',d:'Estenosis del canal lumbar',
+   a:['estenosis canal lumbar','estenosis lumbar','claudicacion neurogena','canal estrecho lumbar']},
+  {c:'M47.816',d:'Síndrome facetario lumbar',
+   a:['sindrome facetario','dolor facetario','facetas lumbares','articulaciones facetarias','ramos mediales','ramos mediales lumbar']},
+  {c:'M53.3',d:'Trastornos sacrococcígeos / coccigodinia',
+   a:['coccigodinia','coccix','dolor coccix','sacrococcigeo','dolor sacro']},
+  {c:'M54.89',d:'Síndrome de cirugía fallida de columna (FBSS)',
+   a:['cirugia fallida columna','fbss','failed back surgery','dolor postquirurgico columna','epidural fibrosis']},
+  // ── Articulación sacroilíaca ─────────────────────────────
+  {c:'M46.18',d:'Sacroileítis',
+   a:['sacroileitis','articulacion sacroiliaca','dolor sacroiliaco','sacro','dolor sacro iliaco','sacroileitis']},
+  {c:'M54.59',d:'Dolor sacroilíaco',
+   a:['dolor sacroiliaco','disfuncion sacroiliaca','sacroiliaca','dolor pelvis posterior']},
+  // ── Hombro ───────────────────────────────────────────────
+  {c:'M75.0',d:'Capsulitis adhesiva del hombro (hombro congelado)',
+   a:['capsulitis adhesiva','hombro congelado','frozen shoulder','rigidez hombro','hombro rigido','periartritis hombro']},
+  {c:'M75.1',d:'Síndrome del manguito rotador',
+   a:['manguito rotador','rotura manguito','tendinitis manguito','impingement','sindrome pinzamiento','pinzamiento hombro','rotura tendon hombro']},
+  {c:'M75.2',d:'Tendinitis bicipital',
+   a:['tendinitis biceps','tendinitis bicipital','plb','porcion larga biceps','dolor biceps hombro']},
+  {c:'M75.3',d:'Tendinitis calcificante del hombro',
+   a:['tendinitis calcificante','calcificacion hombro','calcinosis hombro','deposito calcio hombro']},
+  {c:'M75.5',d:'Bursitis del hombro',
+   a:['bursitis subacromial','bursitis hombro','bursa subacromial','bursa subdeltoidea']},
+  {c:'M19.019',d:'Artrosis glenohumeral',
+   a:['artrosis hombro','glenohumeral','osteoartrosis hombro','artrosis glenohumeral']},
+  {c:'M19.011',d:'Artrosis acromioclavicular',
+   a:['artrosis acromioclavicular','ac joint','dolor acromioclavicular','articulacion ac']},
+  // ── Rodilla ──────────────────────────────────────────────
+  {c:'M17.11',d:'Gonartrosis primaria',
+   a:['artrosis rodilla','gonartrosis','osteoartrosis rodilla','dolor rodilla','gonalgia','condropatia rotula']},
+  {c:'M17.31',d:'Gonartrosis postraumática',
+   a:['artrosis rodilla posttraumatica','gonartrosis traumatica']},
+  {c:'M22.41',d:'Condromalacia rotuliana',
+   a:['condromalacia','condropatia rotula','rodilla anterior','dolor anterior rodilla']},
+  {c:'M79.671',d:'Dolor en rodilla',
+   a:['dolor rodilla','rodilla','gonalgia cronica']},
+  // ── Cadera / coxofemoral ─────────────────────────────────
+  {c:'M16.11',d:'Coxartrosis primaria',
+   a:['coxartrosis','artrosis cadera','osteoartrosis cadera','dolor cadera','coxalgia']},
+  // ── Neuropático ──────────────────────────────────────────
+  {c:'G89.29',d:'Dolor crónico no especificado',
+   a:['dolor cronico','dolor persistente','dolor neuropatico','dolor refractario','dolor cronic']},
+  {c:'G89.3',d:'Síndrome de dolor regional complejo (SDRC/CRPS)',
+   a:['sdrc','crps','dolor regional complejo','algodistrofia','sudeck','allodynia','alodinia']},
+  {c:'M79.2',d:'Neuralgia y neuritis no especificada',
+   a:['neuralgia','neuritis','dolor quemante','ardor','neuralgias','dolor neuropatico periferico']},
+  {c:'G54.2',d:'Radiculopatía cervical (raíz nerviosa)',
+   a:['radiculopatia cervical','raiz cervical','compresion raiz']},
+  {c:'G54.4',d:'Radiculopatía lumbosacra',
+   a:['radiculopatia lumbar','raiz lumbar','radiculopatia sacra','nervio lumbar comprimido']},
+  {c:'G57.0',d:'Lesión del nervio ciático',
+   a:['lesion nervio ciatico','atrapamiento ciatico','neuropatia ciatica']},
+  {c:'G57.10',d:'Meralgia parestésica (nervio femorocutáneo)',
+   a:['meralgia parestesica','femorocutaneo','dolor lateral muslo','hormigueo muslo externo']},
+  // ── Cefalea ──────────────────────────────────────────────
+  {c:'G43.909',d:'Migraña crónica',
+   a:['migrana','jaqueca','cefalea migrañosa','migraña cronica','hemicranea']},
+  {c:'G44.309',d:'Cefalea en racimos (cluster)',
+   a:['cefalea racimos','cluster headache','cefalea hortoniana']},
+  {c:'G44.209',d:'Cefalea tensional crónica',
+   a:['cefalea tension','cefalea tensional','cefalea tipo tension','contractura cervical cefalea']},
+  {c:'G44.52',d:'Cefalea nueva diaria persistente',
+   a:['cefalea diaria','cefalea nueva diaria','ndph']},
+  // ── Fibromialgia / sensibilización ────────────────────────
+  {c:'M79.7',d:'Fibromialgia',
+   a:['fibromialgia','fibromyalgia','dolor difuso','sensibilizacion central','dolor generalizado']},
+  // ── Otros ────────────────────────────────────────────────
+  {c:'M79.1',d:'Mialgia / contractura muscular',
+   a:['mialgia','contractura','contractura muscular','dolor muscular','espasmo muscular','tension muscular']},
+  {c:'M48.50',d:'Fractura vertebral osteoporótica',
+   a:['fractura vertebral','fractura osteoporotica','aplastamiento vertebral','vertebra aplastada','cifoplastia']},
+  {c:'C79.51',d:'Metástasis óseas (dolor oncológico)',
+   a:['metastasis osea','dolor oncologico','cancer columna','vertebra metastasica']},
+  {c:'G43.E0',d:'Migraña crónica con aura',
+   a:['migrana con aura','aura migraña']},
+  {c:'M54.1',d:'Radiculopatía (inespecífica)',
+   a:['radiculopatia','sindrome radicular','dolor irradiado','compresion radicular']},
+  {c:'R52',d:'Dolor crónico no clasificado',
+   a:['dolor cronico no especificado','dolor inexplicado','dolor funcional']},
+];
+
+// Mapeo código → técnicas sugeridas
+const CIE10_TECH={
+  'M50':['facetas-bloqueo','facetas-rf','epi-interlaminar','epi-parasagital','epi-transforaminal'],
+  'M54.2':['facetas-bloqueo','facetas-rf'],
+  'M47.812':['facetas-bloqueo','facetas-rf'],
+  'M48.02':['epi-interlaminar','epi-parasagital'],
+  'M53.0':['facetas-bloqueo','facetas-rf'],
+  'M54.6':['facetas-bloqueo','facetas-rf','epi-interlaminar'],
+  'M47.814':['facetas-bloqueo','facetas-rf'],
+  'M54.14':['epi-transforaminal','facetas-bloqueo'],
+  'M51.16':['epi-transforaminal','epi-parasagital','epi-interlaminar'],
+  'M54.50':['facetas-bloqueo','facetas-rf','epi-interlaminar'],
+  'M54.42':['epi-transforaminal','epi-parasagital'],
+  'M54.3':['epi-transforaminal'],
+  'M47.816':['facetas-bloqueo','facetas-rf'],
+  'M48.061':['epi-caudal','epi-transforaminal','epi-interlaminar'],
+  'M54.89':['epi-caudal','epi-interlaminar','facetas-rf'],
+  'M46.18':['sacroiliaca-bloqueo','sacroiliaca-rf'],
+  'M54.59':['sacroiliaca-bloqueo','sacroiliaca-rf'],
+  'M53.3':['sacroiliaca-bloqueo'],
+  'M75.0':['hombro-intraarticular','hombro-capsular'],
+  'M75.1':['hombro-tendinosa','hombro-intraarticular'],
+  'M75.2':['hombro-tendinosa'],
+  'M75.3':['hombro-tendinosa'],
+  'M75.5':['hombro-tendinosa','hombro-intraarticular'],
+  'M19.019':['hombro-intraarticular'],
+  'M17.11':['rodilla-intraarticular'],
+  'M17.31':['rodilla-intraarticular'],
+  'G89.3':['hombro-nervios','hombro-capsular'],
+  'M79.7':['botox'],
+  'G43.909':['botox'],
+  'G44.209':['botox','facetas-bloqueo'],
+  'G54.2':['epi-transforaminal','facetas-bloqueo'],
+  'G54.4':['epi-transforaminal'],
+};
+
+function normCIE(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').trim();}
+
+function searchCIE10(q){
+  if(!q||q.length<2) return[];
+  const nq=normCIE(q);
+  const words=nq.split(/\s+/).filter(w=>w.length>=2);
+  return CIE10.map(e=>{
+    const haystack=normCIE([e.d,...e.a].join(' '));
+    let score=0;
+    if(haystack.includes(nq)) score+=200;
+    words.forEach(w=>{
+      if(haystack.includes(w)) score+=60;
+      else{
+        haystack.split(/\s+/).forEach(hw=>{
+          if(hw.length<2)return;
+          const d=lev(w,hw);
+          if(d===0)score+=60; else if(d===1&&w.length>=4)score+=30; else if(d===2&&w.length>=5)score+=10;
+        });
+      }
+    });
+    return{...e,score};
+  }).filter(e=>e.score>0).sort((a,b)=>b.score-a.score).slice(0,7);
+}
+
+function onCIE10Search(q){
+  const res=document.getElementById('cie10-results');
+  if(!q||q.length<2){res.classList.add('hidden');return;}
+  const matches=searchCIE10(q);
+  if(!matches.length){res.innerHTML='<div class="search-empty">Sin resultados</div>';res.classList.remove('hidden');return;}
+  res.innerHTML=matches.map(e=>{
+    const techs=(CIE10_TECH[e.c]||Object.keys(CIE10_TECH).filter(k=>e.c.startsWith(k)).flatMap(k=>CIE10_TECH[k])||[]).slice(0,3);
+    const techHint=techs.map(tid=>{const t=TECHNIQUES.find(x=>x.id===tid);return t?`<span class="cie10-tech-tag">${t.name}</span>`:''}).filter(Boolean).join('');
+    return`<div class="cie10-row" onclick="selectCIE10('${e.c}','${e.d.replace(/'/g,'&apos;')}')">
+      <span class="cie10-code">${e.c}</span>
+      <div class="cie10-body"><span class="cie10-desc">${e.d}</span><div class="cie10-techs">${techHint}</div></div>
+    </div>`;
+  }).join('');
+  res.classList.remove('hidden');
+}
+
+function selectCIE10(code, desc){
+  S_CIE={code, desc};
+  document.getElementById('cie10-input').value='';
+  document.getElementById('cie10-results').classList.add('hidden');
+  renderCIE10Badge();
+}
+
+function clearCIE10(){
+  S_CIE={code:null,desc:null};
+  renderCIE10Badge();
+}
+
+function renderCIE10Badge(){
+  const wrap=document.getElementById('cie10-badge-wrap');
+  if(!wrap)return;
+  if(S_CIE.code){
+    wrap.innerHTML=`<div class="cie10-badge"><span class="cie10-badge-code">${S_CIE.code}</span><span class="cie10-badge-desc">${S_CIE.desc}</span><button class="cie10-clear" onclick="clearCIE10()">✕</button></div>`;
+  } else {
+    wrap.innerHTML='';
+  }
 }
 
 // ════════════════════════════════════════════════════════════
