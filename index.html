@@ -304,7 +304,7 @@ textarea::placeholder{color:var(--text2)}
 
 <!-- HEADER -->
 <header class="app-header hidden" id="app-header">
-  <div class="app-logo">
+  <div class="app-logo" onclick="goBack()" style="cursor:pointer" title="Inicio">
     <img src="logo.png" alt="Tecnicolor" class="app-logo-img">
     <div class="app-logo-sub" style="margin-top:0">Registro intervencionista del dolor</div>
   </div>
@@ -589,6 +589,7 @@ const S = {
   aguja:null, alPiel:null, alPrinc:null, alVehiculo:null,
   ramasHombro: new Set(), rfMode:null,
   tendones: new Set(), nerviosHombro: new Set(), capsularMod:null, hombroMod:null, sustIntra:null, prpSistema:null,
+  alHombro:null, alHombroConc:null,
 };
 
 // ════════════════════════════════════════════════════════════
@@ -703,6 +704,7 @@ function selectTechnique(id){
   Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null,rfMode:null});
   S.ramasHombro=new Set(); S.tendones=new Set(); S.nerviosHombro=new Set();
   S.capsularMod=null; S.hombroMod=null; S.sustIntra=null; S.prpSistema=null;
+  S.alHombro=null; S.alHombroConc=null;
   S.branches=new Set();
   S.ubicacion='qx';
   document.getElementById('search-results').classList.add('hidden');
@@ -714,6 +716,11 @@ function selectTechnique(id){
   initHandlers();
   // Quirófano por defecto siempre
   document.querySelector('[data-a="ubicacion"][data-v="qx"]')?.classList.add('sel');
+  // Ecografía por defecto en hombro
+  if(id.startsWith('hombro')){
+    S.imagen=['ecografia'];
+    document.querySelector('[data-a="imagen"][data-v="ecografia"]')?.classList.add('sel');
+  }
   if(id.startsWith('facetas')||id.startsWith('epi')){
     S.posicion='decúbito prono';
     document.querySelector('[data-a="posicion"][data-v="decúbito prono"]')?.classList.add('sel');
@@ -1011,7 +1018,7 @@ function genMacro(id){
     }
     case 'hombro-tendinosa':{
       const selected=TENDONES_HOMBRO.filter(t=>S.tendones.has(t.id));
-      const mezcla=gv('tend-mezcla')||'la mezcla preparada';
+      const mezcla=natALHombro();
       if(!selected.length) return `${opening} ${atb}Bajo guía ecográfica, se procede a la infiltración de tendones y bursas del hombro${lat?` ${lat}`:''}. ${fin}`;
       // Construir listado de dianas con vol
       const partes=selected.map(t=>{
@@ -1443,6 +1450,45 @@ const TENDONES_HOMBRO=[
    prose:'la articulación acromioclavicular', abordaje:'accediendo al espacio articular acromioclavicular por su cara superior'},
 ];
 
+const AL_HOMBRO=[
+  {id:'mepivacaina', label:'Mepivacaína', concs:['1%','1,5%','2%']},
+  {id:'lidocaina',   label:'Lidocaína',   concs:['1%','2%']},
+  {id:'levobupivacaina', label:'Levobupivacaína', concs:['0,25%','0,375%','0,5%']},
+  {id:'bupivacaina', label:'Bupivacaína', concs:['0,25%','0,375%','0,5%']},
+];
+const CORT_HOMBRO=[
+  {v:'Betametasona 6 mg', l:'Betametasona 6 mg'},
+  {v:'Betametasona 12 mg',l:'Betametasona 12 mg'},
+  {v:'Triamcinolona 40 mg',l:'Triamcinolona 40 mg'},
+  {v:'Dexametasona 8 mg', l:'Dexametasona 8 mg'},
+  {v:'Sin corticoide',    l:'Sin corticoide'},
+];
+
+function bkALHombro(){
+  const al=S.alHombro||'';
+  const conc=S.alHombroConc||'';
+  const cort=S.cort||'';
+  const concs=AL_HOMBRO.find(a=>a.id===al)?.concs||[];
+  return`<div class="tags mt1">
+    ${AL_HOMBRO.map(a=>`<span class="nivel${al===a.id?' sel':''}" data-a="al-hombro" data-v="${a.id}">${a.label}</span>`).join('')}
+  </div>
+  <div id="blk-al-conc" class="${al?'':'hidden'} mt2">
+    <div class="sub-label">Concentración</div>
+    <div class="tags mt1">${concs.map(c=>`<span class="nivel${conc===c?' sel':''}" data-a="al-hombro-conc" data-v="${c}">${c}</span>`).join('')}</div>
+  </div>
+  <div class="sub-label mt3">Corticoide</div>
+  <div class="grid-auto mt1">${CORT_HOMBRO.map(c=>`<button class="opt${cort===c.v?' sel':''}" data-a="cort" data-v="${c.v}"><span class="o-label">${c.l}</span></button>`).join('')}</div>`;
+}
+
+function natALHombro(){
+  const al=AL_HOMBRO.find(a=>a.id===S.alHombro);
+  if(!al) return 'la mezcla anestésica';
+  let txt=al.label;
+  if(S.alHombroConc) txt+=` ${S.alHombroConc}`;
+  if(S.cort&&S.cort!=='Sin corticoide') txt+=` + ${S.cort}`;
+  return txt;
+}
+
 function bkTendinosHombro(){
   const rows=TENDONES_HOMBRO.map(t=>{
     const sel=S.tendones.has(t.id);
@@ -1454,9 +1500,7 @@ function bkTendinosHombro(){
       </div>
     </div>`;
   }).join('');
-  return sec('Mezcla infiltrada',`
-    <input type="text" id="tend-mezcla" placeholder="p.ej. bupivacaína 0,25% + betametasona 6mg" oninput="regenMacro()">
-  `)+sec('Dianas',`<div class="tend-list">${rows}</div>`);
+  return sec('Anestésico local',bkALHombro())+sec('Dianas',`<div class="tend-list">${rows}</div>`);
 }
 
 function bkNerviosHombro(){
@@ -1792,6 +1836,25 @@ function initHandlers(){
       el.closest('.tags').querySelectorAll('[data-a="hombro-mod"]').forEach(b=>b.classList.remove('sel'));
       el.classList.add('sel');
       tog('blk-hombro-contraste',(v==='rx'||v==='ambos'));
+      regenMacro();
+    }
+    else if(a==='al-hombro'){
+      S.alHombro=v; S.alHombroConc=null;
+      el.closest('.tags').querySelectorAll('[data-a="al-hombro"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      // Reconstruir concentraciones
+      const blk=document.getElementById('blk-al-conc');
+      if(blk){
+        const concs=AL_HOMBRO.find(a=>a.id===v)?.concs||[];
+        blk.querySelector('.tags').innerHTML=concs.map(c=>`<span class="nivel" data-a="al-hombro-conc" data-v="${c}">${c}</span>`).join('');
+        blk.classList.remove('hidden');
+      }
+      regenMacro();
+    }
+    else if(a==='al-hombro-conc'){
+      S.alHombroConc=v;
+      el.closest('.tags').querySelectorAll('[data-a="al-hombro-conc"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
       regenMacro();
     }
     else if(a==='sust-intra'){
