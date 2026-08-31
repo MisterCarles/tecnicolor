@@ -588,7 +588,7 @@ const S = {
   facetReg:[],
   aguja:null, alPiel:null, alPrinc:null, alVehiculo:null,
   ramasHombro: new Set(), rfMode:null,
-  tendones: new Set(), nerviosHombro: new Set(), capsularMod:null, hombroMod:null,
+  tendones: new Set(), nerviosHombro: new Set(), capsularMod:null, hombroMod:null, sustIntra:null, prpSistema:null,
 };
 
 // ════════════════════════════════════════════════════════════
@@ -702,8 +702,9 @@ function selectTechnique(id){
   TECH_ID=id;
   Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null,rfMode:null});
   S.ramasHombro=new Set(); S.tendones=new Set(); S.nerviosHombro=new Set();
-  S.capsularMod=null; S.hombroMod=null;
+  S.capsularMod=null; S.hombroMod=null; S.sustIntra=null; S.prpSistema=null;
   S.branches=new Set();
+  S.ubicacion='qx';
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('screen-selector').classList.add('hidden');
   document.getElementById('screen-form').classList.remove('hidden');
@@ -711,6 +712,8 @@ function selectTechnique(id){
   document.getElementById('btn-back').classList.remove('hidden');
   document.getElementById('form-container').innerHTML=buildForm(id);
   initHandlers();
+  // Quirófano por defecto siempre
+  document.querySelector('[data-a="ubicacion"][data-v="qx"]')?.classList.add('sel');
   if(id.startsWith('facetas')||id.startsWith('epi')){
     S.posicion='decúbito prono';
     document.querySelector('[data-a="posicion"][data-v="decúbito prono"]')?.classList.add('sel');
@@ -977,9 +980,34 @@ function genMacro(id){
       const modImg=S.hombroMod==='rx'?'control radioscópico':S.hombroMod==='ambos'?'guía ecográfica y control radioscópico':'guía ecográfica';
       const needle=S.aguja||'22G';
       const contrStr=S.hombroMod!=='eco'&&gc('chk-contraste')?' Se inyecta contraste iodado confirmando patrón articular correcto.':'';
-      const sust=S.sust||'la sustancia terapéutica';
-      const volS=gv('sust-vol');
-      return `${opening} ${atb}Bajo ${modImg}, se realiza infiltración intraarticular glenohumeral${lat?` ${lat}`:''}. Se localiza el espacio glenohumeral y se accede con aguja ${needle} confirmando posición intraarticular.${contrStr} Se administra ${sust}${volS?` (${volS} mL)`:''}. ${fin}`;
+      const sustIntra=S.sustIntra;
+      let sustTxt='';
+      if(sustIntra==='prp'){
+        const sistema=document.querySelector('[data-a="prp-sistema"].sel')?.dataset.v||'';
+        const prpVol=gv('prp-vol'), pppVol=gv('ppp-vol');
+        let extracccion=`Se extrae sangre autóloga del paciente en condiciones de asepsia y se centrifuga${sistema?' mediante sistema '+sistema:''} hasta obtener`;
+        if(prpVol) extracccion+=` ${prpVol} mL de plasma rico en plaquetas (PRP)`;
+        if(pppVol) extracccion+=`${prpVol?' y ':' '}${pppVol} mL de plasma pobre en plaquetas (PPP)`;
+        extracccion+='. ';
+        sustTxt=extracccion+(prpVol?`Se infiltra ${prpVol} mL de PRP intraarticular glenohumeral${lat?` ${lat}`:''}. `:'Se procede a la infiltración intraarticular de PRP. ');
+        if(pppVol) sustTxt+=`Se reservan ${pppVol} mL de PPP para infiltración peritendinosa adicional si se precisa. `;
+      } else if(sustIntra==='hialuronico'){
+        const marca=gv('hia-marca'), vol=gv('hia-vol');
+        sustTxt=`Se administra ácido hialurónico${marca?' ('+marca+')':''} intraarticular${vol?` (${vol} mL)`:''}. `;
+      } else if(sustIntra==='alcort'){
+        const alMg=gv('al-mg'), vehiculo=S.alVehiculo||'', alPrinc=S.alPrinc||'anestésico local', cort=S.cort&&S.cort!=='—'?S.cort:'';
+        let mezcla=alPrinc+(alMg?` ${alMg} mg`:'');
+        if(vehiculo) mezcla+=` en ${vehiculo}`;
+        if(cort) mezcla+=` + ${cort}`;
+        const volT=gv('al-voltotal');
+        sustTxt=`Se administra ${mezcla}${volT?` (${volT} mL total)`:''} intraarticular. `;
+      } else {
+        const otro=gv('sust-otro-txt')||'la sustancia terapéutica';
+        const vol=gv('sust-vol');
+        sustTxt=`Se administra ${otro}${vol?` (${vol} mL)`:''}. `;
+      }
+      let t=`${opening} ${atb}Bajo ${modImg}, se realiza infiltración intraarticular glenohumeral${lat?` ${lat}`:''}. Se localiza el espacio glenohumeral y se accede con aguja ${needle} confirmando posición intraarticular.${contrStr} ${sustTxt}${fin}`;
+      return t;
     }
     case 'hombro-tendinosa':{
       const selected=TENDONES_HOMBRO.filter(t=>S.tendones.has(t.id));
@@ -1200,10 +1228,10 @@ const BKDATOS=sec('Procedimiento',`
     </div>
   </div>`);
 
-const BKMACRO=sec('Descripción del procedimiento',`
-  <textarea id="macro-txt" class="macro-area" rows="6" placeholder="Descripción..."></textarea>
+const BKMACRO=sec('Informe generado',`
+  <textarea id="macro-txt" class="macro-area" rows="7" placeholder="El informe se genera automáticamente al completar los campos..."></textarea>
   <div class="macro-hint">
-    <span>✏️ Editable — los campos actualizan el texto automáticamente</span>
+    <span>Vista previa · editable</span>
     <button class="btn-regen" onclick="regenMacro()">↻ Regenerar</button>
   </div>`);
 
@@ -1461,25 +1489,25 @@ function buildForm(id){
   const locEpi=(body)=>sec('Localización',body);
   switch(id){
     case 'epi-interlaminar':
-      return H+BKDATOS+BKMACRO+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'epi-parasagital':
-      return H+BKDATOS+BKMACRO+locEpi(bkLat()+buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+locEpi(bkLat()+buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'epi-transforaminal':
-      return H+BKDATOS+BKMACRO+locEpi(bkLat()+buildNivelesEpi(NIVELES_TF))+bkAgujaEpi('22G punta recta')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+locEpi(bkLat()+buildNivelesEpi(NIVELES_TF))+bkAgujaEpi('22G punta recta')+bkImagenEpi(['fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'epi-caudal':
-      return H+BKDATOS+BKMACRO+bkAgujaEpi('22G punta recta')+bkImagenEpi(['ecografia','fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+bkAgujaEpi('22G punta recta')+bkImagenEpi(['ecografia','fluoroscopia'])+BKALCORT_EPI+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'epi-parche':
-      return H+BKDATOS+BKMACRO+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+
+      return H+BKDATOS+locEpi(buildNivelesEpi(NIVELES_EPI))+bkAgujaEpi('Tuohy')+bkImagenEpi(['fluoroscopia'])+
         sec('Parche hemático',`<div class="row"><div class="field"><div class="field-label">Volumen sangre autóloga (mL)</div><input type="number" id="parche-vol" value="15" max="20" step="1" oninput="regenMacro()"></div></div>`)+
-        BKSED+BKRES+BKNOTAS;
+        BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'facetas-bloqueo':
-      return H+BKDATOS+BKMACRO+BKFACETAS_REG+BKFACETAS_LOC+
+      return H+BKDATOS+BKFACETAS_REG+BKFACETAS_LOC+
         sec('Mezcla infiltrada',`<div class="row"><div class="field"><div class="field-label">Volumen por punto</div><input type="text" id="blq-vol" placeholder="p. ej. 1 mL" oninput="regenMacro()"></div><div class="field"><div class="field-label">Mezcla</div><input type="text" id="blq-mezcla" placeholder="AL + corticoide..." oninput="regenMacro()"></div></div>`)+
-        BKIMAGEN+BKSED+BKRES+BKNOTAS;
+        BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'facetas-rf':
-      return H+BKDATOS+BKMACRO+BKFACETAS_REG+BKFACETAS_LOC+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+BKFACETAS_REG+BKFACETAS_LOC+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'botox':
-      return H+BKDATOS+BKMACRO+
+      return H+BKDATOS+
         sec('Infiltración',`
           <div class="field-label">Sitio de infiltración</div>
           <textarea id="botox-sitio" rows="2" class="mt1" placeholder="Músculos y zonas..." oninput="regenMacro()"></textarea>
@@ -1492,28 +1520,59 @@ function buildForm(id){
             <span class="tag" data-a="tg1-veh">Suero fisiológico</span>
             <span class="tag" data-a="tg1-veh">Anestésico local</span>
           </div></div>`)+
-        BKRES+BKNOTAS;
+        BKRES+BKMACRO+BKNOTAS;
     case 'hombro-intraarticular':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat()+bkHombroMod())+
+      return H+BKDATOS+sec('Localización',bkLat()+bkHombroMod())+
         sec('Aguja',`<div class="tags mt1">
           <span class="nivel${S.aguja==='22G'||!S.aguja?' sel':''}" data-a="aguja" data-v="22G">22G</span>
           <span class="nivel${S.aguja==='20G'?' sel':''}" data-a="aguja" data-v="20G">20G</span>
           <span class="nivel${S.aguja==='18G'?' sel':''}" data-a="aguja" data-v="18G">18G</span>
         </div>`)+
-        BKSUST+BKSED+BKRES+BKNOTAS;
+        sec('Sustancia',`
+          <div class="grid-2 mt1">
+            <button class="opt" data-a="sust-intra" data-v="prp"><span class="o-icon">🩸</span><span class="o-label">PRP</span></button>
+            <button class="opt" data-a="sust-intra" data-v="hialuronico"><span class="o-icon">💧</span><span class="o-label">Ácido hialurónico</span></button>
+            <button class="opt" data-a="sust-intra" data-v="alcort"><span class="o-icon">💉</span><span class="o-label">AL + Corticoide</span></button>
+            <button class="opt" data-a="sust-intra" data-v="otro"><span class="o-icon">✏️</span><span class="o-label">Otro</span></button>
+          </div>
+          <div id="blk-prp" class="hidden mt3">
+            <div class="row">
+              <div class="field"><div class="field-label">Volumen PRP (mL)</div><input type="number" id="prp-vol" placeholder="mL" step="0.5" oninput="regenMacro()"></div>
+              <div class="field"><div class="field-label">Volumen PPP (mL)</div><input type="number" id="ppp-vol" placeholder="mL (si aplica)" step="0.5" oninput="regenMacro()"></div>
+            </div>
+            <div class="field-label mt2" style="font-size:11px;color:var(--text2)">Sistema · equipo de centrifugación</div>
+            <div class="tags mt1">
+              <span class="nivel" data-a="prp-sistema" data-v="BTI">BTI</span>
+              <span class="nivel" data-a="prp-sistema" data-v="RegenKit">RegenKit</span>
+              <span class="nivel" data-a="prp-sistema" data-v="Arthrex">Arthrex</span>
+              <span class="nivel" data-a="prp-sistema" data-v="PRGF-Anitua">PRGF-Anitua</span>
+            </div>
+          </div>
+          <div id="blk-hialuronico" class="hidden mt3">
+            <div class="row">
+              <div class="field"><div class="field-label">Marca / tipo</div><input type="text" id="hia-marca" placeholder="p.ej. Durolane, Synvisc..." oninput="regenMacro()"></div>
+              <div class="field"><div class="field-label">Volumen (mL)</div><input type="number" id="hia-vol" placeholder="mL" step="0.5" oninput="regenMacro()"></div>
+            </div>
+          </div>
+          <div id="blk-alcort" class="hidden mt3">${BKALCORT}</div>
+          <div id="blk-sust-otro" class="hidden mt3">
+            <input type="text" id="sust-otro-txt" placeholder="Describir sustancia..." oninput="regenMacro()">
+            <div class="row mt2"><div class="field"><div class="field-label">Volumen (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>
+          </div>`)+
+        BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'hombro-tendinosa':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+bkTendinosHombro()+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+bkTendinosHombro()+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'hombro-nervios':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+sec('Nervios y técnica',bkNerviosHombro())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+sec('Nervios y técnica',bkNerviosHombro())+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'hombro-capsular':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()+
-        sec('Modo electrodo',bkRfModo())+BKRF+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()+
+        sec('Modo electrodo',bkRfModo())+BKRF+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'rodilla-intraarticular':case 'rodilla-perirodilla':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'sacroiliaca-bloqueo':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'sacroiliaca-rf':
-      return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     default:
       return H+'<div class="section"><div class="section-body" style="padding:20px;color:var(--text2)">Formulario en construcción...</div></div>';
   }
@@ -1701,6 +1760,22 @@ function initHandlers(){
       el.closest('.tags').querySelectorAll('[data-a="hombro-mod"]').forEach(b=>b.classList.remove('sel'));
       el.classList.add('sel');
       tog('blk-hombro-contraste',(v==='rx'||v==='ambos'));
+      regenMacro();
+    }
+    else if(a==='sust-intra'){
+      S.sustIntra=v;
+      el.closest('.grid-2').querySelectorAll('[data-a="sust-intra"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      tog('blk-prp',v==='prp');
+      tog('blk-hialuronico',v==='hialuronico');
+      tog('blk-alcort',v==='alcort');
+      tog('blk-sust-otro',v==='otro');
+      regenMacro();
+    }
+    else if(a==='prp-sistema'){
+      S.prpSistema=v;
+      el.closest('.tags').querySelectorAll('[data-a="prp-sistema"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
       regenMacro();
     }
     else if(a==='rfmode'){
