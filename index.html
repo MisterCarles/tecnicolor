@@ -246,13 +246,10 @@ textarea::placeholder{color:var(--text2)}
 .tend-name{font-size:12px;font-weight:600;color:var(--text)}
 .tend-row.sel .tend-name{color:var(--accent)}
 .tend-hint{font-size:10px;color:var(--text2);font-style:italic}
-.tend-fields{display:none;gap:8px;margin-top:8px;align-items:flex-end}
-.tend-field-wrap{display:flex;flex-direction:column;gap:3px}
-.tend-vol-wrap{width:72px;flex-shrink:0}
-.tend-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.tend-sust{font-size:11px;padding:5px 8px;flex:1;user-select:text}
-.tend-vol{font-size:11px;padding:5px 8px;width:100%;user-select:text}
-.tend-field-wrap:first-child{flex:1}
+.tend-vol-inline{display:none;align-items:center;gap:5px;flex-shrink:0}
+.tend-lbl{font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.tend-vol{font-size:12px;padding:3px 6px;width:62px;user-select:text;text-align:right}
+.tend-main{display:flex;justify-content:space-between;align-items:center;flex:1;gap:8px}
 /* ── Sedation drug rows ──────────────────────────────────── */
 .sed-drug-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .sed-drug-row{display:flex;align-items:center;gap:10px}
@@ -1014,19 +1011,22 @@ function genMacro(id){
     }
     case 'hombro-tendinosa':{
       const selected=TENDONES_HOMBRO.filter(t=>S.tendones.has(t.id));
+      const mezcla=gv('tend-mezcla')||'la mezcla preparada';
       if(!selected.length) return `${opening} ${atb}Bajo guía ecográfica, se procede a la infiltración de tendones y bursas del hombro${lat?` ${lat}`:''}. ${fin}`;
+      // Construir listado de dianas con vol
       const partes=selected.map(t=>{
         const vol=document.querySelector(`.tend-vol[data-tend="${t.id}"]`)?.value?.trim();
-        const sust=document.querySelector(`.tend-sust[data-tend="${t.id}"]`)?.value?.trim();
-        let frase=`Se infiltra ${t.prose} (${t.abordaje})`;
-        if(sust&&vol) frase+=`: ${vol} mL de ${sust}`;
-        else if(vol) frase+=`: ${vol} mL`;
-        else if(sust) frase+=` con ${sust}`;
-        frase+='.';
-        return frase;
+        return `${t.prose}${vol?' ('+vol+' mL)':''}`;
       });
-      const intro=`${opening} ${atb}Bajo guía ecográfica, con técnica aséptica, se realizan las siguientes infiltraciones en hombro${lat?` ${lat}`:''}. `;
-      return intro+partes.join(' ')+` En todos los puntos se verifica la posición correcta de la aguja antes de la inyección. ${fin}`;
+      // Lista larga → separar en puntos; lista corta → frase fluida
+      const dianasTxt=partes.length===1?partes[0]:partes.slice(0,-1).join(', ')+' y '+partes[partes.length-1];
+      // Abordaje detallado por diana
+      const abordajes=selected.map(t=>`${t.label}: ${t.abordaje}`).join('; ');
+      let t=`${opening} ${atb}Bajo guía ecográfica, se infiltran las siguientes estructuras del hombro${lat?` ${lat}`:''}`;
+      t+=` con ${mezcla}: ${dianasTxt}. `;
+      t+=`Abordaje de cada diana — ${abordajes}. `;
+      t+=`Se verifica posición correcta de la aguja antes de cada inyección. ${fin}`;
+      return t;
     }
     case 'hombro-nervios':{
       const hasSupra=S.nerviosHombro.has('supra');
@@ -1448,19 +1448,15 @@ function bkTendinosHombro(){
     const sel=S.tendones.has(t.id);
     return`<div class="tend-row${sel?' sel':''}" data-a="tend-hombro" data-v="${t.id}">
       <div class="tend-main"><span class="tend-name">${t.label}</span><span class="tend-hint">${t.hint}</span></div>
-      <div class="tend-fields" style="display:${sel?'flex':'none'}">
-        <div class="tend-field-wrap">
-          <label class="tend-lbl">Sustancia</label>
-          <input type="text" class="tend-sust" data-tend="${t.id}" placeholder="p.ej. bupivacaína + betametasona" onclick="event.stopPropagation()" oninput="regenMacro()">
-        </div>
-        <div class="tend-field-wrap tend-vol-wrap">
-          <label class="tend-lbl">mL</label>
-          <input type="number" class="tend-vol" data-tend="${t.id}" placeholder="—" step="0.5" onclick="event.stopPropagation()" oninput="regenMacro()">
-        </div>
+      <div class="tend-vol-inline" style="display:${sel?'flex':'none'}">
+        <label class="tend-lbl">mL</label>
+        <input type="number" class="tend-vol" data-tend="${t.id}" placeholder="—" step="0.5" onclick="event.stopPropagation()" oninput="regenMacro()">
       </div>
     </div>`;
   }).join('');
-  return sec('Dianas',`<div class="tend-list">${rows}</div><div class="field-label mt2" style="font-size:10px;color:var(--text2)">Selecciona una diana para introducir la sustancia y el volumen</div>`);
+  return sec('Mezcla infiltrada',`
+    <input type="text" id="tend-mezcla" placeholder="p.ej. bupivacaína 0,25% + betametasona 6mg" oninput="regenMacro()">
+  `)+sec('Dianas',`<div class="tend-list">${rows}</div>`);
 }
 
 function bkNerviosHombro(){
@@ -1738,8 +1734,8 @@ function initHandlers(){
     else if(a==='tend-hombro'){
       if(e.target.tagName==='INPUT'||e.target.tagName==='LABEL')return;
       el.classList.toggle('sel');
-      const fields=el.querySelector('.tend-fields');
-      if(fields) fields.style.display=el.classList.contains('sel')?'flex':'none';
+      const vi=el.querySelector('.tend-vol-inline');
+      if(vi) vi.style.display=el.classList.contains('sel')?'flex':'none';
       if(el.classList.contains('sel'))S.tendones.add(v);
       else S.tendones.delete(v);
       regenMacro();
