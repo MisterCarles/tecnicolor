@@ -377,7 +377,7 @@ const CATEGORIES = [
   {id:'facetas',     name:'Facetas',          icon:'⚡', desc:'Bloqueo · Radiofrecuencia — Cervical · Torácico · Lumbar'},
   {id:'epidural',    name:'Epidural',        icon:'💉', desc:'Interlaminar · Transforaminal · Caudal · Parasagital'},
   {id:'botox',       name:'Botox',            icon:'💊', desc:'Próximamente',disabled:true},
-  {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Próximamente',disabled:true},
+  {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Supraescapular · Circunflejo · Ramos capsulares · Intraarticular'},
   {id:'rodilla',     name:'Rodilla',          icon:'🦵', desc:'Próximamente',disabled:true},
   {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Próximamente',disabled:true},
   {id:'estimuladores',name:'Estimuladores',   icon:'🔋', desc:'Próximamente',disabled:true},
@@ -507,11 +507,14 @@ const TECHNIQUES = [
   {id:'facetas-bloqueo', name:'Bloqueo facetario',    cat:'facetas', icon:'💉', desc:'Inyección diagnóstica de ramos mediales', aliases:['bloqueo facetas','bloqueo facetario','ramos mediales','bloqueo diagnostico facetas','facetas bloqueo','facetas cervical','bloqueo facetas cervical','facetas toracicas','bloqueo toracico','facetas lumbares','bloqueo lumbar']},
   {id:'facetas-rf',      name:'Radiofrecuencia',      cat:'facetas', icon:'⚡', desc:'Lesión térmica o pulsada de ramos mediales', aliases:['radiofrecuencia facetas','rf facetas','rf ramos mediales','radiofrecuencia cervical','rf cervical','radiofrecuencia lumbar','rf lumbar','rf toracico']},
   {id:'botox',                   name:'Botox',                           cat:'botox',       aliases:['botox','toxina botulinica','botulínica','bótox']},
-  {id:'hombro-intraarticular',   name:'Hombro intraarticular',           cat:'hombro',      aliases:['hombro intraarticular','glenohumeral']},
-  {id:'hombro-periarticular',    name:'Hombro periarticular',            cat:'hombro',      aliases:['hombro periarticular','subacromio','subdeltoideo']},
-  {id:'hombro-rf-supra',         name:'RF pulsada supraspinoso',         cat:'hombro',      aliases:['supra','supraspinoso','rf supra','rf pulsada hombro']},
-  {id:'hombro-capsular-bloqueo', name:'Bloqueo ramas capsulares hombro', cat:'hombro',      aliases:['ramas capsulares hombro','bloqueo capsular']},
-  {id:'hombro-capsular-rf',      name:'RF ramas capsulares hombro',      cat:'hombro',      aliases:['rf capsular hombro','radiofrecuencia capsular']},
+  {id:'hombro-supra-bloqueo',    name:'Bloqueo supraescapular', cat:'hombro', desc:'Eco · escotadura supraescapular', aliases:['bloqueo supraescapular','nervio supraescapular','supra bloqueo','supraescapular']},
+  {id:'hombro-supra-rf',         name:'RF supraescapular',      cat:'hombro', desc:'RF pulsada · nervio supraescapular', aliases:['rf supraescapular','radiofrecuencia supraescapular','rf supra','supra rf']},
+  {id:'hombro-circunflejo-bloqueo', name:'Bloqueo circunflejo', cat:'hombro', desc:'Eco · espacio cuadrilátero', aliases:['bloqueo circunflejo','nervio circunflejo','axilar','nervio axilar','circunflejo']},
+  {id:'hombro-circunflejo-rf',   name:'RF circunflejo',         cat:'hombro', desc:'RF pulsada · nervio circunflejo', aliases:['rf circunflejo','radiofrecuencia circunflejo','rf axilar']},
+  {id:'hombro-capsular-bloqueo', name:'Bloqueo ramos capsulares', cat:'hombro', desc:'Eco · ramos terminales articulares', aliases:['ramas capsulares hombro','bloqueo capsular','ramos terminales hombro','capsular bloqueo']},
+  {id:'hombro-capsular-rf',      name:'RF ramos capsulares',    cat:'hombro', desc:'RF pulsada · ramos articulares', aliases:['rf capsular hombro','radiofrecuencia capsular','rf ramos terminales']},
+  {id:'hombro-intraarticular',   name:'Intraarticular',         cat:'hombro', desc:'Eco · glenohumeral', aliases:['hombro intraarticular','glenohumeral','intraarticular hombro']},
+  {id:'hombro-periarticular',    name:'Periarticular',          cat:'hombro', desc:'Eco · subacromio-subdeltoidea', aliases:['hombro periarticular','subacromio','subdeltoideo','bursitis']},
   {id:'rodilla-intraarticular',  name:'Rodilla intraarticular',          cat:'rodilla',     aliases:['rodilla intraarticular','knee','rodilla']},
   {id:'rodilla-perirodilla',     name:'Perirodilla',                     cat:'rodilla',     aliases:['perirodilla','rodilla periarticular']},
   {id:'sacroiliaca-bloqueo',     name:'Infiltración sacroilíaca',        cat:'sacroiliaca', aliases:['sacroiliaca','sacroilíaca','si','infiltracion sacroiliaca']},
@@ -661,7 +664,7 @@ function showCat(catId){
   document.getElementById('tech-cat-icon').textContent=cat.icon+' ';
   document.getElementById('tech-cat-name').textContent=cat.name;
   const techs=TECHNIQUES.filter(t=>t.cat===catId);
-  const big=catId==='facetas'||catId==='epidural';
+  const big=catId==='facetas'||catId==='epidural'||catId==='hombro';
   document.getElementById('tech-list').innerHTML=big
     ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.img?`<img class="fc-img" src="${t.img}" alt="${t.name}">`:t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
     :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
@@ -931,6 +934,18 @@ function genMacro(id){
       t+=` Se informa al paciente del período de latencia esperado de 7-14 días hasta el inicio del efecto clínico. ${fin}`;
       return t;
     }
+    case 'hombro-supra-bloqueo':
+      return `${opening} ${atb}Bajo ${img}, se procede al bloqueo del nervio supraescapular${lat?` ${lat}`:''}. Con el paciente sentado o en decúbito lateral, se localiza la escotadura supraescapular mediante ecografía. Previa anestesia local de piel, se introduce aguja en dirección a la escotadura supraescapular, identificando el nervio en el surco junto al ligamento transverso superior de la escápula. Se confirma posición perineural y se administra ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
+    case 'hombro-supra-rf':
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio supraescapular${lat?` ${lat}`:''}. Se localiza la escotadura supraescapular ecográficamente y se posiciona ${electrodo} en contacto con el nervio, respetando el ligamento transverso superior de la escápula. ${tests||'Test de estimulación sensitiva con parestesias en territorio concordante glenohumeral. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams}. `:''}${fin}`;
+    case 'hombro-circunflejo-bloqueo':
+      return `${opening} ${atb}Bajo ${img}, se procede al bloqueo del nervio circunflejo (axilar)${lat?` ${lat}`:''}. Se identifica el espacio cuadrilátero posterior mediante ecografía, localizando el nervio circunflejo en su trayecto junto a la arteria circunfleja humeral posterior. Previa anestesia local, se introduce aguja hasta posición perineural. Se confirma localización y se administra ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
+    case 'hombro-circunflejo-rf':
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} del nervio circunflejo (axilar)${lat?` ${lat}`:''}. Se identifica el espacio cuadrilátero ecográficamente y se localiza el nervio circunflejo acompañando a la arteria circunfleja humeral posterior. Se posiciona ${electrodo} en contacto perineural. ${tests||'Test de estimulación sensitiva con parestesias en territorio del deltoides y cápsula glenohumeral posteroinferior. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams}. `:''}${fin}`;
+    case 'hombro-capsular-bloqueo':
+      return `${opening} ${atb}Bajo ${img}, se realiza bloqueo de ramos capsulares del hombro${lat?` ${lat}`:''}. Se localizan los ramos articulares terminales del nervio supraescapular (receso posterosuperior), del nervio circunflejo (receso posteroinferior) y del nervio subescapular (receso anterior) mediante ecografía. Se procede al bloqueo con ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
+    case 'hombro-capsular-rf':
+      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():' pulsada'} de ramos capsulares del hombro${lat?` ${lat}`:''}. Se identifican y se posiciona ${electrodo} sobre los ramos articulares terminales de los nervios supraescapular, circunflejo y subescapular en sus respectivos recesos capsulares. ${tests||'Tests de estimulación sensitiva con respuesta concordante en cada punto. '}${rfparams?`Se procede a la lesión por radiofrecuencia ${rfparams}. `:''}${fin}`;
     case 'hombro-intraarticular':
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular glenohumeral${lat?` ${lat}`:''}. Se localiza el espacio articular y se confirma posición intraarticular correcta. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'hombro-periarticular':
@@ -1292,9 +1307,10 @@ function buildForm(id){
             <span class="tag" data-a="tg1-veh">Anestésico local</span>
           </div></div>`)+
         BKRES+BKNOTAS;
-    case 'hombro-intraarticular':case 'hombro-periarticular':case 'hombro-capsular-bloqueo':
+    case 'hombro-supra-bloqueo':case 'hombro-circunflejo-bloqueo':case 'hombro-capsular-bloqueo':
+    case 'hombro-intraarticular':case 'hombro-periarticular':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
-    case 'hombro-rf-supra':case 'hombro-capsular-rf':
+    case 'hombro-supra-rf':case 'hombro-circunflejo-rf':case 'hombro-capsular-rf':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKNOTAS;
     case 'rodilla-intraarticular':case 'rodilla-perirodilla':
       return H+BKDATOS+BKMACRO+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKNOTAS;
