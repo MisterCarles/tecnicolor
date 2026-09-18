@@ -46,7 +46,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-btn:hover{background:var(--border);color:var(--text)}
 
 /* ── Screens ────────────────────────────────────────────── */
-.screen{max-width:680px;margin:0 auto;padding:24px 16px 100px}
+.screen{max-width:920px;margin:0 auto;padding:24px 24px 100px}
 
 /* ── Selector ───────────────────────────────────────────── */
 .search-wrap{position:relative;margin-bottom:24px}
@@ -82,6 +82,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cie10-badge-code{font-size:12px;font-weight:700;color:#3b82f6;font-family:monospace}
 .cie10-badge-desc{font-size:13px;color:var(--text)}
 .cie10-clear{background:none;border:none;color:var(--text2);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+/* ── Cryo section ───────────────────────────────────────── */
+.section.cryo-section{border-color:rgba(56,189,248,.35);background:linear-gradient(135deg,rgba(14,165,233,.07) 0%,rgba(56,189,248,.04) 100%);position:relative;overflow:visible}
+.section.cryo-section .section-header{background:linear-gradient(90deg,rgba(14,165,233,.18) 0%,rgba(56,189,248,.08) 100%);border-bottom-color:rgba(56,189,248,.25)}
+.section.cryo-section .section-title{color:#38bdf8}
+.section.cryo-section .section-num{background:#0ea5e9}
+.section.cryo-section::before{content:'❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️';position:absolute;top:6px;right:10px;font-size:11px;opacity:.22;letter-spacing:3px;pointer-events:none;white-space:nowrap;overflow:hidden;max-width:60%}
+.section.cryo-section input{border-color:rgba(56,189,248,.3)!important}
+.section.cryo-section input:focus{border-color:#38bdf8!important;box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+html.light .section.cryo-section{border-color:rgba(14,165,233,.4);background:linear-gradient(135deg,rgba(14,165,233,.06) 0%,rgba(56,189,248,.03) 100%)}
+/* ── RF section ─────────────────────────────────────────── */
+.section.rf-section{border-color:rgba(251,146,60,.35);background:linear-gradient(135deg,rgba(234,88,12,.07) 0%,rgba(251,146,60,.04) 100%)}
+.section.rf-section .section-header{background:linear-gradient(90deg,rgba(234,88,12,.18) 0%,rgba(251,146,60,.08) 100%);border-bottom-color:rgba(251,146,60,.25)}
+.section.rf-section .section-title{color:#fb923c}
+.section.rf-section .section-num{background:#ea580c}
+.section.rf-section::before{content:'🔥 🔥 🔥 🔥 🔥 🔥 🔥 🔥 🔥';position:absolute;top:6px;right:10px;font-size:11px;opacity:.22;letter-spacing:3px;pointer-events:none;white-space:nowrap;overflow:hidden;max-width:60%}
+html.light .section.rf-section{border-color:rgba(234,88,12,.35);background:linear-gradient(135deg,rgba(234,88,12,.05) 0%,rgba(251,146,60,.03) 100%)}
+
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .cat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 14px;cursor:pointer;text-align:left;transition:all .15s}
 .cat-card:hover:not(.disabled){border-color:var(--accent);background:rgba(155,109,255,.08)}
@@ -280,7 +297,7 @@ textarea::placeholder{color:var(--text2)}
 
 /* ── Modal ──────────────────────────────────────────────── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:920px;max-height:92vh;display:flex;flex-direction:column}
 .modal-head{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .modal-title{font-size:14px;font-weight:700}
 .modal-body{flex:1;overflow-y:auto;padding:20px}
@@ -1256,7 +1273,7 @@ function refreshSpineDots(){
 // ════════════════════════════════════════════════════════════
 // FORM BLOCKS
 // ════════════════════════════════════════════════════════════
-const sec=(title,body)=>`<div class="section"><div class="section-header"><div class="section-num">·</div><div class="section-title">${title}</div></div><div class="section-body">${body}</div></div>`;
+const sec=(title,body,cls='')=>`<div class="section${cls?' '+cls:''}">${cls?'':''}<div class="section-header"><div class="section-num">·</div><div class="section-title">${title}</div></div><div class="section-body">${body}</div></div>`;
 
 const BKDATOS=sec('Procedimiento',`
   <div class="field-label">Posición del paciente</div>
@@ -1338,7 +1355,7 @@ const BKRF=sec('Radiofrecuencia',`
   <div class="row mt1">
     <div class="field"><div class="field-label">Sensitivo (V)</div><input type="number" id="rf-sens" value="0.5" step="0.1" oninput="regenMacro()"></div>
     <div class="field"><div class="field-label">Motor (V)</div><input type="number" id="rf-motor" value="1" step="0.1" oninput="regenMacro()"></div>
-  </div>`);
+  </div>`,'rf-section');
 
 function bkCryo(){
   return sec('Crioablación',`
@@ -1349,7 +1366,7 @@ function bkCryo(){
   <div class="row mt2">
     <div class="field"><div class="field-label">Pausa descongelación (s)</div><input type="number" id="cryo-pausa" value="${S.cryoPausa}" min="0" max="300" oninput="S.cryoPausa=+this.value;regenMacro()"></div>
     <div class="field"><div class="field-label">Temperatura (°C)</div><input type="number" id="cryo-temp" value="${S.cryoTemp}" max="0" oninput="S.cryoTemp=+this.value;regenMacro()"></div>
-  </div>`);
+  </div>`,'cryo-section');
 }
 
 const BKALCORT_EPI=sec('Fármacos',`
@@ -1858,9 +1875,9 @@ function initHandlers(){
       S.capsularMod=v;
       // Rebuild the whole form so RF/cryo/bloqueo blocks swap correctly
       const fc=document.getElementById('form-container');
-      if(fc){fc.innerHTML=buildForm('hombro-capsular');initHandlers();
-        // Restore imagen default
-        S.imagen=['ecografia'];
+      if(fc){
+        fc.innerHTML=buildForm('hombro-capsular');
+        // Restore visual defaults (no initHandlers — listener is already delegated on form-container)
         document.querySelector('[data-a="imagen"][data-v="ecografia"]')?.classList.add('sel');
         document.querySelector('[data-a="ubicacion"][data-v="qx"]')?.classList.add('sel');
       }
