@@ -617,6 +617,7 @@ const S = {
   aguja:null, alPiel:null, alPrinc:null, alVehiculo:null,
   ramasHombro: new Set(), rfMode:null,
   tendones: new Set(), nerviosHombro: new Set(), capsularMod:null, hombroMod:null, sustIntra:null, prpSistema:null,
+  cryoTandas:2, cryoTiempo:3, cryoPausa:30, cryoTemp:-78,
   alHombro:null, alHombroConc:null,
 };
 
@@ -733,6 +734,7 @@ function selectTechnique(id){
   Object.assign(S,{ubicacion:null,posicion:null,lat:null,niveles:[],imagen:[],alList:[],cort:null,rfTipo:null,rfLong:null,rfTip:null,resultado:null,eva:null,sust:null,facetReg:[],aguja:null,alPiel:null,alPrinc:null,alVehiculo:null,rfMode:null});
   S.ramasHombro=new Set(); S.tendones=new Set(); S.nerviosHombro=new Set();
   S.capsularMod=null; S.hombroMod=null; S.sustIntra=null; S.prpSistema=null;
+  S.cryoTandas=2; S.cryoTiempo=3; S.cryoPausa=30; S.cryoTemp=-78;
   S.alHombro=null; S.alHombroConc=null;
   S.branches=new Set();
   S.ubicacion='qx';
@@ -1109,7 +1111,9 @@ function genMacro(id){
       if(isBlq){
         t+=`Se deposita anestésico local en cada receso capsular${volS?` (${volS} mL por punto)`:''}. `;
       } else if(isCryo){
+        const tandas=S.cryoTandas||2, tiempo=S.cryoTiempo||3, pausa=S.cryoPausa||30, temp=S.cryoTemp||-78;
         t+=`Se posiciona la criosonda sobre cada diana en contacto pericapsular. `;
+        t+=`Se realizan ${tandas} tanda${tandas!==1?'s':''} de crioablación de ${tiempo} minuto${tiempo!==1?'s':''} a ${temp} °C, con pausa de descongelación de ${pausa} segundos entre tandas. `;
         t+=tests||'Se verifican parestesias concordantes en territorio glenohumeral (test sensitivo) y ausencia de contracción de deltoides ni manguito rotador (test motor) previo al ciclo de congelación. ';
       } else {
         t+=`Procedimiento realizado en modalidad ${modo}. Se posiciona ${electrodo} sobre cada diana en contacto pericapsular. `;
@@ -1335,6 +1339,18 @@ const BKRF=sec('Radiofrecuencia',`
     <div class="field"><div class="field-label">Sensitivo (V)</div><input type="number" id="rf-sens" value="0.5" step="0.1" oninput="regenMacro()"></div>
     <div class="field"><div class="field-label">Motor (V)</div><input type="number" id="rf-motor" value="1" step="0.1" oninput="regenMacro()"></div>
   </div>`);
+
+function bkCryo(){
+  return sec('Crioablación',`
+  <div class="row">
+    <div class="field"><div class="field-label">Tandas</div><input type="number" id="cryo-tandas" value="${S.cryoTandas}" min="1" max="10" oninput="S.cryoTandas=+this.value;regenMacro()"></div>
+    <div class="field"><div class="field-label">Tiempo/tanda (min)</div><input type="number" id="cryo-tiempo" value="${S.cryoTiempo}" min="1" max="30" oninput="S.cryoTiempo=+this.value;regenMacro()"></div>
+  </div>
+  <div class="row mt2">
+    <div class="field"><div class="field-label">Pausa descongelación (s)</div><input type="number" id="cryo-pausa" value="${S.cryoPausa}" min="0" max="300" oninput="S.cryoPausa=+this.value;regenMacro()"></div>
+    <div class="field"><div class="field-label">Temperatura (°C)</div><input type="number" id="cryo-temp" value="${S.cryoTemp}" max="0" oninput="S.cryoTemp=+this.value;regenMacro()"></div>
+  </div>`);
+}
 
 const BKALCORT_EPI=sec('Fármacos',`
   <div class="sub-label">Piel <span class="sub-label-opt">(AL superficial)</span></div>
@@ -1667,9 +1683,13 @@ function buildForm(id){
       return H+BKDATOS+sec('Localización',bkLat())+bkTendinosHombro()+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'hombro-nervios':
       return H+BKDATOS+sec('Localización',bkLat())+sec('Nervios y técnica',bkNerviosHombro())+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
-    case 'hombro-capsular':
-      return H+BKDATOS+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()+
-        sec('Modo electrodo',bkRfModo())+BKRF+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
+    case 'hombro-capsular':{
+      const isCryo=(S.capsularMod||'rf-termica')==='crioablacion';
+      const isBlq=(S.capsularMod||'rf-termica')==='bloqueo';
+      const rfBlock=isCryo?bkCryo():(isBlq?'':(sec('Modo electrodo',bkRfModo())+`<div id="blk-capsular-rf">${BKRF}</div>`));
+      const sustBlock=isBlq||isCryo?'':`<div id="blk-capsular-sust">`+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+`</div>`;
+      return H+BKDATOS+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()+rfBlock+sustBlock+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
+    }
     case 'rodilla-intraarticular':case 'rodilla-perirodilla':
       return H+BKDATOS+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'sacroiliaca-bloqueo':
@@ -1836,25 +1856,23 @@ function initHandlers(){
     }
     else if(a==='capsular-mod'){
       S.capsularMod=v;
-      el.closest('.grid-2').querySelectorAll('[data-a="capsular-mod"]').forEach(b=>b.classList.remove('sel'));
-      el.classList.add('sel');
-      const showRF=(v==='rf-termica'||v==='rf-pulsada');
-      const rfSec=document.getElementById('blk-capsular-rf');
-      if(rfSec) rfSec.style.display=showRF?'':'none';
+      // Rebuild the whole form so RF/cryo/bloqueo blocks swap correctly
+      const fc=document.getElementById('form-container');
+      if(fc){fc.innerHTML=buildForm('hombro-capsular');initHandlers();
+        // Restore imagen default
+        S.imagen=['ecografia'];
+        document.querySelector('[data-a="imagen"][data-v="ecografia"]')?.classList.add('sel');
+        document.querySelector('[data-a="ubicacion"][data-v="qx"]')?.classList.add('sel');
+      }
       if(v==='rf-pulsada'){
         S.rfTipo='Pulsada';
-        document.querySelector('[data-a="rftype"][data-v="Pulsada"]')?.classList.add('sel');
-        document.querySelector('[data-a="rftype"][data-v="Térmica"]')?.classList.remove('sel');
         const p1=document.getElementById('rf-p1');if(p1)p1.value='45';
         const t=document.getElementById('rf-tiempo');if(t)t.value='120';
         document.getElementById('blk-tandas')?.classList.remove('hidden');
       } else if(v==='rf-termica'){
         S.rfTipo='Térmica';
-        document.querySelector('[data-a="rftype"][data-v="Térmica"]')?.classList.add('sel');
-        document.querySelector('[data-a="rftype"][data-v="Pulsada"]')?.classList.remove('sel');
         const p1=document.getElementById('rf-p1');if(p1)p1.value='80';
         const t=document.getElementById('rf-tiempo');if(t)t.value='60';
-        document.getElementById('blk-tandas')?.classList.add('hidden');
       } else {
         S.rfTipo=null;
       }
