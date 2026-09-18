@@ -24,6 +24,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #splash.fade-out{opacity:0;pointer-events:none}
 .sp-portada{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;opacity:0;transition:opacity 1s ease .1s}
 #splash.ready .sp-portada{opacity:1}
+.sp-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease .1s}
+#splash.ready .sp-video{opacity:1}
 .sp-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.5) 100%)}
 .sp-logo{position:relative;z-index:2;height:110px;width:auto;margin-bottom:44px;opacity:0;transition:opacity .9s ease .2s;filter:drop-shadow(0 2px 16px rgba(0,0,0,.6))}
 #splash.ready .sp-logo{opacity:1}
@@ -82,6 +84,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cie10-badge-code{font-size:12px;font-weight:700;color:#3b82f6;font-family:monospace}
 .cie10-badge-desc{font-size:13px;color:var(--text)}
 .cie10-clear{background:none;border:none;color:var(--text2);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+/* ── Sacro diagram ──────────────────────────────────────── */
+.si-diagram{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.si-col-hdr{display:grid;grid-template-columns:1fr 120px 1fr;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;padding:0 0 6px;text-align:center}
+.si-col-hdr span:first-child{text-align:left}
+.si-col-hdr span:last-child{text-align:right}
+.si-row{display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;padding:3px 0}
+.si-center{text-align:center;font-size:12px;font-weight:600;color:var(--text2);padding:0 8px;cursor:pointer;user-select:none;transition:color .12s}
+.si-center:hover{color:var(--text)}
+.si-center span{font-size:11px;font-weight:400;color:var(--text2)}
+.si-side{display:flex;align-items:center}
+.si-side.r{justify-content:flex-end}
+.si-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .12s;flex-shrink:0}
+.si-dot:hover{border-color:var(--accent)}
+.si-dot.sel{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 3px rgba(155,109,255,.25)}
 /* ── Cryo section ───────────────────────────────────────── */
 .section.cryo-section{border-color:rgba(56,189,248,.35);background:linear-gradient(135deg,rgba(14,165,233,.07) 0%,rgba(56,189,248,.04) 100%);position:relative;overflow:visible}
 .section.cryo-section .section-header{background:linear-gradient(90deg,rgba(14,165,233,.18) 0%,rgba(56,189,248,.08) 100%);border-bottom-color:rgba(56,189,248,.25)}
@@ -329,6 +345,7 @@ textarea::placeholder{color:var(--text2)}
 <!-- SPLASH -->
 <div id="splash" onclick="dismissSplash()">
   <img id="sp-portada" class="sp-portada" src="" alt="" style="display:none">
+  <video id="sp-video" class="sp-video" src="splash.mp4" autoplay muted loop playsinline style="display:none"></video>
   <div class="sp-overlay"></div>
   <img src="logo.png" alt="Tecnicolor" class="sp-logo">
   <div class="sp-q" id="sq"></div>
@@ -444,7 +461,7 @@ const CATEGORIES = [
   {id:'botox',       name:'Botox',            icon:'💊', desc:'Próximamente',disabled:true},
   {id:'hombro',      name:'Hombro',           icon:'🦴', desc:'Intraarticular · Tendones · Supraescapular · Ramos capsulares'},
   {id:'rodilla',     name:'Rodilla',          icon:'🦵', desc:'Próximamente',disabled:true},
-  {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Próximamente',disabled:true},
+  {id:'sacroiliaca', name:'Sacroilíaca',      icon:'🔴', desc:'Bloqueo · Radiofrecuencia / denervación'},
   {id:'estimuladores',name:'Estimuladores',   icon:'🔋', desc:'Próximamente',disabled:true},
   {id:'simpatico',   name:'Simpático',        icon:'🌡️', desc:'Próximamente',disabled:true},
   {id:'infusiones',  name:'Infusiones',       icon:'💧', desc:'Próximamente',disabled:true},
@@ -578,8 +595,8 @@ const TECHNIQUES = [
   {id:'hombro-capsular',        name:'Ramas capsulares',        cat:'hombro', desc:'RF · crioablación · bloqueo', aliases:['ramas capsulares hombro','rf capsular','crioablacion hombro','bloqueo capsular','ramos terminales hombro']},
   {id:'rodilla-intraarticular',  name:'Rodilla intraarticular',          cat:'rodilla',     aliases:['rodilla intraarticular','knee','rodilla']},
   {id:'rodilla-perirodilla',     name:'Perirodilla',                     cat:'rodilla',     aliases:['perirodilla','rodilla periarticular']},
-  {id:'sacroiliaca-bloqueo',     name:'Infiltración sacroilíaca',        cat:'sacroiliaca', aliases:['sacroiliaca','sacroilíaca','si','infiltracion sacroiliaca']},
-  {id:'sacroiliaca-rf',          name:'RF sacroilíaca',                  cat:'sacroiliaca', aliases:['rf sacroiliaca','radiofrecuencia sacroiliaca']},
+  {id:'sacroiliaca-bloqueo', name:'Bloqueo sacroilíaco',           cat:'sacroiliaca', icon:'💉', desc:'Intraarticular · Cápsula posterior · Mixto', aliases:['sacroiliaca bloqueo','bloqueo sacroiliaca','infiltracion sacroiliaca','sacroiliaca','si bloqueo']},
+  {id:'sacroiliaca-rf',     name:'Radiofrecuencia sacroilíaca',   cat:'sacroiliaca', icon:'⚡', desc:'Empalizada · Simplicity · Cooled RF', aliases:['rf sacroiliaca','radiofrecuencia sacroiliaca','denervacion sacroiliaca','simplicity','empalizada sacro','cooled rf sacro']},
 ];
 
 // ── Spine diagram data ──────────────────────────────────────
@@ -635,6 +652,17 @@ const S = {
   ramasHombro: new Set(), rfMode:null,
   tendones: new Set(), nerviosHombro: new Set(), capsularMod:null, hombroMod:null, sustIntra:null, prpSistema:null,
   cryoTandas:2, cryoTiempo:3, cryoPausa:30, cryoTemp:-78,
+  siBlqTipo:null, siGuia:null, siContraste:false, siContrasteVol:null, siContrastePatron:null,
+  siAgujaTipo:null, siAgujaG:null, siAgujaLong:null,
+  siAL:null, siALConc:null, siALVol:null, siCort:false, siCortFarm:null, siCortDosis:null,
+  siEVApre:null, siEVApost:null, siMejoria:null, siDuracion:null, siResultadoBlq:null,
+  siRfTecnica:null, siRfNiveles:new Set(),
+  siRfMod:null, siRfTemp:null, siRfTiempo:null, siRfLesiones:null, siRfCiclos:null,
+  siSimplicityDev:null, siRfElecTipo:null, siRfElecG:null, siRfElecLong:null, siRfElecPunta:null, siRfElecN:null,
+  siTestSens:null, siTestSensV:null, siTestMot:null, siTestMotV:null, siTestMotRes:null,
+  siALrf:false, siALrfFarm:null, siALrfConc:null, siALrfVol:null,
+  siBlqPrevio:null, siBlqPrevioMejoria:null, siBlqPrevioDur:null,
+  siDefNeurol:false, siResultado:null,
   alHombro:null, alHombroConc:null,
 };
 
@@ -646,7 +674,9 @@ function initSplash(){
   const item=QUOTES[Math.floor(Math.random()*QUOTES.length)];
   document.getElementById('sq').textContent=`"${item.q}"`;
   document.getElementById('sa').textContent=`— ${item.a}`;
-  if(PORTADAS_N>0){
+  const vid=document.getElementById('sp-video');
+  if(vid){vid.style.display='block';vid.play().catch(()=>{});}
+  else if(PORTADAS_N>0){
     const n=Math.floor(Math.random()*PORTADAS_N)+1;
     const img=document.getElementById('sp-portada');
     img.src=`portadas/portada${n}.png`;
@@ -730,7 +760,7 @@ function showCat(catId){
   document.getElementById('tech-cat-icon').textContent=cat.icon+' ';
   document.getElementById('tech-cat-name').textContent=cat.name;
   const techs=TECHNIQUES.filter(t=>t.cat===catId);
-  const big=catId==='facetas'||catId==='epidural'||catId==='hombro';
+  const big=catId==='facetas'||catId==='epidural'||catId==='hombro'||catId==='sacroiliaca';
   document.getElementById('tech-list').innerHTML=big
     ?`<div class="faceta-choice">${techs.map(t=>`<button class="faceta-card" onclick="selectTechnique('${t.id}')">${t.img?`<img class="fc-img" src="${t.img}" alt="${t.name}">`:t.svg?t.svg:`<span class="fc-icon">${t.icon||''}</span>`}<span class="fc-name">${t.name}</span><span class="fc-desc">${t.desc||''}</span></button>`).join('')}</div>`
     :techs.map(t=>`<button class="tech-btn" onclick="selectTechnique('${t.id}')">${t.name}</button>`).join('');
@@ -752,6 +782,17 @@ function selectTechnique(id){
   S.ramasHombro=new Set(); S.tendones=new Set(); S.nerviosHombro=new Set();
   S.capsularMod=null; S.hombroMod=null; S.sustIntra=null; S.prpSistema=null;
   S.cryoTandas=2; S.cryoTiempo=3; S.cryoPausa=30; S.cryoTemp=-78;
+  S.siBlqTipo=null; S.siGuia=null; S.siContraste=false; S.siContrasteVol=null; S.siContrastePatron=null;
+  S.siAgujaTipo=null; S.siAgujaG=null; S.siAgujaLong=null;
+  S.siAL=null; S.siALConc=null; S.siALVol=null; S.siCort=false; S.siCortFarm=null; S.siCortDosis=null;
+  S.siEVApre=null; S.siEVApost=null; S.siMejoria=null; S.siDuracion=null; S.siResultadoBlq=null;
+  S.siRfTecnica=null; S.siRfNiveles=new Set();
+  S.siRfMod=null; S.siRfTemp=null; S.siRfTiempo=null; S.siRfLesiones=null; S.siRfCiclos=null;
+  S.siSimplicityDev=null; S.siRfElecTipo=null; S.siRfElecG=null; S.siRfElecLong=null; S.siRfElecPunta=null; S.siRfElecN=null;
+  S.siTestSens=null; S.siTestSensV=null; S.siTestMot=null; S.siTestMotV=null; S.siTestMotRes=null;
+  S.siALrf=false; S.siALrfFarm=null; S.siALrfConc=null; S.siALrfVol=null;
+  S.siBlqPrevio=null; S.siBlqPrevioMejoria=null; S.siBlqPrevioDur=null;
+  S.siDefNeurol=false; S.siResultado=null;
   S.alHombro=null; S.alHombroConc=null;
   S.branches=new Set();
   S.ubicacion='qx';
@@ -787,6 +828,16 @@ function selectTechnique(id){
       const t=document.getElementById('rf-tiempo');if(t)t.value='120';
       document.querySelector('[data-a="rftype"][data-v="Pulsada"]')?.classList.add('sel');
       document.getElementById('blk-tandas')?.classList.remove('hidden');
+      regenMacro();
+    },0);
+  }
+  if(id.startsWith('sacroiliaca')){
+    S.posicion='decúbito prono'; S.siGuia='eco'; S.siBlqTipo='posterior'; S.siResultado='sin-incidencias';
+    setTimeout(()=>{
+      document.querySelector('[data-a="posicion"][data-v="decúbito prono"]')?.classList.add('sel');
+      document.querySelector('[data-a="si-guia"][data-v="eco"]')?.classList.add('sel');
+      document.querySelector('[data-a="si-blq-tipo"][data-v="posterior"]')?.classList.add('sel');
+      document.querySelector('[data-a="si-resultado"][data-v="sin-incidencias"]')?.classList.add('sel');
       regenMacro();
     },0);
   }
@@ -1143,10 +1194,62 @@ function genMacro(id){
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración intraarticular de rodilla${lat?`, ${lat}`:''}. Se accede al compartimento articular confirmando posición intraarticular de la aguja. Se administra ${S.sust||'la sustancia terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
     case 'rodilla-perirodilla':
       return `${opening} ${atb}Bajo ${img}, se realiza infiltración periarticular de rodilla${lat?`, ${lat}`:''}. Se identifican las estructuras periarticulares diana bajo visión ecográfica y se realizan las infiltraciones según pauta establecida. ${fin}`;
-    case 'sacroiliaca-bloqueo':
-      return `${opening} ${atb}Bajo ${img}, se realiza infiltración de la articulación sacroilíaca${lat?`, ${lat}`:''}. Se localiza la interlínea articular en su tercio inferior y se accede al interior articular. Se confirma posición${contr?` con contraste radiológico, con patrón articular característico`:''}. Se administra ${S.sust||'la mezcla terapéutica'}${gv('sust-vol')?` (${gv('sust-vol')} mL)`:''}. ${fin}`;
-    case 'sacroiliaca-rf':
-      return `${opening} ${atb}Bajo ${img}, se realiza radiofrecuencia${S.rfTipo?' '+S.rfTipo.toLowerCase():''} de la articulación sacroilíaca${lat?`, ${lat}`:''}. Se posicionan ${electrodo} a lo largo de la interlínea sacroilíaca posterior, cubriendo los ramos dorsales S1-S3. ${tests||'Tests de estimulación sensitiva y motora realizados. '}${rfparams?`Se procede a la lesión ${rfparams}. `:''}${fin}`;
+    case 'sacroiliaca-bloqueo':{
+      const siGuiaTxt=S.siGuia==='rx'?'fluoroscópico':S.siGuia==='eco-rx'?'ecográfico y fluoroscópico':'ecográfico';
+      const siLatTxt=S.lat?` ${S.lat}`:'';
+      const siTipoTxt=S.siBlqTipo==='intra'?'intraarticular':S.siBlqTipo==='mixto'?'intraarticular y de cápsula posterior':S.siBlqTipo==='otro'?'':' de cápsula posterior';
+      const siAgujaDesc=[S.siAgujaTipo,S.siAgujaG,S.siAgujaLong].filter(Boolean).join(' ');
+      const siMedic=S.siAL?`${S.siAL}${S.siALConc?' '+S.siALConc:''}${S.siALVol?' ('+S.siALVol+' mL)':''}`:null;
+      const siCortTxt=S.siCort&&S.siCortFarm?`, asociada a ${S.siCortFarm}${S.siCortDosis?' '+S.siCortDosis+' mg':''}`:null;
+      let t=`${opening} ${atb}Paciente en ${S.posicion||'decúbito prono'}, bajo medidas de asepsia y antisepsia. `;
+      t+=`Bajo control ${siGuiaTxt} se identifica la articulación sacroilíaca${siLatTxt}. `;
+      if(siAgujaDesc) t+=`Previa anestesia local, se posiciona aguja ${siAgujaDesc} y se realiza bloqueo${siTipoTxt} de la articulación sacroilíaca. `;
+      else t+=`Previa anestesia local, se realiza bloqueo${siTipoTxt} de la articulación sacroilíaca. `;
+      if(S.siContraste) t+=`Se administra contraste radioopaco (${S.siContrasteVol?S.siContrasteVol+' mL':''}) comprobándose ${S.siContrastePatron===false?'distribución no óptima':'adecuada distribución y ausencia de captación vascular'}. `;
+      if(siMedic) t+=`Se administra ${siMedic}${siCortTxt||''}. `;
+      t+=`Procedimiento bien tolerado y sin incidencias. `;
+      if(S.siEVApre!=null) t+=`EVA previa: ${S.siEVApre}/10. `;
+      if(S.siEVApost!=null) t+=`EVA posterior: ${S.siEVApost}/10. `;
+      if(S.siMejoria!=null) t+=`El paciente refiere una mejoría aproximada del ${S.siMejoria}% respecto a su dolor habitual. `;
+      if(S.siResultadoBlq) t+=`Resultado del bloqueo: ${S.siResultadoBlq}. `;
+      return t.trim();
+    }
+    case 'sacroiliaca-rf':{
+      const siGuiaTxt=S.siGuia==='eco'?'ecográfico':S.siGuia==='eco-rx'?'ecográfico y fluoroscópico':'fluoroscópico';
+      const siLatTxt=S.lat?` ${S.lat}`:'';
+      const siNiveles=natSINiveles();
+      const tec=S.siRfTecnica||'empalizada';
+      const rfTemp=S.siRfTemp||80, rfT=S.siRfTiempo||90, rfL=S.siRfLesiones;
+      const alrfTxt=S.siALrf&&S.siALrfFarm?`Previa anestesia local con ${S.siALrfFarm}${S.siALrfConc?' '+S.siALrfConc:''}${S.siALrfVol?' ('+S.siALrfVol+' mL)':''}. `:'Previa anestesia local. ';
+      let siTests='';
+      if(S.siTestSens==='realizado'||S.siTestMot==='realizado'){
+        const ts=S.siTestSens==='realizado'?`sensitiva${S.siTestSensV?' a '+S.siTestSensV+' V':''}`:'';
+        const tm=S.siTestMot==='realizado'?`motora${S.siTestMotV?' a '+S.siTestMotV+' V':''}`:'';
+        const tparts=[ts,tm].filter(Boolean).join(' y ');
+        const tmres=S.siTestMotRes==='con-respuesta'?'con respuesta motora presente':'sin respuesta motora indeseada';
+        siTests=`Se realizan tests de estimulación ${tparts}, ${tmres}. `;
+      }
+      let t=`${opening} ${atb}Paciente en ${S.posicion||'decúbito prono'}, bajo medidas de asepsia y antisepsia. `;
+      t+=`Bajo control ${siGuiaTxt} se identifican los forámenes sacros posteriores y las referencias anatómicas correspondientes. `;
+      if(tec==='simplicity'){
+        const dev=S.siSimplicityDev==='simplicity-iii'?'Simplicity III':'electrodo multilesión Simplicity';
+        t+=`${alrfTxt}Se posiciona ${dev} en la región sacra${siLatTxt}, confirmando su adecuada posición. `;
+        if(siNiveles) t+=`Se realiza radiofrecuencia de ${siNiveles}. `;
+        else t+=`Se realiza radiofrecuencia de los ramos laterales sacros según protocolo de lesión. `;
+        if(siTests) t+=siTests;
+      } else {
+        t+=`${alrfTxt}Se posicionan electrodos de radiofrecuencia`;
+        if(siNiveles) t+=` para tratamiento de ${siNiveles}`;
+        t+=`${siLatTxt}. `;
+        if(tec==='empalizada') t+=`Se realiza técnica en empalizada (leapfrog), disponiendo los electrodos lateralmente a los forámenes sacros posteriores y realizando lesiones secuenciales y solapadas a lo largo del territorio seleccionado. `;
+        if(siTests) t+=siTests;
+        if(rfL) t+=`Se realizan ${rfL} lesiones mediante radiofrecuencia a ${rfTemp} °C durante ${rfT} segundos por lesión. `;
+        else t+=`Se realiza radiofrecuencia a ${rfTemp} °C durante ${rfT} segundos por lesión. `;
+      }
+      if(S.siBlqPrevio==='si'&&S.siBlqPrevioMejoria) t+=`Bloqueo diagnóstico previo con mejoría del ${S.siBlqPrevioMejoria}%${S.siBlqPrevioDur?', duración '+S.siBlqPrevioDur:''}. `;
+      t+=`Procedimiento bien tolerado y sin incidencias.`;
+      return t.trim();
+    }
     default:return opening;
   }
 }
@@ -1356,6 +1459,275 @@ const BKRF=sec('Radiofrecuencia',`
     <div class="field"><div class="field-label">Sensitivo (V)</div><input type="number" id="rf-sens" value="0.5" step="0.1" oninput="regenMacro()"></div>
     <div class="field"><div class="field-label">Motor (V)</div><input type="number" id="rf-motor" value="1" step="0.1" oninput="regenMacro()"></div>
   </div>`,'rf-section');
+
+// ── Sacroilíaca helpers ──────────────────────────────────
+const SI_NIVELES=[
+  {id:'L5', label:'L5 ramo posterior',  prose:'ramo posterior de L5'},
+  {id:'S1', label:'S1 ramos laterales', prose:'ramos laterales S1'},
+  {id:'S2', label:'S2 ramos laterales', prose:'ramos laterales S2'},
+  {id:'S3', label:'S3 ramos laterales', prose:'ramos laterales S3'},
+  {id:'S4', label:'S4 ramos laterales', prose:'ramos laterales S4'},
+];
+
+function buildSIDiagram(){
+  let html=`<div class="si-diagram">`;
+  html+=`<div class="si-col-hdr"><span>← IZQ</span><span></span><span>DER →</span></div>`;
+  SI_NIVELES.forEach(n=>{
+    const cL=S.siRfNiveles.has(n.id+'-L')?'sel':'';
+    const cR=S.siRfNiveles.has(n.id+'-R')?'sel':'';
+    html+=`<div class="si-row">
+      <div class="si-side"><div class="si-dot ${cL}" data-a="si-nivel" data-side="L" data-v="${n.id}"></div></div>
+      <div class="si-center" onclick="siToggleBilateral('${n.id}')" title="Clic: bilateral">${n.label}<br><span>clic = bilateral</span></div>
+      <div class="si-side r"><div class="si-dot ${cR}" data-a="si-nivel" data-side="R" data-v="${n.id}"></div></div>
+    </div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+
+function siToggleBilateral(id){
+  const kL=id+'-L',kR=id+'-R';
+  const both=S.siRfNiveles.has(kL)&&S.siRfNiveles.has(kR);
+  if(both){S.siRfNiveles.delete(kL);S.siRfNiveles.delete(kR);}
+  else{S.siRfNiveles.add(kL);S.siRfNiveles.add(kR);}
+  refreshSIDots(); regenMacro();
+}
+
+function refreshSIDots(){
+  document.querySelectorAll('[data-a="si-nivel"]').forEach(dot=>{
+    const k=dot.dataset.v+'-'+dot.dataset.side;
+    dot.classList.toggle('sel',S.siRfNiveles.has(k));
+  });
+}
+
+function natSINiveles(){
+  if(!S.siRfNiveles.size)return null;
+  const byLvl={};
+  S.siRfNiveles.forEach(k=>{
+    const [id,side]=k.split('-');
+    if(!byLvl[id])byLvl[id]={L:false,R:false};
+    byLvl[id][side]=true;
+  });
+  const order=['L5','S1','S2','S3','S4'];
+  const parts=order.filter(id=>byLvl[id]).map(id=>{
+    const nv=SI_NIVELES.find(n=>n.id===id);
+    const l=byLvl[id].L, r=byLvl[id].R;
+    const side=l&&r?'bilateral':l?'izquierdo':'derecho';
+    return `${nv.prose} ${side}`;
+  });
+  if(!parts.length)return null;
+  if(parts.length===1)return parts[0];
+  return parts.slice(0,-1).join(', ')+' y '+parts[parts.length-1];
+}
+
+function buildSIBloqueoForm(){
+  const t=S.siBlqTipo||'posterior';
+  const g=S.siGuia||'eco';
+  const showContr=(g==='rx'||g==='eco-rx');
+  const cort=S.siCort;
+  return sec('Tipo de bloqueo',`
+    <div class="grid-2 mt1">
+      <button class="opt${t==='posterior'?' sel':''}" data-a="si-blq-tipo" data-v="posterior"><span class="o-icon">💉</span><span class="o-label">Cápsula posterior</span></button>
+      <button class="opt${t==='intra'?' sel':''}" data-a="si-blq-tipo" data-v="intra"><span class="o-icon">🎯</span><span class="o-label">Intraarticular</span></button>
+      <button class="opt${t==='mixto'?' sel':''}" data-a="si-blq-tipo" data-v="mixto"><span class="o-icon">✳️</span><span class="o-label">Mixto intra+cápsula</span></button>
+      <button class="opt${t==='otro'?' sel':''}" data-a="si-blq-tipo" data-v="otro"><span class="o-icon">·</span><span class="o-label">Otro</span></button>
+    </div>`)
+  +sec('Guía de imagen',`
+    <div class="grid-2 mt1">
+      <button class="opt${g==='eco'?' sel':''}" data-a="si-guia" data-v="eco"><span class="o-icon">📡</span><span class="o-label">Ecografía</span></button>
+      <button class="opt${g==='rx'?' sel':''}" data-a="si-guia" data-v="rx"><span class="o-icon">☢️</span><span class="o-label">Fluoroscopia</span></button>
+      <button class="opt${g==='eco-rx'?' sel':''}" data-a="si-guia" data-v="eco-rx"><span class="o-icon">🔬</span><span class="o-label">Eco + Fluoroscopia</span></button>
+    </div>
+    <div id="blk-si-contr" class="mt2" style="display:${showContr?'':'none'}">
+      <div class="toggle-row" style="padding-top:0"><span class="toggle-label">Contraste radioopaco</span>
+        <label class="toggle"><input type="checkbox" id="chk-si-contr" ${S.siContraste?'checked':''} onchange="S.siContraste=this.checked;tog('blk-si-contr-det',this.checked);regenMacro()"><span class="toggle-slider"></span></label>
+      </div>
+      <div id="blk-si-contr-det" style="display:${S.siContraste?'':'none'}" class="mt2">
+        <div class="row">
+          <div class="field"><div class="field-label">Vol. contraste (mL)</div><input type="number" id="si-contr-vol" value="${S.siContrasteVol||''}" placeholder="mL" step="0.5" oninput="S.siContrasteVol=this.value;regenMacro()"></div>
+          <div class="field"><div class="field-label">Distribución adecuada</div><div class="tags mt1">
+            <span class="nivel${S.siContrastePatron===true?' sel':''}" data-a="si-contr-patron" data-v="si">Sí</span>
+            <span class="nivel${S.siContrastePatron===false?' sel':''}" data-a="si-contr-patron" data-v="no">No</span>
+          </div></div>
+        </div>
+      </div>
+    </div>`)
+  +sec('Aguja',`
+    <div class="sub-label">Tipo</div>
+    <div class="tags mt1">
+      ${['Espinal','Quincke','Chiba','Ecogénica','RF','Otra'].map(t=>`<span class="nivel${S.siAgujaTipo===t?' sel':''}" data-a="si-aguja-tipo" data-v="${t}">${t}</span>`).join('')}
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">Calibre</div><div class="tags mt1">
+        ${['18G','20G','21G','22G','23G','25G'].map(g=>`<span class="nivel${S.siAgujaG===g?' sel':''}" data-a="si-aguja-g" data-v="${g}">${g}</span>`).join('')}
+      </div></div>
+      <div class="field"><div class="field-label">Longitud</div><div class="tags mt1">
+        ${['50mm','80mm','90mm','100mm','120mm','150mm'].map(l=>`<span class="nivel${S.siAgujaLong===l?' sel':''}" data-a="si-aguja-long" data-v="${l}">${l}</span>`).join('')}
+      </div></div>
+    </div>`)
+  +sec('Medicación',`
+    <div class="sub-label">Anestésico local</div>
+    <div class="tags mt1">
+      ${['Mepivacaína','Lidocaína','Bupivacaína','Ropivacaína','Otro'].map(f=>`<span class="nivel${S.siAL===f?' sel':''}" data-a="si-al" data-v="${f}">${f}</span>`).join('')}
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">Concentración</div><input type="text" id="si-al-conc" placeholder="p.ej. 1%" value="${S.siALConc||''}" oninput="S.siALConc=this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Volumen total (mL)</div><input type="number" id="si-al-vol" placeholder="mL" step="0.5" value="${S.siALVol||''}" oninput="S.siALVol=+this.value;regenMacro()"></div>
+    </div>
+    <div class="toggle-row mt2" style="padding-top:0"><span class="toggle-label">Corticoide</span>
+      <label class="toggle"><input type="checkbox" id="chk-si-cort" ${cort?'checked':''} onchange="S.siCort=this.checked;tog('blk-si-cort',this.checked);regenMacro()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="blk-si-cort" style="display:${cort?'':'none'}" class="mt2">
+      <div class="tags mt1">
+        ${['Triamcinolona','Dexametasona','Betametasona','Otro'].map(f=>`<span class="nivel${S.siCortFarm===f?' sel':''}" data-a="si-cort-farm" data-v="${f}">${f}</span>`).join('')}
+      </div>
+      <div class="field mt2"><div class="field-label">Dosis (mg)</div><input type="number" id="si-cort-dosis" placeholder="mg" value="${S.siCortDosis||''}" oninput="S.siCortDosis=this.value;regenMacro()"></div>
+    </div>`)
+  +sec('Valoración',`
+    <div class="row">
+      <div class="field"><div class="field-label">EVA pre (0–10)</div><input type="number" id="si-eva-pre" min="0" max="10" placeholder="0-10" value="${S.siEVApre??''}" oninput="S.siEVApre=+this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">EVA post (0–10)</div><input type="number" id="si-eva-post" min="0" max="10" placeholder="0-10" value="${S.siEVApost??''}" oninput="S.siEVApost=+this.value;regenMacro()"></div>
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">Mejoría (%)</div><input type="number" id="si-mejoria" min="0" max="100" placeholder="%" value="${S.siMejoria??''}" oninput="S.siMejoria=+this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Duración mejoría</div><input type="text" id="si-duracion" placeholder="ej. 4 horas, 2 días..." value="${S.siDuracion||''}" oninput="S.siDuracion=this.value;regenMacro()"></div>
+    </div>
+    <div class="sub-label mt3">Resultado del bloqueo</div>
+    <div class="tags mt1">
+      <span class="nivel${S.siResultadoBlq==='positivo'?' sel':''}" data-a="si-resultado-blq" data-v="positivo">Positivo</span>
+      <span class="nivel${S.siResultadoBlq==='negativo'?' sel':''}" data-a="si-resultado-blq" data-v="negativo">Negativo</span>
+      <span class="nivel${S.siResultadoBlq==='indeterminado'?' sel':''}" data-a="si-resultado-blq" data-v="indeterminado">Indeterminado</span>
+    </div>`);
+}
+
+function buildSIRfForm(){
+  const tec=S.siRfTecnica||'empalizada';
+  const showSimp=tec==='simplicity';
+  const showElec=!showSimp;
+  const alrf=S.siALrf;
+  return sec('Objetivos',`
+    <div class="field-label">Selecciona nivel — clic etiqueta = bilateral</div>
+    <div class="mt2">${buildSIDiagram()}</div>`)
+  +sec('Técnica RF',`
+    <div class="grid-2 mt1">
+      <button class="opt${tec==='empalizada'?' sel':''}" data-a="si-rf-tecnica" data-v="empalizada"><span class="o-icon">📏</span><span class="o-label">Empalizada / Leapfrog</span></button>
+      <button class="opt${tec==='simplicity'?' sel':''}" data-a="si-rf-tecnica" data-v="simplicity"><span class="o-icon">⚡</span><span class="o-label">Simplicity</span></button>
+      <button class="opt${tec==='monopolar'?' sel':''}" data-a="si-rf-tecnica" data-v="monopolar"><span class="o-icon">·</span><span class="o-label">Convencional monopolar</span></button>
+      <button class="opt${tec==='bipolar'?' sel':''}" data-a="si-rf-tecnica" data-v="bipolar"><span class="o-icon">◉</span><span class="o-label">Bipolar</span></button>
+      <button class="opt${tec==='cooled'?' sel':''}" data-a="si-rf-tecnica" data-v="cooled"><span class="o-icon">❄</span><span class="o-label">Cooled RF</span></button>
+      <button class="opt${tec==='otra'?' sel':''}" data-a="si-rf-tecnica" data-v="otra"><span class="o-icon">·</span><span class="o-label">Otra</span></button>
+    </div>`)
+  +`<div id="blk-si-simplicity" style="display:${showSimp?'':'none'}">`
+  +sec('Dispositivo Simplicity',`
+    <div class="tags mt1">
+      <span class="nivel${S.siSimplicityDev==='simplicity-iii'?' sel':''}" data-a="si-simp-dev" data-v="simplicity-iii">Simplicity III</span>
+      <span class="nivel${S.siSimplicityDev==='otro'?' sel':''}" data-a="si-simp-dev" data-v="otro">Otro</span>
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">¿L5 por separado?</div><div class="tags mt1">
+        <span class="nivel${S.siSimplicityDev==='l5-si'?' sel':''}" data-a="si-l5-sep" data-v="si">Sí</span>
+        <span class="nivel${S.siSimplicityDev==='l5-no'?' sel':''}" data-a="si-l5-sep" data-v="no">No</span>
+      </div></div>
+    </div>`)
+  +`</div>`
+  +`<div id="blk-si-elec" style="display:${showElec?'':'none'}">`
+  +sec('Electrodos',`
+    <div class="sub-label">Tipo</div>
+    <div class="tags mt1">
+      ${['RF estándar','RF bipolar','Cooled','Otro'].map(t=>`<span class="nivel${S.siRfElecTipo===t?' sel':''}" data-a="si-elec-tipo" data-v="${t}">${t}</span>`).join('')}
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">Calibre</div><input type="text" id="si-elec-g" placeholder="ej. 20G" value="${S.siRfElecG||''}" oninput="S.siRfElecG=this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Longitud</div><input type="text" id="si-elec-long" placeholder="ej. 100 mm" value="${S.siRfElecLong||''}" oninput="S.siRfElecLong=this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Punta activa</div><div class="tags mt1">
+        ${['5mm','10mm','15mm'].map(p=>`<span class="nivel${S.siRfElecPunta===p?' sel':''}" data-a="si-elec-punta" data-v="${p}">${p}</span>`).join('')}
+      </div></div>
+    </div>
+    <div class="field mt2"><div class="field-label">Nº electrodos</div><input type="number" id="si-elec-n" min="1" value="${S.siRfElecN||''}" placeholder="nº" oninput="S.siRfElecN=+this.value;regenMacro()"></div>`)
+  +`</div>`
+  +sec('Parámetros RF',`
+    <div class="row">
+      <div class="field"><div class="field-label">Modalidad</div><div class="tags mt1">
+        <span class="nivel${(S.siRfMod||'convencional')==='convencional'?' sel':''}" data-a="si-rf-mod" data-v="convencional">Convencional</span>
+        <span class="nivel${S.siRfMod==='cooled'?' sel':''}" data-a="si-rf-mod" data-v="cooled">Cooled</span>
+        <span class="nivel${S.siRfMod==='otra'?' sel':''}" data-a="si-rf-mod" data-v="otra">Otra</span>
+      </div></div>
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">Temperatura (°C)</div><input type="number" id="si-rf-temp" value="${S.siRfTemp||80}" oninput="S.siRfTemp=+this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Tiempo/lesión (s)</div><input type="number" id="si-rf-tiempo" value="${S.siRfTiempo||90}" oninput="S.siRfTiempo=+this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Nº lesiones</div><input type="number" id="si-rf-lesiones" value="${S.siRfLesiones||''}" placeholder="nº" oninput="S.siRfLesiones=+this.value;regenMacro()"></div>
+      <div class="field"><div class="field-label">Nº ciclos (opc.)</div><input type="number" id="si-rf-ciclos" value="${S.siRfCiclos||''}" placeholder="opc." oninput="S.siRfCiclos=+this.value;regenMacro()"></div>
+    </div>`)
+  +sec('Tests estimulación',`
+    <div class="toggle-row" style="padding-top:0"><span class="toggle-label">Realizar tests</span>
+      <label class="toggle"><input type="checkbox" id="chk-si-tests" ${(S.siTestSens||S.siTestMot)?'checked':''} onchange="tog('blk-si-tests',this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="blk-si-tests" style="display:${(S.siTestSens||S.siTestMot)?'':'none'}" class="mt2">
+      <div class="row">
+        <div class="field"><div class="field-label">Test sensitivo</div><div class="tags mt1">
+          <span class="nivel${S.siTestSens==='realizado'?' sel':''}" data-a="si-test-sens" data-v="realizado">Realizado</span>
+          <span class="nivel${S.siTestSens==='no'?' sel':''}" data-a="si-test-sens" data-v="no">No realizado</span>
+        </div></div>
+        <div class="field"><div class="field-label">Voltaje sensitivo (V)</div><input type="number" id="si-test-sens-v" step="0.1" placeholder="V" value="${S.siTestSensV||''}" oninput="S.siTestSensV=this.value;regenMacro()"></div>
+      </div>
+      <div class="row mt2">
+        <div class="field"><div class="field-label">Test motor</div><div class="tags mt1">
+          <span class="nivel${S.siTestMot==='realizado'?' sel':''}" data-a="si-test-mot" data-v="realizado">Realizado</span>
+          <span class="nivel${S.siTestMot==='no'?' sel':''}" data-a="si-test-mot" data-v="no">No realizado</span>
+        </div></div>
+        <div class="field"><div class="field-label">Voltaje motor (V)</div><input type="number" id="si-test-mot-v" step="0.1" placeholder="V" value="${S.siTestMotV||''}" oninput="S.siTestMotV=this.value;regenMacro()"></div>
+      </div>
+      <div class="sub-label mt2">Resultado motor</div>
+      <div class="tags mt1">
+        <span class="nivel${S.siTestMotRes==='sin-respuesta'?' sel':''}" data-a="si-test-mot-res" data-v="sin-respuesta">Sin respuesta indeseada</span>
+        <span class="nivel${S.siTestMotRes==='con-respuesta'?' sel':''}" data-a="si-test-mot-res" data-v="con-respuesta">Respuesta motora presente</span>
+      </div>
+    </div>`)
+  +sec('Anestesia local previa',`
+    <div class="toggle-row" style="padding-top:0"><span class="toggle-label">AL antes de RF</span>
+      <label class="toggle"><input type="checkbox" id="chk-si-alrf" ${alrf?'checked':''} onchange="S.siALrf=this.checked;tog('blk-si-alrf',this.checked);regenMacro()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="blk-si-alrf" style="display:${alrf?'':'none'}" class="mt2">
+      <div class="tags mt1">
+        ${['Mepivacaína','Lidocaína','Bupivacaína','Ropivacaína','Otro'].map(f=>`<span class="nivel${S.siALrfFarm===f?' sel':''}" data-a="si-alrf-farm" data-v="${f}">${f}</span>`).join('')}
+      </div>
+      <div class="row mt2">
+        <div class="field"><div class="field-label">Concentración</div><input type="text" id="si-alrf-conc" placeholder="%" value="${S.siALrfConc||''}" oninput="S.siALrfConc=this.value;regenMacro()"></div>
+        <div class="field"><div class="field-label">Volumen (mL)</div><input type="number" id="si-alrf-vol" step="0.5" placeholder="mL" value="${S.siALrfVol||''}" oninput="S.siALrfVol=this.value;regenMacro()"></div>
+      </div>
+    </div>`)
+  +sec('Bloqueo diagnóstico previo',`
+    <div class="tags mt1">
+      <span class="nivel${S.siBlqPrevio==='si'?' sel':''}" data-a="si-blq-previo" data-v="si">Sí</span>
+      <span class="nivel${S.siBlqPrevio==='no'?' sel':''}" data-a="si-blq-previo" data-v="no">No</span>
+      <span class="nivel${S.siBlqPrevio==='no-consta'?' sel':''}" data-a="si-blq-previo" data-v="no-consta">No consta</span>
+    </div>
+    <div id="blk-si-blq-previo-det" style="display:${S.siBlqPrevio==='si'?'':'none'}" class="mt2">
+      <div class="row">
+        <div class="field"><div class="field-label">Mejoría obtenida (%)</div><input type="number" id="si-blq-prev-mej" min="0" max="100" placeholder="%" value="${S.siBlqPrevioMejoria||''}" oninput="S.siBlqPrevioMejoria=+this.value;regenMacro()"></div>
+        <div class="field"><div class="field-label">Duración</div><input type="text" id="si-blq-prev-dur" placeholder="ej. 3 días" value="${S.siBlqPrevioDur||''}" oninput="S.siBlqPrevioDur=this.value;regenMacro()"></div>
+      </div>
+    </div>`);
+}
+
+function bkSIResultado(){
+  return sec('Resultado y seguridad',`
+    <div class="sub-label">Resultado</div>
+    <div class="tags mt1">
+      <span class="nivel${(S.siResultado||'sin-incidencias')==='sin-incidencias'?' sel':''}" data-a="si-resultado" data-v="sin-incidencias">Sin incidencias</span>
+      <span class="nivel${S.siResultado==='dolor-intra'?' sel':''}" data-a="si-resultado" data-v="dolor-intra">Dolor intraprocedimiento</span>
+      <span class="nivel${S.siResultado==='vasovagal'?' sel':''}" data-a="si-resultado" data-v="vasovagal">Reacción vasovagal</span>
+      <span class="nivel${S.siResultado==='complicacion-menor'?' sel':''}" data-a="si-resultado" data-v="complicacion-menor">Complicación menor</span>
+      <span class="nivel${S.siResultado==='complicacion-mayor'?' sel':''}" data-a="si-resultado" data-v="complicacion-mayor">Complicación mayor</span>
+    </div>
+    <div class="row mt2">
+      <div class="field"><div class="field-label">EVA post (0–10)</div><input type="number" id="si-eva-post2" min="0" max="10" value="${S.siEVApost??''}" placeholder="0-10" oninput="S.siEVApost=+this.value;regenMacro()"></div>
+    </div>
+    <div class="toggle-row mt2" style="padding-top:0"><span class="toggle-label">Déficit neurológico nuevo</span>
+      <label class="toggle"><input type="checkbox" id="chk-si-defneurol" ${S.siDefNeurol?'checked':''} onchange="S.siDefNeurol=this.checked;regenMacro()"><span class="toggle-slider"></span></label>
+    </div>`);
+}
 
 function bkCryo(){
   return sec('Crioablación',`
@@ -1701,18 +2073,25 @@ function buildForm(id){
     case 'hombro-nervios':
       return H+BKDATOS+sec('Localización',bkLat())+sec('Nervios y técnica',bkNerviosHombro())+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'hombro-capsular':{
-      const isCryo=(S.capsularMod||'rf-termica')==='crioablacion';
-      const isBlq=(S.capsularMod||'rf-termica')==='bloqueo';
-      const rfBlock=isCryo?bkCryo():(isBlq?'':(sec('Modo electrodo',bkRfModo())+`<div id="blk-capsular-rf">${BKRF}</div>`));
-      const sustBlock=isBlq||isCryo?'':`<div id="blk-capsular-sust">`+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+`</div>`;
-      return H+BKDATOS+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()+rfBlock+sustBlock+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
+      const m=S.capsularMod||'rf-termica';
+      const showRF=(m==='rf-termica'||m==='rf-pulsada');
+      return H+BKDATOS+sec('Localización',bkLat())+sec('Modalidad',bkCapsularMod())+bkRamasHombro()
+        +`<div id="blk-cryo-params" style="display:${m==='crioablacion'?'':'none'}">`+bkCryo()+`</div>`
+        +`<div id="blk-capsular-rfmode" style="display:${showRF?'':'none'}">`+sec('Modo electrodo',bkRfModo())+`</div>`
+        +`<div id="blk-capsular-rf" style="display:${showRF?'':'none'}">${BKRF}</div>`
+        +`<div id="blk-capsular-sust" style="display:${m==='bloqueo'||m==='crioablacion'?'none':''}">`+sec('Sustancia / volumen',`<div class="row"><div class="field"><div class="field-label">Vol por punto (mL)</div><input type="text" id="sust-vol" placeholder="mL" oninput="regenMacro()"></div></div>`)+`</div>`
+        +BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     }
     case 'rodilla-intraarticular':case 'rodilla-perirodilla':
       return H+BKDATOS+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
     case 'sacroiliaca-bloqueo':
-      return H+BKDATOS+sec('Localización',bkLat())+BKSUST+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())
+        +buildSIBloqueoForm()
+        +bkSIResultado()+BKMACRO+BKNOTAS;
     case 'sacroiliaca-rf':
-      return H+BKDATOS+sec('Localización',bkLat())+BKRF+BKIMAGEN+BKSED+BKRES+BKMACRO+BKNOTAS;
+      return H+BKDATOS+sec('Localización',bkLat())
+        +buildSIRfForm()
+        +bkSIResultado()+BKMACRO+BKNOTAS;
     default:
       return H+'<div class="section"><div class="section-body" style="padding:20px;color:var(--text2)">Formulario en construcción...</div></div>';
   }
@@ -1873,16 +2252,18 @@ function initHandlers(){
     }
     else if(a==='capsular-mod'){
       S.capsularMod=v;
-      // Rebuild the whole form so RF/cryo/bloqueo blocks swap correctly
-      const fc=document.getElementById('form-container');
-      if(fc){
-        fc.innerHTML=buildForm('hombro-capsular');
-        // Restore visual defaults (no initHandlers — listener is already delegated on form-container)
-        document.querySelector('[data-a="imagen"][data-v="ecografia"]')?.classList.add('sel');
-        document.querySelector('[data-a="ubicacion"][data-v="qx"]')?.classList.add('sel');
-      }
+      el.closest('.grid-2').querySelectorAll('[data-a="capsular-mod"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      const showRF=(v==='rf-termica'||v==='rf-pulsada');
+      const showCryo=(v==='crioablacion');
+      document.getElementById('blk-cryo-params').style.display=showCryo?'':'none';
+      document.getElementById('blk-capsular-rfmode').style.display=showRF?'':'none';
+      document.getElementById('blk-capsular-rf').style.display=showRF?'':'none';
+      document.getElementById('blk-capsular-sust').style.display=(v==='bloqueo'||v==='crioablacion')?'none':'';
       if(v==='rf-pulsada'){
         S.rfTipo='Pulsada';
+        document.querySelector('[data-a="rftype"][data-v="Pulsada"]')?.classList.add('sel');
+        document.querySelector('[data-a="rftype"][data-v="Convencional"]')?.classList.remove('sel');
         const p1=document.getElementById('rf-p1');if(p1)p1.value='45';
         const t=document.getElementById('rf-tiempo');if(t)t.value='120';
         document.getElementById('blk-tandas')?.classList.remove('hidden');
@@ -1890,6 +2271,7 @@ function initHandlers(){
         S.rfTipo='Térmica';
         const p1=document.getElementById('rf-p1');if(p1)p1.value='80';
         const t=document.getElementById('rf-tiempo');if(t)t.value='60';
+        document.getElementById('blk-tandas')?.classList.add('hidden');
       } else {
         S.rfTipo=null;
       }
@@ -1979,6 +2361,128 @@ function initHandlers(){
       el.classList.add('sel');
       document.getElementById('blk-sust-alcort')?.classList.toggle('hidden',!['AL + corticoide','Anestésico local'].includes(v));
       regenMacro();
+    }
+    // ── Sacroilíaca handlers ──────────────────────────────
+    else if(a==='si-nivel'){
+      const k=v+'-'+el.dataset.side;
+      if(S.siRfNiveles.has(k))S.siRfNiveles.delete(k); else S.siRfNiveles.add(k);
+      refreshSIDots(); regenMacro();
+    }
+    else if(a==='si-blq-tipo'){
+      S.siBlqTipo=v;
+      el.closest('.grid-2').querySelectorAll('[data-a="si-blq-tipo"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-guia'){
+      S.siGuia=v;
+      el.closest('.grid-2').querySelectorAll('[data-a="si-guia"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      const showContr=(v==='rx'||v==='eco-rx');
+      const blk=document.getElementById('blk-si-contr');
+      if(blk) blk.style.display=showContr?'':'none';
+      regenMacro();
+    }
+    else if(a==='si-contr-patron'){
+      S.siContrastePatron=(v==='si');
+      el.closest('.tags').querySelectorAll('[data-a="si-contr-patron"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-aguja-tipo'){
+      S.siAgujaTipo=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-aguja-tipo"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-aguja-g'){
+      S.siAgujaG=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-aguja-g"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-aguja-long'){
+      S.siAgujaLong=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-aguja-long"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-al'){
+      S.siAL=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-al"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-cort-farm'){
+      S.siCortFarm=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-cort-farm"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-resultado-blq'){
+      S.siResultadoBlq=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-resultado-blq"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-rf-tecnica'){
+      S.siRfTecnica=v;
+      el.closest('.grid-2').querySelectorAll('[data-a="si-rf-tecnica"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      const isSimp=(v==='simplicity');
+      document.getElementById('blk-si-simplicity').style.display=isSimp?'':'none';
+      document.getElementById('blk-si-elec').style.display=isSimp?'none':'';
+      regenMacro();
+    }
+    else if(a==='si-simp-dev'){
+      S.siSimplicityDev=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-simp-dev"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-l5-sep'){
+      S.siSimplicityDev=v==='si'?'l5-si':'l5-no';
+      el.closest('.tags').querySelectorAll('[data-a="si-l5-sep"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-elec-tipo'){
+      S.siRfElecTipo=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-elec-tipo"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-elec-punta'){
+      S.siRfElecPunta=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-elec-punta"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-rf-mod'){
+      S.siRfMod=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-rf-mod"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-test-sens'){
+      S.siTestSens=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-test-sens"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-test-mot'){
+      S.siTestMot=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-test-mot"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-test-mot-res'){
+      S.siTestMotRes=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-test-mot-res"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-alrf-farm'){
+      S.siALrfFarm=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-alrf-farm"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
+    }
+    else if(a==='si-blq-previo'){
+      S.siBlqPrevio=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-blq-previo"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+      const det=document.getElementById('blk-si-blq-previo-det');
+      if(det) det.style.display=(v==='si')?'':'none';
+      regenMacro();
+    }
+    else if(a==='si-resultado'){
+      S.siResultado=v;
+      el.closest('.tags').querySelectorAll('[data-a="si-resultado"]').forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel'); regenMacro();
     }
   });
 }
