@@ -52,6 +52,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ── Screens ────────────────────────────────────────────── */
 .screen{max-width:920px;margin:0 auto;padding:24px 24px 100px}
+/* ── Tratamiento ─────────────────────────────────────────── */
+.tx-inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:14px;outline:none;box-sizing:border-box}
+.tx-inp:focus{border-color:var(--accent)}
+.tx-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s}
+.tx-row:hover{border-color:var(--border)}
+.tx-row-name{font-weight:700;color:var(--text);font-size:15px;border:none;background:transparent;outline:none;font-family:inherit;width:100%}
+.tx-row-name:focus{border-bottom:1px solid var(--accent)}
+.tx-dose-inp{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:12px;outline:none;width:80px;font-family:inherit}
+.tx-sched-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}
+.tx-sched-btn:hover,.tx-sched-btn.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tx-time-inp{width:44px;text-align:center;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 4px;color:var(--text);font-size:13px;outline:none;font-family:inherit}
+.tx-time-inp:focus{border-color:var(--accent)}
+.tx-fav-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s}
+.tx-fav-chip:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tx-dd-item{padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.tx-dd-item:last-child{border-bottom:none}
+.tx-dd-item:hover{background:var(--surface)}
 
 /* ── Selector ───────────────────────────────────────────── */
 .search-wrap{position:relative;margin-bottom:24px}
@@ -409,6 +426,73 @@ textarea::placeholder{color:var(--text2)}
   <div id="form-container"></div>
 </div>
 
+<!-- TRATAMIENTO -->
+<div class="screen hidden" id="screen-tratamiento">
+  <div style="max-width:860px;margin:0 auto">
+    <!-- Paciente -->
+    <div class="section" style="margin-bottom:12px">
+      <div class="section-header"><div class="section-num">·</div><div class="section-title">Datos del paciente</div></div>
+      <div class="section-body">
+        <div class="row">
+          <div class="field" style="flex:2">
+            <div class="field-label">Paciente</div>
+            <input type="text" id="tx-paciente" placeholder="Nombre y apellidos..." class="tx-inp" oninput="txRender()">
+          </div>
+          <div class="field">
+            <div class="field-label">Fecha</div>
+            <input type="text" id="tx-fecha" class="tx-inp" oninput="txRender()">
+          </div>
+          <div class="field" style="flex:2">
+            <div class="field-label">Diagnóstico (opcional)</div>
+            <input type="text" id="tx-diag" placeholder="Opcional..." class="tx-inp" oninput="txRender()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favoritos rápidos -->
+    <div id="tx-fav-wrap" style="margin-bottom:12px"></div>
+
+    <!-- Buscador -->
+    <div class="section" style="margin-bottom:12px;position:relative">
+      <div class="section-header"><div class="section-num">·</div><div class="section-title">Añadir medicamento</div></div>
+      <div class="section-body">
+        <div style="position:relative">
+          <input type="text" id="tx-search" placeholder="Buscar medicamento..." class="tx-inp" oninput="txSearch(this.value)" autocomplete="off" onfocus="txSearch(this.value)">
+          <div id="tx-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;z-index:100;overflow:hidden;margin-top:4px;box-shadow:0 8px 24px #0008"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de medicamentos -->
+    <div id="tx-rows-wrap"></div>
+
+    <!-- Acciones -->
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <button class="nav-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);flex:1;padding:12px;font-size:14px" onclick="txPrint()">🖨️ Imprimir / PDF</button>
+      <button class="nav-btn" style="flex:1;padding:12px;font-size:14px" onclick="txPreview()">👁 Vista previa</button>
+      <button class="nav-btn" style="padding:12px;font-size:14px" onclick="txNueva()">+ Nueva pauta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRATAMIENTO PREVIEW MODAL -->
+<div class="overlay hidden" id="tx-overlay">
+  <div class="modal" style="max-width:700px;width:95%">
+    <div class="modal-head">
+      <span class="modal-title">💊 Vista previa — pauta de tratamiento</span>
+      <button class="nav-btn" onclick="document.getElementById('tx-overlay').classList.add('hidden')">✕ Cerrar</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div id="tx-preview-content" style="background:#fff;color:#111;padding:32px;font-family:Georgia,serif;font-size:13px;line-height:1.6"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn modal-btn-sec" onclick="document.getElementById('tx-overlay').classList.add('hidden')">← Volver</button>
+      <button class="modal-btn modal-btn-pri" onclick="txPrint()">🖨️ Imprimir / PDF</button>
+    </div>
+  </div>
+</div>
+
 <button class="btn-generate hidden" id="btn-gen" onclick="generarInforme()">GENERAR INFORME →</button>
 
 <!-- REPORT MODAL -->
@@ -470,6 +554,7 @@ const CATEGORIES = [
   {id:'simpatico',   name:'Simpático',        icon:'🌡️', desc:'Próximamente',disabled:true},
   {id:'infusiones',  name:'Infusiones',       icon:'💧', desc:'Próximamente',disabled:true},
   {id:'bomba',       name:'Relleno de bomba', icon:'🔄', desc:'Próximamente',disabled:true},
+  {id:'tratamiento', name:'Tratamiento',      icon:'💊', desc:'Pauta farmacológica · PDF', onclick:'showTratamiento()'},
 ];
 
 const TECHNIQUES = [
@@ -750,7 +835,7 @@ function showSelector(){
   document.getElementById('btn-gen').classList.add('hidden');
   document.getElementById('btn-back').classList.add('hidden');
   document.getElementById('cat-grid').innerHTML=CATEGORIES.map(c=>`
-    <button class="cat-card${c.disabled?' disabled':''}" ${c.disabled?'':` onclick="showCat('${c.id}')"`}>
+    <button class="cat-card${c.disabled?' disabled':''}" ${c.disabled?'':`onclick="${c.onclick||`showCat('${c.id}')`}"`}>
       <span class="cat-icon">${c.icon}</span>
       <div class="cat-name">${c.name}</div>
       <div class="cat-desc">${c.desc}</div>
@@ -2939,6 +3024,237 @@ function toggleTheme(){
 })();
 
 initSplash();
+
+// ════════════════════════════════════════════════════════════
+// MÓDULO TRATAMIENTO
+// ════════════════════════════════════════════════════════════
+const TX_MEDS=[
+  {id:'preg75',  n:'Pregabalina 75 mg',  d:'75 mg',  m:'0',nn:'0',no:'1', fav:true},
+  {id:'preg150', n:'Pregabalina 150 mg', d:'150 mg', m:'1',nn:'0',no:'1', fav:true},
+  {id:'preg300', n:'Pregabalina 300 mg', d:'300 mg', m:'1',nn:'0',no:'1'},
+  {id:'gaba300', n:'Gabapentina 300 mg', d:'300 mg', m:'1',nn:'0',no:'1'},
+  {id:'gaba600', n:'Gabapentina 600 mg', d:'600 mg', m:'1',nn:'0',no:'1'},
+  {id:'dulox30', n:'Duloxetina 30 mg',   d:'30 mg',  m:'1',nn:'0',no:'0', fav:true},
+  {id:'dulox60', n:'Duloxetina 60 mg',   d:'60 mg',  m:'1',nn:'0',no:'0', fav:true},
+  {id:'amit10',  n:'Amitriptilina 10 mg',d:'10 mg',  m:'0',nn:'0',no:'1', fav:true},
+  {id:'amit25',  n:'Amitriptilina 25 mg',d:'25 mg',  m:'0',nn:'0',no:'1'},
+  {id:'pcm1g',   n:'Paracetamol 1 g',    d:'1 g',    m:'1',nn:'1',no:'1', fav:true},
+  {id:'pcm650',  n:'Paracetamol 650 mg', d:'650 mg', m:'1',nn:'1',no:'1'},
+  {id:'meta',    n:'Metamizol 575 mg',   d:'575 mg', m:'1',nn:'1',no:'1'},
+  {id:'ibu400',  n:'Ibuprofeno 400 mg',  d:'400 mg', m:'1',nn:'1',no:'1'},
+  {id:'ibu600',  n:'Ibuprofeno 600 mg',  d:'600 mg', m:'1',nn:'1',no:'0'},
+  {id:'nap500',  n:'Naproxeno 500 mg',   d:'500 mg', m:'1',nn:'0',no:'1'},
+  {id:'cele200', n:'Celecoxib 200 mg',   d:'200 mg', m:'1',nn:'0',no:'0'},
+  {id:'etori60', n:'Etoricoxib 60 mg',   d:'60 mg',  m:'1',nn:'0',no:'0'},
+  {id:'etori90', n:'Etoricoxib 90 mg',   d:'90 mg',  m:'1',nn:'0',no:'0'},
+  {id:'tram50',  n:'Tramadol 50 mg',     d:'50 mg',  m:'1',nn:'0',no:'1'},
+  {id:'tram100', n:'Tramadol 100 mg (retard)',d:'100 mg', m:'1',nn:'0',no:'1'},
+  {id:'trampcm', n:'Tramadol/Paracetamol',d:'37,5/325 mg',m:'1',nn:'0',no:'1'},
+  {id:'tapent',  n:'Tapentadol 50 mg',   d:'50 mg',  m:'1',nn:'0',no:'1'},
+  {id:'oxinal',  n:'Oxicodona/Naloxona', d:'10/5 mg',m:'1',nn:'0',no:'1'},
+  {id:'lido5p',  n:'Lidocaína 5% parche',d:'1 parche',m:'1',nn:'0',no:'0',custom:'1 parche/24h en zona dolorosa'},
+  {id:'caps8p',  n:'Capsaicina 8% parche',d:'parche', m:'0',nn:'0',no:'0',custom:'Aplicar en Unidad del Dolor'},
+  {id:'melor',   n:'Meloxicam 15 mg',    d:'15 mg',  m:'1',nn:'0',no:'0'},
+  {id:'omep',    n:'Omeprazol 20 mg',    d:'20 mg',  m:'1',nn:'0',no:'0'},
+  {id:'pantop',  n:'Pantoprazol 40 mg',  d:'40 mg',  m:'1',nn:'0',no:'0'},
+  {id:'lor1',    n:'Lorazepam 1 mg',     d:'1 mg',   m:'0',nn:'0',no:'1'},
+];
+
+let TX_ROWS=[];
+let txUid=0;
+function txId(){return 'tx'+(++txUid);}
+function txNorm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').trim();}
+
+function txTodayStr(){
+  const d=new Date();
+  return`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function showTratamiento(){
+  document.getElementById('screen-selector').classList.add('hidden');
+  document.getElementById('screen-form').classList.add('hidden');
+  document.getElementById('screen-tratamiento').classList.remove('hidden');
+  document.getElementById('btn-back').classList.remove('hidden');
+  document.getElementById('btn-gen').classList.add('hidden');
+  document.getElementById('btn-back').onclick=()=>{
+    document.getElementById('screen-tratamiento').classList.add('hidden');
+    document.getElementById('btn-back').classList.add('hidden');
+    document.getElementById('btn-back').onclick=goBack;
+    showSelector();
+  };
+  if(!document.getElementById('tx-fecha').value) document.getElementById('tx-fecha').value=txTodayStr();
+  txRenderFavs();
+  txRenderRows();
+}
+
+function txRenderFavs(){
+  const favs=TX_MEDS.filter(m=>m.fav);
+  document.getElementById('tx-fav-wrap').innerHTML=
+    `<div class="section"><div class="section-header"><div class="section-num">·</div><div class="section-title">Favoritos rápidos</div></div><div class="section-body"><div style="display:flex;flex-wrap:wrap;gap:8px">`+
+    favs.map(m=>`<button class="tx-fav-chip" onclick="txAddMed('${m.id}')">${m.n}</button>`).join('')+
+    `</div></div></div>`;
+}
+
+function txSearch(q){
+  const dd=document.getElementById('tx-dropdown');
+  if(q.length<2){dd.style.display='none';return;}
+  const nq=txNorm(q);
+  const res=TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)).slice(0,8);
+  if(!res.length&&q.length<2){dd.style.display='none';return;}
+  dd.innerHTML=res.map(m=>
+    `<div class="tx-dd-item" onmousedown="txAddMed('${m.id}');document.getElementById('tx-search').value='';document.getElementById('tx-dropdown').style.display='none'">
+      <span style="font-weight:600">${m.n}</span><span style="color:var(--text2);font-size:12px;margin-left:auto">${m.d}</span>
+    </div>`
+  ).join('')+
+  `<div class="tx-dd-item" style="color:var(--text2)" onmousedown="txAddManual();document.getElementById('tx-dropdown').style.display='none'">+ Añadir «${q}» manualmente</div>`;
+  dd.style.display='block';
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#tx-search')&&!e.target.closest('#tx-dropdown'))
+    document.getElementById('tx-dropdown').style.display='none';
+});
+
+function txAddMed(id){
+  const m=TX_MEDS.find(x=>x.id===id);
+  TX_ROWS.push({uid:txId(),name:m.n,dose:m.d,mode:m.custom?'custom':'std',m:m.m||'1',nn:m.nn||'0',no:m.no||'1',custom:m.custom||'',notes:''});
+  txRenderRows();
+}
+function txAddManual(){
+  TX_ROWS.push({uid:txId(),name:'',dose:'',mode:'std',m:'1',nn:'0',no:'1',custom:'',notes:''});
+  txRenderRows();
+}
+function txRemove(uid){TX_ROWS=TX_ROWS.filter(r=>r.uid!==uid);txRenderRows();}
+function txUp(uid){const i=TX_ROWS.findIndex(r=>r.uid===uid);if(i>0){[TX_ROWS[i-1],TX_ROWS[i]]=[TX_ROWS[i],TX_ROWS[i-1]];txRenderRows();}}
+function txDown(uid){const i=TX_ROWS.findIndex(r=>r.uid===uid);if(i<TX_ROWS.length-1){[TX_ROWS[i+1],TX_ROWS[i]]=[TX_ROWS[i],TX_ROWS[i+1]];txRenderRows();}}
+function txSetField(uid,field,val){const r=TX_ROWS.find(r=>r.uid===uid);if(r)r[field]=val;}
+function txSetMode(uid,mode){const r=TX_ROWS.find(r=>r.uid===uid);if(r){r.mode=mode;txRenderRows();}}
+function txSetSched(uid,m,nn,no){const r=TX_ROWS.find(r=>r.uid===uid);if(r){r.m=m;r.nn=nn;r.no=no;txRenderRows();}}
+
+const TX_QUICK=[
+  {l:'1-0-0',m:'1',nn:'0',no:'0'},
+  {l:'0-0-1',m:'0',nn:'0',no:'1'},
+  {l:'1-0-1',m:'1',nn:'0',no:'1'},
+  {l:'0-1-0',m:'0',nn:'1',no:'0'},
+  {l:'1-1-1',m:'1',nn:'1',no:'1'},
+  {l:'½-0-½',m:'½',nn:'0',no:'½'},
+];
+
+function txRenderRows(){
+  const w=document.getElementById('tx-rows-wrap');
+  if(!TX_ROWS.length){w.innerHTML='<div style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;color:var(--text2);font-size:14px">Añade medicamentos arriba</div>';return;}
+  w.innerHTML=TX_ROWS.map((r,i)=>{
+    const isStd=r.mode==='std';
+    const quickBtns=TX_QUICK.map(q=>{
+      const active=r.m===q.m&&r.nn===q.nn&&r.no===q.no;
+      return`<button class="tx-sched-btn${active?' sel':''}" onclick="txSetSched('${r.uid}','${q.m}','${q.nn}','${q.no}')">${q.l}</button>`;
+    }).join('');
+    return`<div class="tx-row">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:3px;padding-top:2px;color:var(--text2);font-size:10px">
+          ${i>0?`<button class="tx-sched-btn" onclick="txUp('${r.uid}')" style="padding:2px 6px">▲</button>`:'<span style="width:28px"></span>'}
+          ${i<TX_ROWS.length-1?`<button class="tx-sched-btn" onclick="txDown('${r.uid}')" style="padding:2px 6px">▼</button>`:'<span style="width:28px"></span>'}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input class="tx-row-name" value="${r.name}" placeholder="Medicamento..." oninput="txSetField('${r.uid}','name',this.value);txRender()">
+            <input class="tx-dose-inp" value="${r.dose}" placeholder="Dosis" oninput="txSetField('${r.uid}','dose',this.value);txRender()">
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <button class="tx-sched-btn${isStd?' sel':''}" onclick="txSetMode('${r.uid}','std')">Estándar</button>
+            <button class="tx-sched-btn${!isStd?' sel':''}" onclick="txSetMode('${r.uid}','custom')">Personalizada</button>
+          </div>
+          ${isStd?`
+          <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:8px">
+            <label style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--text2)">Mañana<input class="tx-time-inp" value="${r.m}" oninput="txSetField('${r.uid}','m',this.value);txRender()"></label>
+            <label style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--text2)">Mediodía<input class="tx-time-inp" value="${r.nn}" oninput="txSetField('${r.uid}','nn',this.value);txRender()"></label>
+            <label style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--text2)">Noche<input class="tx-time-inp" value="${r.no}" oninput="txSetField('${r.uid}','no',this.value);txRender()"></label>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">${quickBtns}</div>`
+          :`<input class="tx-inp" style="margin-bottom:8px" value="${r.custom}" placeholder="Ej: A demanda, máx 3 comp/día..." oninput="txSetField('${r.uid}','custom',this.value);txRender()">`}
+          <input class="tx-inp" style="font-size:12px;padding:5px 10px" value="${r.notes}" placeholder="Observaciones (opcional)..." oninput="txSetField('${r.uid}','notes',this.value);txRender()">
+        </div>
+        <button onclick="txRemove('${r.uid}')" style="color:var(--text2);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.5;transition:.15s" onmouseover="this.style.opacity=1;this.style.color='#f87171'" onmouseout="this.style.opacity=.5;this.style.color='var(--text2)'">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function txFormatSched(r){
+  if(r.mode==='custom') return r.custom;
+  const lbl=['mañana','mediodía','noche'];
+  const v=[r.m,r.nn,r.no];
+  return v.map((x,i)=>x&&x!=='0'?`${x} ${lbl[i]}`:'').filter(Boolean).join(' + ')||'';
+}
+
+function txBuildHTML(){
+  const pac=document.getElementById('tx-paciente')?.value||'';
+  const fecha=document.getElementById('tx-fecha')?.value||txTodayStr();
+  const diag=document.getElementById('tx-diag')?.value||'';
+  const rows=TX_ROWS.filter(r=>r.name.trim());
+  return`<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111;max-width:700px;margin:0 auto">
+    <div style="border-bottom:2px solid #1e293b;padding-bottom:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end">
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#1e293b">PAUTA DE TRATAMIENTO</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px">Unidad del Dolor</div>
+      </div>
+      <div style="font-size:11px;color:#64748b;text-align:right">${fecha}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;font-size:12px">
+      <div><b>Paciente:</b> ${pac||'_______________________'}</div>
+      ${diag?`<div style="grid-column:1/-1"><b>Diagnóstico:</b> ${diag}</div>`:''}
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f1f5f9">
+        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid #cbd5e1;width:4%">#</th>
+        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid #cbd5e1;width:30%">Medicamento</th>
+        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid #cbd5e1;width:14%">Dosis</th>
+        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid #cbd5e1;width:34%">Pauta</th>
+        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid #cbd5e1">Observaciones</th>
+      </tr></thead>
+      <tbody>${rows.map((r,i)=>`
+        <tr style="background:${i%2?'#f8fafc':'#fff'}">
+          <td style="padding:7px 8px;border-bottom:1px solid #e2e8f0;color:#94a3b8">${i+1}</td>
+          <td style="padding:7px 8px;border-bottom:1px solid #e2e8f0;font-weight:600">${r.name}</td>
+          <td style="padding:7px 8px;border-bottom:1px solid #e2e8f0;color:#475569">${r.dose}</td>
+          <td style="padding:7px 8px;border-bottom:1px solid #e2e8f0">${txFormatSched(r)}</td>
+          <td style="padding:7px 8px;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:11px">${r.notes}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:40px;display:flex;justify-content:flex-end">
+      <div style="text-align:center;min-width:180px">
+        <div style="height:50px;border-bottom:1px solid #94a3b8;margin-bottom:4px"></div>
+        <div style="font-size:10px;color:#64748b">Firma y sello</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function txRender(){/* live updates handled inline */}
+
+function txPreview(){
+  document.getElementById('tx-preview-content').innerHTML=txBuildHTML();
+  document.getElementById('tx-overlay').classList.remove('hidden');
+}
+
+function txPrint(){
+  const content=txBuildHTML();
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pauta de tratamiento</title>
+  <style>body{margin:24px 32px;font-family:Arial,sans-serif}@media print{body{margin:16mm 20mm}}</style>
+  </head><body>${content}<script>window.onload=()=>{window.print();window.onafterprint=()=>window.close();}<\/script></body></html>`);
+  w.document.close();
+}
+
+function txNueva(){
+  if(TX_ROWS.length>0&&!confirm('¿Nueva pauta? Se perderán los datos actuales.'))return;
+  TX_ROWS=[];
+  document.getElementById('tx-paciente').value='';
+  document.getElementById('tx-fecha').value=txTodayStr();
+  document.getElementById('tx-diag').value='';
+  txRenderRows();
+}
 </script>
 </body>
 </html>
