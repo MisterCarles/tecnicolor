@@ -3098,6 +3098,13 @@ const TX_PACKS=[
    scheds:{dac30:{m:'1',nn:'0',no:'0',custom:'30 mg/día los primeros 5 días · 20 mg/día los días 6-10 · 10 mg/día los días 11-15 · 5 mg/día los días 16-20. Tomar siempre con el desayuno'},omep:{m:'1',nn:'0',no:'0'}}},
 ];
 
+const TX_DOCTORS=[
+  {id:'d1', name:'Dr. Carles García-Vitoria',  spec:'Anestesiología · Unidad del Dolor', col:''},
+  {id:'d2', name:'Dra. Ana Calvo Laffarga',     spec:'Anestesiología · Unidad del Dolor', col:''},
+  {id:'d3', name:'Dra. Maite Bovaira Fornera',  spec:'Anestesiología · Unidad del Dolor', col:''},
+  {id:'d4', name:'Dra. Carlota Martín',         spec:'Anestesiología · Unidad del Dolor', col:''},
+];
+let txActiveDoctorId='d1';
 let TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'}));
 let txDragMedId=null;
 
@@ -3197,6 +3204,7 @@ function txRenderFooter(){
 }
 
 function txAddMedToNextSlot(medId){
+  if(TX_SLOTS.some(s=>s.med===medId))return;
   let slot=TX_SLOTS.find(s=>!s.name.trim());
   if(!slot){TX_SLOTS.push({uid:'s'+Date.now(),med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'});slot=TX_SLOTS[TX_SLOTS.length-1];}
   txFillSlot(slot,medId);txRenderSlots();txRenderPalette();
@@ -3411,7 +3419,11 @@ tr:last-child td{border-bottom:none}
 </div>
 <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close();}<\/script>
 </body></html>`;
-  const w=window.open('','_blank');w.document.write(html);w.document.close();
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
+  if(!w){alert('Permite ventanas emergentes para imprimir el PDF.');URL.revokeObjectURL(url);}
+  else{setTimeout(()=>URL.revokeObjectURL(url),60000);}
 }
 
 function txBorrarTodo(){
