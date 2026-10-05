@@ -3106,7 +3106,7 @@ const TX_DOCTORS=[
   {id:'d4', name:'Dra. Carlota Martín',         spec:'Anestesiología · Unidad del Dolor', col:''},
 ];
 let txActiveDoctorId='d1';
-let TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'}));
+let TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',rescueMax:'3',mode:'std'}));
 let txDragMedId=null;
 
 function txTodayStr(){const d=new Date();return`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
@@ -3205,7 +3205,8 @@ function txRenderFooter(){
 }
 
 function txAddMedToNextSlot(medId){
-  if(TX_SLOTS.some(s=>s.med===medId))return;
+  const existing=TX_SLOTS.find(s=>s.med===medId);
+  if(existing){txClearSlot(existing.uid);return;}
   let slot=TX_SLOTS.find(s=>!s.name.trim());
   if(!slot){TX_SLOTS.push({uid:'s'+Date.now(),med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'});slot=TX_SLOTS[TX_SLOTS.length-1];}
   txFillSlot(slot,medId);txRenderSlots();txRenderPalette();
@@ -3261,7 +3262,9 @@ function txRenderSlots(){
         <span onclick="txSetSlotMode('${s.uid}','std')"
           style="font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${isStd?'#166534':'#e5e7eb'};background:${isStd?'#166534':'transparent'};color:${isStd?'#fff':'#9ca3af'}">☀️ · 🌤️ · 🌙</span>
         <span onclick="txSetSlotMode('${s.uid}','custom')"
-          style="font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${!isStd?'#166534':'#e5e7eb'};background:${!isStd?'#166534':'transparent'};color:${!isStd?'#fff':'#9ca3af'}">Posología libre</span>
+          style="font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${s.mode==='custom'?'#166534':'#e5e7eb'};background:${s.mode==='custom'?'#166534':'transparent'};color:${s.mode==='custom'?'#fff':'#9ca3af'}">Texto libre</span>
+        <span onclick="txSetSlotMode('${s.uid}','rescue')"
+          style="font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${s.mode==='rescue'?'#b45309':'#e5e7eb'};background:${s.mode==='rescue'?'#b45309':'transparent'};color:${s.mode==='rescue'?'#fff':'#9ca3af'}">🆘 Si dolor</span>
       </div>
 
       ${isStd?`
@@ -3287,8 +3290,14 @@ function txRenderSlots(){
         </div>
         <div style="display:flex;gap:3px;flex-wrap:wrap;padding-bottom:2px">${qBtns}</div>
       </div>`
+      :s.mode==='rescue'?`<div style="padding-left:22px;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:#b45309;font-weight:600">A demanda si dolor · máx.</span>
+        <input value="${s.rescueMax||'3'}" oninput="txSlotField('${s.uid}','rescueMax',this.value)"
+          style="width:36px;text-align:center;border:2px solid #fed7aa;border-radius:6px;padding:4px 2px;font-size:14px;font-weight:800;outline:none;font-family:inherit;color:#b45309;background:#fff7ed">
+        <span style="font-size:11px;color:#b45309;font-weight:600">comp./día · separados ≥8h</span>
+      </div>`
       :`<div style="padding-left:22px;margin-bottom:6px">
-        <input value="${s.custom.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','custom',this.value)" placeholder="Ej: 30mg/día primera semana, 20mg/día segunda semana…"
+        <input value="${s.custom.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','custom',this.value)" placeholder="Ej: 30 mg/día primera semana, luego 20 mg/día…"
           style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:12px;outline:none;font-family:inherit;color:#374151;background:#fff;box-sizing:border-box">
       </div>`}
 
@@ -3304,7 +3313,7 @@ function txDropOnSlot(uid){
 }
 function txClearSlot(uid){
   const s=TX_SLOTS.find(x=>x.uid===uid);
-  if(s){s.med=null;s.name='';s.dose='';s.m='';s.nn='';s.no='';s.custom='';s.notes='';s.mode='std';}
+  if(s){s.med=null;s.name='';s.dose='';s.m='';s.nn='';s.no='';s.custom='';s.notes='';s.rescueMax='3';s.mode='std';}
   txRenderSlots();txRenderPalette();
 }
 function txSlotField(uid,field,val){const s=TX_SLOTS.find(x=>x.uid===uid);if(s)s[field]=val;}
@@ -3347,28 +3356,30 @@ function txPrint(){
 
   const tableRows=rows.map((s,i)=>{
     const isStd=s.mode==='std';
+    const isRescue=s.mode==='rescue';
     const posCells=isStd
-      ?`<td style="text-align:center;font-size:15px;font-weight:800;color:#b45309;background:#fffbeb;width:52px">${s.m||'0'}</td>
-         <td style="text-align:center;font-size:15px;font-weight:800;color:#0369a1;background:#f0f9ff;width:52px">${s.nn||'0'}</td>
-         <td style="text-align:center;font-size:15px;font-weight:800;color:#4338ca;background:#eef2ff;width:52px">${s.no||'0'}</td>
-         `
+      ?`<td style="text-align:center;font-size:17px;font-weight:800;color:#b45309;background:#fffbeb;width:54px">${s.m||'0'}</td>
+         <td style="text-align:center;font-size:17px;font-weight:800;color:#0369a1;background:#f0f9ff;width:54px">${s.nn||'0'}</td>
+         <td style="text-align:center;font-size:17px;font-weight:800;color:#4338ca;background:#eef2ff;width:54px">${s.no||'0'}</td>`
+      :isRescue
+      ?`<td colspan="3" style="font-size:11px;color:#b45309;font-weight:600;padding:8px 10px">🆘 A demanda si dolor · máx. ${s.rescueMax||'3'} comp./día (separados ≥8h)</td>`
       :`<td colspan="3" style="font-size:11px;color:#374151;font-style:italic;padding:8px 10px">${s.custom}</td>`;
     return`<tr>
-      <td style="text-align:center;color:#d1d5db;font-weight:700;font-size:11px;width:28px">${i+1}</td>
-      <td style="padding:10px 10px"><strong style="font-size:13px;display:block">${s.name}</strong><span style="font-size:11px;color:#6b7280">${s.dose}</span></td>
+      <td style="text-align:center;color:#d1d5db;font-weight:700;font-size:11px;width:24px">${i+1}</td>
+      <td style="padding:10px"><strong style="font-size:15px;display:block;font-family:'Calibri','Candara',Georgia,serif">${s.name}</strong><span style="font-size:11px;color:#6b7280">${s.dose}</span></td>
       ${posCells}
     </tr>`;
   }).join('');
 
-  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Tratamiento</title>
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pauta</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;padding:16mm 20mm;position:relative}
+body{font-family:'Calibri','Candara',Georgia,serif;font-size:12px;color:#111;padding:16mm 20mm;position:relative}
 .wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);opacity:0.05;width:75%;z-index:0;pointer-events:none}
 .c{position:relative;z-index:1}
 table{width:100%;border-collapse:collapse;margin-top:4px}
-th{padding:7px 10px;font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;border-top:1px solid #e5e7eb;border-bottom:2px solid #166534;background:#f9fafb}
-th.pos{text-align:center;width:52px;padding:7px 4px}
+th{padding:7px 10px;font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;border-top:1px solid #e5e7eb;border-bottom:2px solid #166534;background:#f9fafb;font-family:Arial,sans-serif}
+th.pos{text-align:center;width:54px;padding:7px 4px}
 td{padding:8px 10px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 @media print{body{padding:12mm 16mm}}
@@ -3378,27 +3389,26 @@ tr:last-child td{border-bottom:none}
   <div style="display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:12px;margin-bottom:18px;border-bottom:2.5px solid #166534">
     <img src="${TX_LOGO}" style="height:50px;object-fit:contain">
     <div style="text-align:right">
-      <div style="font-size:11px;color:#6b7280">${txLongDate()}</div>
+      <div style="font-size:12px;color:#374151;font-style:italic">Valencia, a ${txLongDate()}</div>
     </div>
   </div>
   <div style="display:grid;grid-template-columns:${diag?'1fr 1fr':'1fr'};gap:16px;margin-bottom:18px">
     <div>
-      <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Paciente</div>
-      <div style="font-size:15px;font-weight:700">${pac||'_________________________'}</div>
+      <div style="font-size:17px;font-weight:700;font-family:'Calibri','Candara',Georgia,serif">${pac||'_________________________'}</div>
+      ${diag?'':`<div style="font-size:10px;color:#9ca3af;margin-top:3px">Paciente</div>`}
     </div>
     ${diag?`<div>
-      <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Diagnóstico / Motivo</div>
+      <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-family:Arial,sans-serif">Diagnóstico / Motivo</div>
       <div style="font-size:13px">${diag}</div>
     </div>`:''}
   </div>
   <table>
     <thead><tr>
       <th></th>
-      <th>Medicamento</th>
+      <th>Fármaco</th>
       <th class="pos">☀️<br>Mañana</th>
       <th class="pos">🌤️<br>Mediodía</th>
       <th class="pos">🌙<br>Noche</th>
-      <th>Posología / Notas</th>
     </tr></thead>
     <tbody>${tableRows}</tbody>
   </table>
@@ -3421,7 +3431,7 @@ tr:last-child td{border-bottom:none}
 
 function txBorrarTodo(){
   if(!confirm('¿Borrar toda la pauta?'))return;
-  TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'}));
+  TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',rescueMax:'3',mode:'std'}));
   document.getElementById('tx-paciente').value='';
   document.getElementById('tx-diag').value='';
   txRenderSlots();txRenderPalette();
@@ -3429,7 +3439,7 @@ function txBorrarTodo(){
 
 function txNueva(){
   if(TX_SLOTS.some(s=>s.name.trim())&&!confirm('¿Nueva pauta? Se borrarán los datos actuales.'))return;
-  TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'}));
+  TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',rescueMax:'3',mode:'std'}));
   document.getElementById('tx-paciente').value='';
   document.getElementById('tx-fecha').value=txTodayStr();
   document.getElementById('tx-diag').value='';
