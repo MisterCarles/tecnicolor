@@ -383,6 +383,7 @@ textarea::placeholder{color:var(--text2)}
     <div class="app-logo-sub" style="margin-top:0">Registro intervencionista del dolor</div>
   </div>
   <div class="header-right">
+    <button class="nav-btn" id="btn-tratamiento" onclick="showTratamiento()" style="background:rgba(22,101,52,.12);border-color:rgba(22,101,52,.35);color:#166534;font-weight:700">💊 Tratamiento</button>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
     <button class="nav-btn hidden" id="btn-back" onclick="goBack()">← Volver</button>
   </div>
@@ -552,7 +553,6 @@ const CATEGORIES = [
   {id:'simpatico',   name:'Simpático',        icon:'🌡️', desc:'Próximamente',disabled:true},
   {id:'infusiones',  name:'Infusiones',       icon:'💧', desc:'Próximamente',disabled:true},
   {id:'bomba',       name:'Relleno de bomba', icon:'🔄', desc:'Próximamente',disabled:true},
-  {id:'tratamiento', name:'Tratamiento',      icon:'💊', desc:'Pauta farmacológica · PDF', onclick:'showTratamiento()'},
 ];
 
 const TECHNIQUES = [
@@ -3036,66 +3036,73 @@ let txActiveDoctorId='d1';
 // MÓDULO TRATAMIENTO
 // ════════════════════════════════════════════════════════════
 const TX_CATS=[
-  {id:'neuro',  label:'Neuromoduladores', color:'#6d28d9'},
-  {id:'antid',  label:'Antidepresivos',   color:'#0369a1'},
-  {id:'analg',  label:'Analgésicos',      color:'#166534'},
-  {id:'aine',   label:'AINEs / COX-2',    color:'#b45309'},
-  {id:'opiac',  label:'Opioides',         color:'#9f1239'},
-  {id:'topico', label:'Tópicos',          color:'#0e7490'},
-  {id:'gastro', label:'Gastroprotección', color:'#4b5563'},
-  {id:'otros',  label:'Otros',            color:'#374151'},
+  {id:'neuro',   label:'Neuromoduladores',  color:'#6d28d9'},
+  {id:'antid',   label:'Antidepresivos',    color:'#0369a1'},
+  {id:'analg',   label:'Analgésicos',       color:'#166534'},
+  {id:'aine',    label:'AINEs / COX-2',     color:'#b45309'},
+  {id:'cort',    label:'Corticoides',       color:'#b45309'},
+  {id:'opiac',   label:'Opioides',          color:'#9f1239'},
+  {id:'topico',  label:'Tópicos',           color:'#0e7490'},
+  {id:'gastro',  label:'Gastroprotección',  color:'#4b5563'},
+  {id:'otros',   label:'Otros',             color:'#374151'},
 ];
 const TX_MEDS=[
-  {id:'preg75',  cat:'neuro', n:'Pregabalina 75 mg',   d:'75 mg',   m:'0',nn:'0',no:'1'},
-  {id:'preg150', cat:'neuro', n:'Pregabalina 150 mg',  d:'150 mg',  m:'1',nn:'0',no:'1'},
-  {id:'preg300', cat:'neuro', n:'Pregabalina 300 mg',  d:'300 mg',  m:'1',nn:'0',no:'1'},
-  {id:'gaba300', cat:'neuro', n:'Gabapentina 300 mg',  d:'300 mg',  m:'1',nn:'0',no:'1'},
-  {id:'gaba600', cat:'neuro', n:'Gabapentina 600 mg',  d:'600 mg',  m:'1',nn:'0',no:'1'},
-  {id:'dulox30', cat:'antid', n:'Duloxetina 30 mg',    d:'30 mg',   m:'1',nn:'0',no:'0'},
-  {id:'dulox60', cat:'antid', n:'Duloxetina 60 mg',    d:'60 mg',   m:'1',nn:'0',no:'0'},
-  {id:'amit10',  cat:'antid', n:'Amitriptilina 10 mg', d:'10 mg',   m:'0',nn:'0',no:'1'},
-  {id:'amit25',  cat:'antid', n:'Amitriptilina 25 mg', d:'25 mg',   m:'0',nn:'0',no:'1'},
-  {id:'pcm1g',   cat:'analg', n:'Paracetamol 1 g',     d:'1 g',     m:'1',nn:'1',no:'1'},
-  {id:'pcm650',  cat:'analg', n:'Paracetamol 650 mg',  d:'650 mg',  m:'1',nn:'1',no:'1'},
-  {id:'meta',    cat:'analg', n:'Metamizol 575 mg',    d:'575 mg',  m:'1',nn:'1',no:'1'},
-  {id:'ibu400',  cat:'aine',  n:'Ibuprofeno 400 mg',   d:'400 mg',  m:'1',nn:'1',no:'1'},
-  {id:'ibu600',  cat:'aine',  n:'Ibuprofeno 600 mg',   d:'600 mg',  m:'1',nn:'0',no:'1'},
-  {id:'nap500',  cat:'aine',  n:'Naproxeno 500 mg',    d:'500 mg',  m:'1',nn:'0',no:'1'},
-  {id:'cele200', cat:'aine',  n:'Celecoxib 200 mg',    d:'200 mg',  m:'1',nn:'0',no:'0'},
-  {id:'etori60', cat:'aine',  n:'Etoricoxib 60 mg',    d:'60 mg',   m:'1',nn:'0',no:'0'},
-  {id:'etori90', cat:'aine',  n:'Etoricoxib 90 mg',    d:'90 mg',   m:'1',nn:'0',no:'0'},
-  {id:'tram50',  cat:'opiac', n:'Tramadol 50 mg',      d:'50 mg',   m:'1',nn:'0',no:'1'},
-  {id:'tram100', cat:'opiac', n:'Tramadol 100 mg ret', d:'100 mg',  m:'1',nn:'0',no:'1'},
-  {id:'trampcm', cat:'opiac', n:'Tramadol/Paracetamol',d:'37,5/325 mg',m:'1',nn:'0',no:'1'},
-  {id:'tapent',  cat:'opiac', n:'Tapentadol 50 mg',    d:'50 mg',   m:'1',nn:'0',no:'1'},
-  {id:'oxinal',  cat:'opiac', n:'Oxicodona/Naloxona',  d:'10/5 mg', m:'1',nn:'0',no:'1'},
-  {id:'lido5p',  cat:'topico',n:'Lidocaína 5% parche', d:'1 parche',m:'',nn:'',no:'',custom:'1 parche/24h en zona dolorosa'},
-  {id:'caps8p',  cat:'topico',n:'Capsaicina 8% parche',d:'parche',  m:'',nn:'',no:'',custom:'Aplicar en Unidad del Dolor'},
-  {id:'omep',    cat:'gastro',n:'Omeprazol 20 mg',     d:'20 mg',   m:'1',nn:'0',no:'0'},
-  {id:'pantop',  cat:'gastro',n:'Pantoprazol 40 mg',   d:'40 mg',   m:'1',nn:'0',no:'0'},
-  {id:'vitc',    cat:'otros', n:'Vitamina C 1 g',      d:'1 g',     m:'1',nn:'0',no:'0'},
-  {id:'lor1',    cat:'otros', n:'Lorazepam 1 mg',      d:'1 mg',    m:'0',nn:'0',no:'1'},
-  {id:'melor',   cat:'aine',  n:'Meloxicam 15 mg',     d:'15 mg',   m:'1',nn:'0',no:'0'},
+  {id:'preg75',  cat:'neuro', n:'Pregabalina 75 mg',       d:'75 mg',   m:'0', nn:'0', no:'1'},
+  {id:'preg150', cat:'neuro', n:'Pregabalina 150 mg',      d:'150 mg',  m:'1', nn:'0', no:'1'},
+  {id:'preg300', cat:'neuro', n:'Pregabalina 300 mg',      d:'300 mg',  m:'1', nn:'0', no:'1'},
+  {id:'gaba300', cat:'neuro', n:'Gabapentina 300 mg',      d:'300 mg',  m:'1', nn:'0', no:'1'},
+  {id:'gaba600', cat:'neuro', n:'Gabapentina 600 mg',      d:'600 mg',  m:'1', nn:'0', no:'1'},
+  {id:'dulox30', cat:'antid', n:'Duloxetina 30 mg',        d:'30 mg',   m:'1', nn:'0', no:'0'},
+  {id:'dulox60', cat:'antid', n:'Duloxetina 60 mg',        d:'60 mg',   m:'1', nn:'0', no:'0'},
+  {id:'amit10',  cat:'antid', n:'Amitriptilina 10 mg',     d:'10 mg',   m:'0', nn:'0', no:'1'},
+  {id:'amit25',  cat:'antid', n:'Amitriptilina 25 mg',     d:'25 mg',   m:'0', nn:'0', no:'1'},
+  {id:'pcm1g',   cat:'analg', n:'Paracetamol 1 g',         d:'1 g',     m:'1', nn:'1', no:'1'},
+  {id:'pcm650',  cat:'analg', n:'Paracetamol 650 mg',      d:'650 mg',  m:'1', nn:'1', no:'1'},
+  {id:'meta',    cat:'analg', n:'Metamizol 575 mg',        d:'575 mg',  m:'1', nn:'1', no:'1'},
+  {id:'ibu400',  cat:'aine',  n:'Ibuprofeno 400 mg',       d:'400 mg',  m:'1', nn:'1', no:'1'},
+  {id:'ibu600',  cat:'aine',  n:'Ibuprofeno 600 mg',       d:'600 mg',  m:'1', nn:'0', no:'1'},
+  {id:'nap500',  cat:'aine',  n:'Naproxeno 500 mg',        d:'500 mg',  m:'1', nn:'0', no:'1'},
+  {id:'cele200', cat:'aine',  n:'Celecoxib 200 mg',        d:'200 mg',  m:'1', nn:'0', no:'0'},
+  {id:'etori60', cat:'aine',  n:'Etoricoxib 60 mg',        d:'60 mg',   m:'1', nn:'0', no:'0'},
+  {id:'melor',   cat:'aine',  n:'Meloxicam 15 mg',         d:'15 mg',   m:'1', nn:'0', no:'0'},
+  {id:'dac6',    cat:'cort',  n:'Dacortin 6 mg',           d:'6 mg',    m:'1', nn:'0', no:'0', note:'Tomar con desayuno'},
+  {id:'dac30',   cat:'cort',  n:'Dacortin 30 mg',          d:'30 mg',   m:'1', nn:'0', no:'0', note:'Tomar con desayuno'},
+  {id:'pred5',   cat:'cort',  n:'Prednisona 5 mg',         d:'5 mg',    m:'1', nn:'0', no:'0', note:'Tomar con desayuno'},
+  {id:'tram50',  cat:'opiac', n:'Tramadol 50 mg',          d:'50 mg',   m:'1', nn:'0', no:'1'},
+  {id:'tram100', cat:'opiac', n:'Tramadol 100 mg ret.',    d:'100 mg',  m:'1', nn:'0', no:'1'},
+  {id:'trampcm', cat:'opiac', n:'Tramadol/Paracetamol',    d:'37,5/325 mg', m:'1', nn:'0', no:'1'},
+  {id:'tapent',  cat:'opiac', n:'Tapentadol 50 mg',        d:'50 mg',   m:'1', nn:'0', no:'1'},
+  {id:'oxinal',  cat:'opiac', n:'Oxicodona/Naloxona',      d:'10/5 mg', m:'1', nn:'0', no:'1'},
+  {id:'lido5p',  cat:'topico',n:'Lidocaína 5% parche',     d:'1 parche',m:'', nn:'', no:'', custom:'1 parche/24h sobre zona dolorosa'},
+  {id:'caps8p',  cat:'topico',n:'Capsaicina 8% parche',    d:'parche',  m:'', nn:'', no:'', custom:'Aplicar en Unidad del Dolor'},
+  {id:'omep',    cat:'gastro',n:'Omeprazol 20 mg',         d:'20 mg',   m:'1', nn:'0', no:'0'},
+  {id:'pantop',  cat:'gastro',n:'Pantoprazol 40 mg',       d:'40 mg',   m:'1', nn:'0', no:'0'},
+  {id:'vitc',    cat:'otros', n:'Vitamina C 1 g',          d:'1 g',     m:'1', nn:'0', no:'0'},
+  {id:'lor1',    cat:'otros', n:'Lorazepam 1 mg',          d:'1 mg',    m:'0', nn:'0', no:'1'},
 ];
+
 const TX_PACKS=[
-  {id:'sdrc',    label:'Pack SDRC',          emoji:'🔥',
+  {id:'sdrc',    label:'Pack SDRC',              emoji:'🔥',
    meds:['preg75','amit10','vitc','ibu600','omep'],
    scheds:{preg75:{m:'0',nn:'0',no:'1'},amit10:{m:'0',nn:'0',no:'1'},vitc:{m:'1',nn:'0',no:'0'},ibu600:{m:'1',nn:'0',no:'1'},omep:{m:'1',nn:'0',no:'0'}}},
-  {id:'neuropat',label:'Dolor neuropático',  emoji:'⚡',
+  {id:'neuropat',label:'Dolor neuropático',      emoji:'⚡',
    meds:['preg150','dulox60','amit10'],
    scheds:{preg150:{m:'1',nn:'0',no:'1'},dulox60:{m:'1',nn:'0',no:'0'},amit10:{m:'0',nn:'0',no:'1'}}},
-  {id:'lumbar',  label:'Lumbalgia crónica',  emoji:'🦴',
+  {id:'lumbar',  label:'Lumbalgia crónica',      emoji:'🦴',
    meds:['ibu600','pcm1g','omep'],
    scheds:{ibu600:{m:'1',nn:'0',no:'1'},pcm1g:{m:'1',nn:'1',no:'1'},omep:{m:'1',nn:'0',no:'0'}}},
-  {id:'postop',  label:'Postoperatorio',     emoji:'🏥',
+  {id:'postop',  label:'Postoperatorio',         emoji:'🏥',
    meds:['pcm1g','ibu600','tram50','omep'],
-   scheds:{pcm1g:{m:'1',nn:'1',no:'1'},ibu600:{m:'1',nn:'0',no:'1'},tram50:{m:'0',nn:'0',no:'0',custom:'A demanda, máx 3/día'},omep:{m:'1',nn:'0',no:'0'}}},
-  {id:'cefalea', label:'Cefalea crónica',    emoji:'🧠',
+   scheds:{pcm1g:{m:'1',nn:'1',no:'1'},ibu600:{m:'1',nn:'0',no:'1'},tram50:{m:'0',nn:'0',no:'0',custom:'A demanda, máx 3 comp/día (separados 8h)'},omep:{m:'1',nn:'0',no:'0'}}},
+  {id:'cefalea', label:'Cefalea crónica',        emoji:'🧠',
    meds:['amit10','pcm1g','ibu400'],
-   scheds:{amit10:{m:'0',nn:'0',no:'1'},pcm1g:{m:'1',nn:'1',no:'1'},ibu400:{m:'0',nn:'0',no:'0',custom:'A demanda en crisis'}}},
-  {id:'fibro',   label:'Fibromialgia',       emoji:'🌡️',
+   scheds:{amit10:{m:'0',nn:'0',no:'1'},pcm1g:{m:'1',nn:'1',no:'1'},ibu400:{m:'0',nn:'0',no:'0',custom:'A demanda en crisis (máx 10 días/mes)'}}},
+  {id:'fibro',   label:'Fibromialgia',           emoji:'🌡️',
    meds:['preg75','dulox30','amit10'],
    scheds:{preg75:{m:'0',nn:'0',no:'1'},dulox30:{m:'1',nn:'0',no:'0'},amit10:{m:'0',nn:'0',no:'1'}}},
+  {id:'dacdes',  label:'Dacortin pauta descendente', emoji:'📉',
+   meds:['dac30','omep'],
+   scheds:{dac30:{m:'1',nn:'0',no:'0',custom:'30 mg/día los primeros 5 días · 20 mg/día los días 6-10 · 10 mg/día los días 11-15 · 5 mg/día los días 16-20. Tomar siempre con el desayuno'},omep:{m:'1',nn:'0',no:'0'}}},
 ];
 
 let TX_SLOTS=Array.from({length:8},(_,i)=>({uid:'s'+i,med:null,name:'',dose:'',m:'',nn:'',no:'',custom:'',notes:'',mode:'std'}));
@@ -3117,7 +3124,6 @@ function showTratamiento(){
     showSelector();
   };
   if(!document.getElementById('tx-fecha').value) document.getElementById('tx-fecha').value=txTodayStr();
-  // Set logo and watermark
   document.getElementById('tx-logo-img').src=TX_LOGO;
   document.getElementById('tx-wm-img').src=TX_LOGO;
   txRenderPacks();
@@ -3130,7 +3136,7 @@ function showTratamiento(){
 function txRenderPacks(){
   document.getElementById('tx-packs-list').innerHTML=TX_PACKS.map(p=>
     `<button onclick="txLoadPack('${p.id}')" style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;color:var(--text);font-size:12px;font-weight:600;text-align:left;transition:border-color .15s;width:100%" onmouseover="this.style.borderColor='#166534'" onmouseout="this.style.borderColor='var(--border)'">
-      <span style="font-size:16px">${p.emoji}</span><span>${p.label}</span>
+      <span style="font-size:15px">${p.emoji}</span><span>${p.label}</span>
     </button>`
   ).join('');
 }
@@ -3142,9 +3148,14 @@ function txLoadPack(id){
     if(i>=TX_SLOTS.length)return;
     const med=TX_MEDS.find(m=>m.id===mid);if(!med)return;
     const sc=pack.scheds[mid]||{};
+    const useCustom=!!(sc.custom||(med.custom));
     TX_SLOTS[i]={...TX_SLOTS[i],med:mid,name:med.n,dose:med.d,
-      m:sc.m!==undefined?sc.m:med.m,nn:sc.nn!==undefined?sc.nn:med.nn,no:sc.no!==undefined?sc.no:med.no,
-      custom:sc.custom||med.custom||'',mode:sc.custom||med.custom?'custom':'std',notes:''};
+      m:sc.m!==undefined?sc.m:(med.m||''),
+      nn:sc.nn!==undefined?sc.nn:(med.nn||''),
+      no:sc.no!==undefined?sc.no:(med.no||''),
+      custom:sc.custom||med.custom||'',
+      notes:med.note||'',
+      mode:useCustom?'custom':'std'};
   });
   txRenderSlots();
 }
@@ -3154,14 +3165,12 @@ function txRenderPalette(){
   pal.innerHTML=TX_CATS.map(cat=>{
     const meds=TX_MEDS.filter(m=>m.cat===cat.id);
     if(!meds.length)return'';
-    return`<div style="margin-bottom:9px">
-      <div style="font-size:9px;font-weight:700;color:${cat.color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">${cat.label}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:3px">
-        ${meds.map(m=>`<div draggable="true"
-          ondragstart="txDragMedId='${m.id}'"
-          onclick="txAddMedToNextSlot('${m.id}')"
-          style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:3px 9px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;user-select:none"
-          onmouseover="this.style.background='${cat.color}20';this.style.borderColor='${cat.color}';this.style.color='var(--text)'"
+    return`<div style="margin-bottom:10px">
+      <div style="font-size:9px;font-weight:700;color:${cat.color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">${cat.label}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${meds.map(m=>`<div draggable="true" ondragstart="txDragMedId='${m.id}'" onclick="txAddMedToNextSlot('${m.id}')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;user-select:none"
+          onmouseover="this.style.background='${cat.color}18';this.style.borderColor='${cat.color}';this.style.color='var(--text)'"
           onmouseout="this.style.background='var(--surface2)';this.style.borderColor='var(--border)';this.style.color='var(--text2)'">${m.n}</div>`).join('')}
       </div>
     </div>`;
@@ -3169,17 +3178,16 @@ function txRenderPalette(){
 }
 
 function txRenderDoctors(){
-  const dl=document.getElementById('tx-doctor-list');
-  if(!dl)return;
+  const dl=document.getElementById('tx-doctor-list');if(!dl)return;
   dl.innerHTML=TX_DOCTORS.map(d=>{
     const active=txActiveDoctorId===d.id;
     return`<div onclick="txActiveDoctorId='${d.id}';txRenderDoctors();txRenderFooter()"
       style="display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;border:1px solid ${active?'#166534':'var(--border)'};background:${active?'rgba(22,101,52,.08)':'var(--surface2)'};margin-bottom:4px;transition:all .15s">
-      <div style="width:14px;height:14px;border-radius:50%;border:2px solid ${active?'#166534':'var(--border)'};background:${active?'#166534':'transparent'};flex-shrink:0;margin-top:1px;transition:all .15s"></div>
+      <div style="width:13px;height:13px;border-radius:50%;border:2px solid ${active?'#166534':'var(--border)'};background:${active?'#166534':'transparent'};flex-shrink:0;margin-top:2px;transition:all .15s"></div>
       <div>
         <div style="font-size:12px;font-weight:600;color:var(--text)">${d.name}</div>
         ${d.spec?`<div style="font-size:10px;color:var(--text2)">${d.spec}</div>`:''}
-        ${d.col?`<div style="font-size:10px;color:var(--text2)">Colegiado nº ${d.col}</div>`:''}
+        ${d.col?`<div style="font-size:10px;color:var(--text2)">Col. nº ${d.col}</div>`:''}
       </div>
     </div>`;
   }).join('');
@@ -3188,7 +3196,7 @@ function txRenderDoctors(){
 function txRenderFooter(){
   const footer=document.getElementById('tx-footer');if(!footer)return;
   const doc=TX_DOCTORS.find(d=>d.id===txActiveDoctorId)||TX_DOCTORS[0];
-  if(!doc)return;
+  if(!doc||!doc.name)return;
   footer.innerHTML=`<div style="text-align:center;min-width:170px;border-top:1px solid #d1d5db;padding-top:8px">
     <div style="font-size:11px;font-weight:700;color:#1f2937">${doc.name}</div>
     ${doc.spec?`<div style="font-size:10px;color:#6b7280">${doc.spec}</div>`:''}
@@ -3205,48 +3213,94 @@ function txFillSlot(slot,medId){
   const med=TX_MEDS.find(m=>m.id===medId);if(!med)return;
   slot.med=medId;slot.name=med.n;slot.dose=med.d;
   slot.m=med.m||'';slot.nn=med.nn||'';slot.no=med.no||'';
-  slot.custom=med.custom||'';slot.mode=med.custom?'custom':'std';slot.notes='';
+  slot.custom=med.custom||'';slot.notes=med.note||'';
+  slot.mode=med.custom?'custom':'std';
 }
 
-const TX_QUICK=[{l:'1-0-0',m:'1',nn:'0',no:'0'},{l:'0-0-1',m:'0',nn:'0',no:'1'},{l:'1-0-1',m:'1',nn:'0',no:'1'},{l:'0-1-0',m:'0',nn:'1',no:'0'},{l:'1-1-1',m:'1',nn:'1',no:'1'},{l:'½-0-½',m:'½',nn:'0',no:'½'}];
+const TX_QUICK=[{l:'1-0-0',m:'1',nn:'0',no:'0'},{l:'0-0-1',m:'0',nn:'0',no:'1'},{l:'1-0-1',m:'1',nn:'0',no:'1'},{l:'0-1-0',m:'0',nn:'1',no:'0'},{l:'1-1-1',m:'1',nn:'1',no:'1'},{l:'½-0-½',m:'½',nn:'0',no:'½'},{l:'0-0-½',m:'0',nn:'0',no:'½'}];
 
 function txRenderSlots(){
   const container=document.getElementById('tx-slots');if(!container)return;
   container.innerHTML=TX_SLOTS.map((s,idx)=>{
     const filled=!!s.name.trim();
     if(!filled){
-      return`<div data-slot-uid="${s.uid}" ondragover="event.preventDefault();this.style.background='#f0fdf4';this.style.borderColor='#166534'" ondragleave="this.style.background='transparent';this.style.borderColor='#d1d5db'" ondrop="txDropOnSlot('${s.uid}');this.style.background='transparent';this.style.borderColor='#d1d5db'"
-        style="display:flex;align-items:center;gap:8px;border:1.5px dashed #d1d5db;border-radius:5px;padding:7px 10px;margin-bottom:5px;color:#9ca3af;font-size:11px;min-height:34px;transition:all .15s">
-        <span style="font-size:10px;font-weight:700;color:#d1d5db;min-width:14px">${idx+1}</span>
-        <span>Arrastra un fármaco aquí o haz clic en la paleta…</span>
+      return`<div data-slot-uid="${s.uid}"
+        ondragover="event.preventDefault();this.style.background='#f0fdf4';this.style.borderColor='#166534'"
+        ondragleave="this.style.background='transparent';this.style.borderColor='#d1d5db'"
+        ondrop="txDropOnSlot('${s.uid}');this.style.background='transparent';this.style.borderColor='#d1d5db'"
+        style="display:flex;align-items:center;gap:10px;border:1.5px dashed #d1d5db;border-radius:6px;padding:10px 12px;margin-bottom:6px;color:#9ca3af;font-size:11px;transition:all .15s;min-height:40px">
+        <span style="font-size:11px;font-weight:700;color:#d1d5db;min-width:16px;text-align:right">${idx+1}</span>
+        <span>Arrastra un fármaco aquí · o haz clic en la paleta</span>
       </div>`;
     }
     const isStd=s.mode==='std';
     const qBtns=TX_QUICK.map(q=>{
       const active=s.m===q.m&&s.nn===q.nn&&s.no===q.no;
-      return`<span onclick="txSetSlotSched('${s.uid}','${q.m}','${q.nn}','${q.no}')" style="font-size:10px;padding:2px 6px;border-radius:8px;cursor:pointer;border:1px solid ${active?'#166534':'#d1d5db'};background:${active?'#166534':'transparent'};color:${active?'#fff':'#6b7280'};transition:all .1s">${q.l}</span>`;
+      return`<span onclick="txSetSlotSched('${s.uid}','${q.m}','${q.nn}','${q.no}')"
+        style="font-size:10px;padding:3px 7px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${active?'#166534':'#e5e7eb'};background:${active?'#166534':'transparent'};color:${active?'#fff':'#9ca3af'};transition:all .1s">${q.l}</span>`;
     }).join('');
-    return`<div data-slot-uid="${s.uid}" ondragover="event.preventDefault();this.style.outline='2px solid #166534'" ondragleave="this.style.outline='none'" ondrop="txDropOnSlot('${s.uid}');this.style.outline='none'"
-      style="border:1px solid #e5e7eb;border-radius:5px;padding:7px 10px;margin-bottom:5px;background:#fafafa;transition:outline .1s">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-        <span style="font-size:10px;font-weight:700;color:#9ca3af;min-width:14px">${idx+1}</span>
-        <input value="${s.name.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','name',this.value)" style="font-weight:700;font-size:13px;color:#111;border:none;outline:none;background:transparent;flex:1;font-family:inherit">
-        <input value="${s.dose.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','dose',this.value)" placeholder="dosis" style="font-size:11px;color:#6b7280;border:none;border-bottom:1px solid #e5e7eb;outline:none;background:transparent;width:72px;text-align:right;font-family:inherit">
-        <button onclick="txClearSlot('${s.uid}')" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;cursor:pointer;border-radius:5px;font-size:13px;font-weight:700;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" onmouseover="this.style.background='#dc2626';this.style.color='#fff'" onmouseout="this.style.background='#fee2e2';this.style.color='#dc2626'">✕</button>
+    return`<div data-slot-uid="${s.uid}"
+      ondragover="event.preventDefault();this.style.outline='2px solid #166534'"
+      ondragleave="this.style.outline='none'"
+      ondrop="txDropOnSlot('${s.uid}');this.style.outline='none'"
+      style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:8px;background:#fafafa;transition:outline .1s">
+
+      <!-- Fila nombre + dosis + borrar -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;color:#9ca3af;min-width:16px;text-align:right">${idx+1}</span>
+        <input value="${s.name.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','name',this.value)"
+          style="font-weight:700;font-size:14px;color:#111;border:none;outline:none;background:transparent;flex:1;font-family:inherit">
+        <input value="${s.dose.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','dose',this.value)" placeholder="dosis"
+          style="font-size:12px;color:#6b7280;border:none;border-bottom:1px solid #e5e7eb;outline:none;background:transparent;width:80px;text-align:right;font-family:inherit;padding-bottom:1px">
+        <button onclick="txClearSlot('${s.uid}')"
+          style="background:#fee2e2;border:2px solid #fca5a5;color:#dc2626;cursor:pointer;border-radius:6px;font-size:14px;font-weight:900;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:all .15s"
+          onmouseover="this.style.background='#dc2626';this.style.borderColor='#dc2626';this.style.color='#fff'"
+          onmouseout="this.style.background='#fee2e2';this.style.borderColor='#fca5a5';this.style.color='#dc2626'">✕</button>
       </div>
-      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
-        <span onclick="txSetSlotMode('${s.uid}','std')" style="font-size:10px;padding:2px 6px;border-radius:8px;cursor:pointer;border:1px solid ${isStd?'#166534':'#d1d5db'};background:${isStd?'#166534':'transparent'};color:${isStd?'#fff':'#9ca3af'}">M-MD-N</span>
-        <span onclick="txSetSlotMode('${s.uid}','custom')" style="font-size:10px;padding:2px 6px;border-radius:8px;cursor:pointer;border:1px solid ${!isStd?'#166534':'#d1d5db'};background:${!isStd?'#166534':'transparent'};color:${!isStd?'#fff':'#9ca3af'}">Libre</span>
-        ${isStd?`
-        <input value="${s.m}" oninput="txSlotField('${s.uid}','m',this.value)" style="width:28px;text-align:center;border:1px solid #e5e7eb;border-radius:4px;padding:2px;font-size:11px;outline:none;font-family:inherit" title="Mañana">
-        <span style="font-size:9px;color:#9ca3af">·</span>
-        <input value="${s.nn}" oninput="txSlotField('${s.uid}','nn',this.value)" style="width:28px;text-align:center;border:1px solid #e5e7eb;border-radius:4px;padding:2px;font-size:11px;outline:none;font-family:inherit" title="Mediodía">
-        <span style="font-size:9px;color:#9ca3af">·</span>
-        <input value="${s.no}" oninput="txSlotField('${s.uid}','no',this.value)" style="width:28px;text-align:center;border:1px solid #e5e7eb;border-radius:4px;padding:2px;font-size:11px;outline:none;font-family:inherit" title="Noche">
-        <span style="color:#d1d5db;margin:0 2px">|</span>${qBtns}
-        `:`<input value="${s.custom.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','custom',this.value)" placeholder="Ej: A demanda, máx 3/día..." style="flex:1;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;font-size:11px;outline:none;font-family:inherit;min-width:160px">`}
+
+      <!-- Posología -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-left:24px;margin-bottom:6px">
+        <span onclick="txSetSlotMode('${s.uid}','std')"
+          style="font-size:10px;padding:3px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${isStd?'#166534':'#e5e7eb'};background:${isStd?'#166534':'transparent'};color:${isStd?'#fff':'#9ca3af'}">Desayuno · Comida · Cena</span>
+        <span onclick="txSetSlotMode('${s.uid}','custom')"
+          style="font-size:10px;padding:3px 8px;border-radius:8px;cursor:pointer;font-weight:600;border:1px solid ${!isStd?'#166534':'#e5e7eb'};background:${!isStd?'#166534':'transparent'};color:${!isStd?'#fff':'#9ca3af'}">Posología libre</span>
       </div>
-      <input value="${(s.notes||'').replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','notes',this.value)" placeholder="Observaciones (opcional)…" style="margin-top:4px;width:100%;border:none;border-top:1px dashed #e5e7eb;padding-top:3px;font-size:10px;color:#9ca3af;outline:none;background:transparent;font-family:inherit;box-sizing:border-box">
+
+      ${isStd?`
+      <div style="display:flex;align-items:flex-end;gap:8px;padding-left:24px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="display:flex;align-items:flex-end;gap:6px">
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#9ca3af;margin-bottom:2px;text-transform:uppercase">Desayuno</div>
+            <input value="${s.m}" oninput="txSlotField('${s.uid}','m',this.value)"
+              style="width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:4px 2px;font-size:14px;font-weight:700;outline:none;font-family:inherit;color:#166534">
+          </div>
+          <div style="color:#d1d5db;font-size:18px;font-weight:300;margin-bottom:4px">–</div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#9ca3af;margin-bottom:2px;text-transform:uppercase">Comida</div>
+            <input value="${s.nn}" oninput="txSlotField('${s.uid}','nn',this.value)"
+              style="width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:4px 2px;font-size:14px;font-weight:700;outline:none;font-family:inherit;color:#166534">
+          </div>
+          <div style="color:#d1d5db;font-size:18px;font-weight:300;margin-bottom:4px">–</div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#9ca3af;margin-bottom:2px;text-transform:uppercase">Cena</div>
+            <input value="${s.no}" oninput="txSlotField('${s.uid}','no',this.value)"
+              style="width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:4px 2px;font-size:14px;font-weight:700;outline:none;font-family:inherit;color:#166534">
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;padding-bottom:2px">${qBtns}</div>
+      </div>`
+      :`<div style="padding-left:24px;margin-bottom:6px">
+        <input value="${s.custom.replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','custom',this.value)" placeholder="Ej: 30mg/día primera semana, 20mg/día segunda semana…"
+          style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:12px;outline:none;font-family:inherit;color:#374151;background:#fff;box-sizing:border-box">
+      </div>`}
+
+      <!-- Observaciones -->
+      <div style="padding-left:24px">
+        <div style="font-size:9px;color:#9ca3af;margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em">Observaciones</div>
+        <input value="${(s.notes||'').replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','notes',this.value)" placeholder="Ej: Tomar con alimentos · Evitar alcohol · Reducir dosis gradualmente…"
+          style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;outline:none;font-family:inherit;background:#fff;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#e5e7eb'">
+      </div>
     </div>`;
   }).join('');
 }
@@ -3281,8 +3335,8 @@ document.addEventListener('click',e=>{
 
 function txFormatSched(s){
   if(s.mode==='custom')return s.custom;
-  const v=[s.m,s.nn,s.no],l=['mañana','mediodía','noche'];
-  return v.map((x,i)=>x&&x!=='0'?`${x} ${l[i]}`:'').filter(Boolean).join(' + ')||'';
+  const v=[s.m,s.nn,s.no];
+  return v.map(x=>x||'0').join(' – ');
 }
 
 function txPrint(){
@@ -3291,40 +3345,74 @@ function txPrint(){
   const diag=document.getElementById('tx-diag')?.value||'';
   const rows=TX_SLOTS.filter(s=>s.name.trim());
   const doc=TX_DOCTORS.find(d=>d.id===txActiveDoctorId)||TX_DOCTORS[0];
+
+  const tableRows=rows.map((s,i)=>{
+    const isStd=s.mode==='std';
+    const posRow=isStd
+      ?`<td style="text-align:center;font-size:13px;font-weight:700;color:#166534">${s.m||'0'}</td>
+         <td style="text-align:center;font-size:13px;font-weight:700;color:#166534">${s.nn||'0'}</td>
+         <td style="text-align:center;font-size:13px;font-weight:700;color:#166534">${s.no||'0'}</td>
+         <td style="font-size:11px;color:#374151">—</td>`
+      :`<td colspan="3" style="font-size:11px;color:#374151;font-style:italic">${s.custom}</td>
+         <td></td>`;
+    return`<tr style="background:${i%2?'#f9fafb':'#fff'}">
+      <td style="text-align:center;color:#9ca3af;font-weight:700;font-size:12px">${i+1}</td>
+      <td><strong style="font-size:13px">${s.name}</strong></td>
+      <td style="color:#374151;font-size:12px">${s.dose}</td>
+      ${posRow}
+      <td style="font-size:11px;color:#6b7280;font-style:italic">${s.notes||''}</td>
+    </tr>`;
+  }).join('');
+
   const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pauta de tratamiento</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;padding:18mm 20mm;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;position:relative}
-.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.045;width:55%;z-index:0;pointer-events:none}
-.content{position:relative;z-index:1}
-table{width:100%;border-collapse:collapse}
-th{background:#f3f4f6;font-size:10px;font-weight:700;color:#374151;padding:6px 8px;border-bottom:2px solid #166534;text-align:left}
-td{padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:11px;vertical-align:top}
-tr:nth-child(even) td{background:#f9fafb}
-@media print{body{margin:15mm 18mm}}
-</style>
-</head><body>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;padding:18mm 20mm;position:relative}
+.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.04;width:56%;z-index:0;pointer-events:none}
+.c{position:relative;z-index:1}
+table{width:100%;border-collapse:collapse;margin-top:4px}
+th{padding:8px 10px;font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #166534;border-top:1px solid #e5e7eb;background:#f9fafb}
+th.pos{text-align:center;width:52px}
+td{padding:10px 10px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+@media print{body{padding:14mm 16mm}}
+</style></head><body>
 <img class="wm" src="${TX_LOGO}">
-<div class="content">
-<div style="display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:10px;margin-bottom:14px;border-bottom:2px solid #166534">
-  <img src="${TX_LOGO}" style="height:50px;object-fit:contain">
-  <div style="text-align:right;font-size:11px;color:#374151">${fecha}</div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;font-size:12px">
-  <div><span style="font-size:9px;color:#6b7280;text-transform:uppercase;display:block;margin-bottom:2px">Paciente</span><strong>${pac||'_________________________'}</strong></div>
-  ${diag?`<div><span style="font-size:9px;color:#6b7280;text-transform:uppercase;display:block;margin-bottom:2px">Diagnóstico</span>${diag}</div>`:'<div></div>'}
-</div>
-<table>
-  <thead><tr><th style="width:4%">#</th><th style="width:32%">Medicamento</th><th style="width:12%">Dosis</th><th style="width:34%">Pauta posológica</th><th>Observaciones</th></tr></thead>
-  <tbody>${rows.map((s,i)=>`<tr><td style="color:#9ca3af;font-weight:700">${i+1}</td><td><strong>${s.name}</strong></td><td style="color:#374151">${s.dose}</td><td>${txFormatSched(s)}</td><td style="color:#6b7280">${s.notes||''}</td></tr>`).join('')}</tbody>
-</table>
-${doc?`<div style="margin-top:36px;display:flex;justify-content:flex-end">
-  <div style="text-align:center;min-width:180px;border-top:1px solid #9ca3af;padding-top:8px">
-    <div style="font-size:11px;font-weight:700">${doc.name}</div>
-    ${doc.spec?`<div style="font-size:10px;color:#6b7280">${doc.spec}</div>`:''}
-    ${doc.col?`<div style="font-size:10px;color:#6b7280">Colegiado nº ${doc.col}</div>`:''}
+<div class="c">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:16px;border-bottom:2.5px solid #166534">
+    <img src="${TX_LOGO}" style="height:52px;object-fit:contain">
+    <div style="font-size:11px;color:#6b7280">${fecha}</div>
   </div>
-</div>`:''}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+    <div>
+      <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Paciente</div>
+      <div style="font-size:14px;font-weight:700">${pac||'_________________________'}</div>
+    </div>
+    ${diag?`<div>
+      <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Diagnóstico / Motivo</div>
+      <div style="font-size:13px">${diag}</div>
+    </div>`:''}
+  </div>
+  <table>
+    <thead><tr>
+      <th style="width:32px;text-align:center">#</th>
+      <th style="width:28%">Medicamento</th>
+      <th style="width:12%">Dosis</th>
+      <th class="pos">Desayuno</th>
+      <th class="pos">Comida</th>
+      <th class="pos">Cena</th>
+      <th style="width:18%">Posología libre</th>
+      <th>Observaciones</th>
+    </tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+  ${doc&&doc.name?`<div style="margin-top:40px;display:flex;justify-content:flex-end">
+    <div style="text-align:center;min-width:190px;border-top:1.5px solid #9ca3af;padding-top:10px">
+      <div style="font-size:12px;font-weight:700">${doc.name}</div>
+      ${doc.spec?`<div style="font-size:10px;color:#6b7280">${doc.spec}</div>`:''}
+      ${doc.col?`<div style="font-size:10px;color:#6b7280">Colegiado nº ${doc.col}</div>`:''}
+    </div>
+  </div>`:''}
 </div>
 <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close();}<\/script>
 </body></html>`;
