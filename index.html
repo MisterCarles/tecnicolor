@@ -483,10 +483,11 @@ textarea::placeholder{color:var(--text2)}
           <div id="tx-footer" style="margin-top:auto;padding-top:16px;display:flex;justify-content:flex-end"></div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="nav-btn" style="background:#166534;color:#fff;border-color:#166534;flex:1;padding:10px;font-size:13px;font-weight:700" onclick="txPrint()">🖨️ Imprimir / PDF</button>
-        <button class="nav-btn" style="padding:10px;font-size:13px" onclick="txNueva()">+ Nueva pauta</button>
-        <button class="nav-btn" style="padding:10px;font-size:13px;color:#dc2626;border-color:#fca5a5" onclick="txBorrarTodo()">🗑 Borrar todo</button>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="nav-btn" style="background:#166534;color:#fff;border-color:#166534;flex:2;padding:10px;font-size:13px;font-weight:700" onclick="txPrint()">🖨️ Imprimir / PDF</button>
+        <button class="nav-btn" style="padding:10px;font-size:13px;flex:1" onclick="txEmail()">📧 Correo</button>
+        <button class="nav-btn" style="padding:10px;font-size:13px;flex:1" onclick="txNueva()">+ Nueva</button>
+        <button class="nav-btn" style="padding:10px;font-size:13px;color:#dc2626;border-color:#fca5a5;flex:1" onclick="txBorrarTodo()">🗑 Borrar</button>
       </div>
     </div>
 
@@ -3136,17 +3137,26 @@ function showTratamiento(){
   txRenderFooter();
 }
 
+let txActivePack=null;
 function txRenderPacks(){
-  document.getElementById('tx-packs-list').innerHTML=TX_PACKS.map(p=>
-    `<button onclick="txLoadPack('${p.id}')" style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;color:var(--text);font-size:12px;font-weight:600;text-align:left;transition:border-color .15s;width:100%" onmouseover="this.style.borderColor='#166534'" onmouseout="this.style.borderColor='var(--border)'">
+  document.getElementById('tx-packs-list').innerHTML=TX_PACKS.map(p=>{
+    const active=txActivePack===p.id;
+    return`<button onclick="txLoadPack('${p.id}')" style="display:flex;align-items:center;gap:8px;background:${active?'rgba(22,101,52,.12)':'var(--surface2)'};border:1px solid ${active?'#166534':'var(--border)'};border-radius:7px;padding:7px 11px;cursor:pointer;color:var(--text);font-size:12px;font-weight:600;text-align:left;transition:all .15s;width:100%">
       <span style="font-size:15px">${p.emoji}</span><span style="flex:1">${p.label}</span>
-    </button>`
-  ).join('');
+      ${active?'<span style="font-size:10px;color:#166534">✓</span>':''}
+    </button>`;
+  }).join('');
 }
 
 function txLoadPack(id){
+  if(txActivePack===id){
+    txActivePack=null;
+    TX_SLOTS.forEach(s=>{s.med=null;s.name='';s.dose='';s.m='';s.nn='';s.no='';s.custom='';s.notes='';s.rescueMax='3';s.mode='std';});
+    txRenderPacks();txRenderSlots();txRenderPalette();return;
+  }
+  txActivePack=id;
   const pack=TX_PACKS.find(p=>p.id===id);if(!pack)return;
-  TX_SLOTS.forEach(s=>{s.med=null;s.name='';s.dose='';s.m='';s.nn='';s.no='';s.custom='';s.notes='';s.mode='std';});
+  TX_SLOTS.forEach(s=>{s.med=null;s.name='';s.dose='';s.m='';s.nn='';s.no='';s.custom='';s.notes='';s.rescueMax='3';s.mode='std';});
   pack.meds.forEach((mid,i)=>{
     if(i>=TX_SLOTS.length)return;
     const med=TX_MEDS.find(m=>m.id===mid);if(!med)return;
@@ -3156,8 +3166,7 @@ function txLoadPack(id){
       m:sc.m!==undefined?sc.m:(med.m||''),nn:sc.nn!==undefined?sc.nn:(med.nn||''),no:sc.no!==undefined?sc.no:(med.no||''),
       custom:sc.custom||med.custom||'',notes:med.note||'',mode:useCustom?'custom':'std'};
   });
-  txRenderSlots();
-  txRenderPalette();
+  txRenderPacks();txRenderSlots();txRenderPalette();
 }
 
 function txRenderPalette(){
@@ -3302,6 +3311,11 @@ function txRenderSlots(){
           style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:12px;outline:none;font-family:inherit;color:#374151;background:#fff;box-sizing:border-box">
       </div>`}
 
+      <div style="padding-left:22px;margin-top:4px">
+        <input value="${(s.notes||'').replace(/"/g,'&quot;')}" oninput="txSlotField('${s.uid}','notes',this.value)" placeholder="Observaciones (tomar con alimentos, evitar alcohol…)"
+          style="width:100%;border:none;border-bottom:1px dashed #e5e7eb;padding:3px 0;font-size:10px;color:#9ca3af;outline:none;font-family:inherit;background:transparent;box-sizing:border-box"
+          onfocus="this.style.borderBottomColor='#166534';this.style.color='#374151'" onblur="this.style.borderBottomColor='#e5e7eb';this.style.color='#9ca3af'">
+      </div>
     </div>`;
   }).join('');
 }
@@ -3365,10 +3379,12 @@ function txPrint(){
       :isRescue
       ?`<td colspan="3" style="font-size:11px;color:#b45309;font-weight:600;padding:8px 10px">🆘 A demanda si dolor · máx. ${s.rescueMax||'3'} comp./día (separados ≥8h)</td>`
       :`<td colspan="3" style="font-size:11px;color:#374151;font-style:italic;padding:8px 10px">${s.custom}</td>`;
+    const notesCell=s.notes?`<td style="font-size:10px;color:#6b7280;font-style:italic;max-width:120px">${s.notes}</td>`:`<td></td>`;
     return`<tr>
       <td style="text-align:center;color:#d1d5db;font-weight:700;font-size:11px;width:24px">${i+1}</td>
       <td style="padding:10px"><strong style="font-size:15px;display:block;font-family:'Calibri','Candara',Georgia,serif">${s.name}</strong><span style="font-size:11px;color:#6b7280">${s.dose}</span></td>
       ${posCells}
+      ${notesCell}
     </tr>`;
   }).join('');
 
@@ -3410,17 +3426,16 @@ tr:last-child td{border-bottom:none}
       <th class="pos">☀️<br>Mañana</th>
       <th class="pos">🌤️<br>Mediodía</th>
       <th class="pos">🌙<br>Noche</th>
+      <th style="font-size:9px">Observaciones</th>
     </tr></thead>
     <tbody>${tableRows}</tbody>
   </table>
   ${doc&&doc.name?`<div style="margin-top:36px;display:flex;justify-content:flex-end;align-items:flex-end;gap:20px">
-    ${doc.id==='d1'?`<div style="position:relative;width:110px;height:110px;flex-shrink:0">
-      <img src="${TX_SELLO}" style="position:absolute;top:0;left:0;width:110px;height:110px;transform:rotate(-7deg) translate(-4px,2px);mix-blend-mode:multiply;opacity:0.82;filter:sepia(30%) saturate(200%) hue-rotate(200deg) brightness(0.75)">
-    </div>`:''}
-    <div style="text-align:center;min-width:180px;border-top:1.5px solid #d1d5db;padding-top:10px">
-      <div style="font-size:12px;font-weight:700">${doc.name}</div>
-      ${doc.spec?`<div style="font-size:10px;color:#6b7280">${doc.spec}</div>`:''}
-      ${doc.col?`<div style="font-size:10px;color:#6b7280">Col. nº ${doc.col}</div>`:''}
+    <div style="text-align:center;min-width:200px;border-top:1.5px solid #d1d5db;padding-top:10px;position:relative">
+      ${doc.id==='d1'?`<img src="${TX_SELLO}" style="position:absolute;top:-55px;left:50%;transform:translateX(-50%) rotate(-6deg);width:130px;height:130px;opacity:0.22;mix-blend-mode:multiply;pointer-events:none">`:''}
+      <div style="position:relative;font-size:12px;font-weight:700">${doc.name}</div>
+      ${doc.spec?`<div style="position:relative;font-size:10px;color:#6b7280">${doc.spec}</div>`:''}
+      ${doc.col?`<div style="position:relative;font-size:10px;color:#6b7280">Col. nº ${doc.col}</div>`:''}
     </div>
   </div>`:''}
 </div>
@@ -3431,6 +3446,16 @@ tr:last-child td{border-bottom:none}
   const w=window.open(url,'_blank');
   if(!w){alert('Permite ventanas emergentes para imprimir el PDF.');URL.revokeObjectURL(url);}
   else{setTimeout(()=>URL.revokeObjectURL(url),60000);}
+}
+
+function txEmail(){
+  const pac=document.getElementById('tx-paciente')?.value||'Paciente';
+  const doc=TX_DOCTORS.find(d=>d.id===txActiveDoctorId)||TX_DOCTORS[0];
+  const farmacos=TX_SLOTS.filter(s=>s.name.trim()).map(s=>s.name).join(', ');
+  const subject=encodeURIComponent(`Pauta de tratamiento — ${pac}`);
+  const body=encodeURIComponent(`Estimado/a paciente,\n\nAdjunto encontrará su pauta de tratamiento.\n\nFármacos prescritos: ${farmacos}\n\nSaludos,\n${doc.name}`);
+  txPrint();
+  setTimeout(()=>window.location.href=`mailto:?subject=${subject}&body=${body}`,800);
 }
 
 function txBorrarTodo(){
