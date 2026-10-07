@@ -763,7 +763,7 @@ function initSplash(){
   document.getElementById('sq').textContent=`"${item.q}"`;
   document.getElementById('sa').textContent=`— ${item.a}`;
   const vid=document.getElementById('sp-video');
-  if(vid){vid.style.display='block';vid.play().catch(()=>{});}
+  if(vid){const vids=['splash.mp4','intro2.mp4'];vid.src=vids[Math.floor(Math.random()*vids.length)];vid.style.display='block';vid.play().catch(()=>{});}
   else if(PORTADAS_N>0){
     const n=Math.floor(Math.random()*PORTADAS_N)+1;
     const img=document.getElementById('sp-portada');
