@@ -440,7 +440,7 @@ textarea::placeholder{color:var(--text2)}
         <div style="display:flex;flex-direction:column;gap:5px" id="tx-packs-list"></div>
       </div>
       <div style="position:relative;margin-bottom:10px">
-        <input type="text" id="tx-search" placeholder="🔍 Buscar fármaco..." class="tx-inp" oninput="txSearch(this.value)" autocomplete="off">
+        <input type="text" id="tx-search" placeholder="🔍 Buscar fármaco..." class="tx-inp" oninput="txSearch(this.value)" onfocus="txSearch(this.value)" autocomplete="off">
         <div id="tx-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;z-index:200;overflow:hidden;margin-top:4px;box-shadow:0 8px 24px #0008"></div>
       </div>
       <div id="tx-palette"></div>
@@ -777,7 +777,45 @@ function dismissSplash(){
   clearTimeout(splashTimer);
   const el=document.getElementById('splash');
   el.classList.add('fade-out');
-  setTimeout(()=>{el.remove();showSelector();},750);
+  setTimeout(()=>{el.remove();showMatrixChoice();},750);
+}
+function showMatrixChoice(){
+  const d=document.createElement('div');
+  d.id='matrix-choice';
+  d.style.cssText='position:fixed;inset:0;z-index:990;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px';
+  d.innerHTML=`
+    <div style="font-family:Georgia,serif;color:#e5e7eb;font-size:15px;letter-spacing:.12em;text-align:center;text-transform:uppercase;opacity:.7">Elige</div>
+    <div style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center">
+      <button onclick="pickMatrix('tecnicas')"
+        style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8);border:2px solid #3b82f6;border-radius:50%;width:130px;height:130px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 0 30px rgba(59,130,246,.3)"
+        onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 0 50px rgba(59,130,246,.6)'"
+        onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 0 30px rgba(59,130,246,.3)'">
+        <span style="font-size:36px">💉</span>
+        <span style="color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Técnicas</span>
+      </button>
+      <div style="color:#4b5563;font-size:22px;font-weight:200">·</div>
+      <button onclick="pickMatrix('farmacos')"
+        style="background:linear-gradient(135deg,#7f1d1d,#dc2626);border:2px solid #ef4444;border-radius:50%;width:130px;height:130px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 0 30px rgba(239,68,68,.3)"
+        onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 0 50px rgba(239,68,68,.6)'"
+        onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 0 30px rgba(239,68,68,.3)'">
+        <span style="font-size:36px">💊</span>
+        <span style="color:#fca5a5;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Fármacos</span>
+      </button>
+    </div>
+    <div style="color:#374151;font-size:11px;letter-spacing:.08em;text-align:center">Tecnicolor · Unidad del Dolor</div>
+  `;
+  document.body.appendChild(d);
+}
+function pickMatrix(choice){
+  const d=document.getElementById('matrix-choice');
+  if(d){d.style.opacity='0';d.style.transition='opacity .4s';setTimeout(()=>d.remove(),400);}
+  if(choice==='farmacos'){
+    document.getElementById('app-header').classList.remove('hidden');
+    showTratamiento();
+  } else {
+    document.getElementById('app-header').classList.remove('hidden');
+    showSelector();
+  }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3071,14 +3109,25 @@ const TX_MEDS=[
   {id:'pred20',   cat:'cort',  n:'Prednisona 20 mg',         d:'20 mg',       m:'1', nn:'0', no:'0', note:'Tomar con el desayuno'},
   {id:'pred30',   cat:'cort',  n:'Prednisona 30 mg',         d:'30 mg',       m:'1', nn:'0', no:'0', note:'Tomar con el desayuno'},
   {id:'pred60',   cat:'cort',  n:'Prednisona 60 mg',         d:'60 mg',       m:'1', nn:'0', no:'0', note:'Tomar con el desayuno'},
-  // Opioides
-  {id:'tram50',   cat:'opiac', n:'Tramadol retard 50 mg',    d:'50 mg',       m:'1', nn:'0', no:'1'},
-  {id:'tram100',  cat:'opiac', n:'Tramadol retard 100 mg',   d:'100 mg',      m:'1', nn:'0', no:'1'},
-  {id:'tram150',  cat:'opiac', n:'Tramadol retard 150 mg',   d:'150 mg',      m:'1', nn:'0', no:'1'},
-  {id:'zaldiar',  cat:'opiac', n:'Tramadol/Paracetamol',     d:'37,5/325 mg', m:'1', nn:'1', no:'1'},
-  {id:'tap5050',  cat:'opiac', n:'Tapentadol 50 mg',         d:'50 mg',       m:'1', nn:'0', no:'1'},
-  {id:'tap75',    cat:'opiac', n:'Tapentadol 75 mg',         d:'75 mg',       m:'1', nn:'0', no:'0'},
-  {id:'tap100',   cat:'opiac', n:'Tapentadol 100 mg',        d:'100 mg',      m:'0', nn:'0', no:'1'},
+  // Opioides débiles / combinados
+  {id:'tram50',   cat:'opiac', n:'Tramadol retard 50 mg',       d:'50 mg',       m:'1', nn:'0', no:'1'},
+  {id:'tram100',  cat:'opiac', n:'Tramadol retard 100 mg',      d:'100 mg',      m:'1', nn:'0', no:'1'},
+  {id:'tram150',  cat:'opiac', n:'Tramadol retard 150 mg',      d:'150 mg',      m:'1', nn:'0', no:'1'},
+  {id:'diliban',  cat:'opiac', n:'Diliban 100 mg',              d:'100 mg ret.', m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'zaldiar',  cat:'opiac', n:'Zaldiar (tramadol/PCM)',      d:'37,5/325 mg', m:'1', nn:'1', no:'1'},
+  {id:'velyntra', cat:'opiac', n:'Velyntra (aceclofenaco/tram)',d:'100/37,5 mg', m:'1', nn:'0', no:'1', note:'Tomar con alimentos · no asociar otros AINEs'},
+  // Opioides mayores
+  {id:'tap5050',  cat:'opiac', n:'Palexia retard 50 mg',        d:'50 mg',       m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'tap75',    cat:'opiac', n:'Palexia retard 75 mg',        d:'75 mg',       m:'1', nn:'0', no:'0', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'tap100',   cat:'opiac', n:'Palexia retard 100 mg',       d:'100 mg',      m:'0', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'tap150',   cat:'opiac', n:'Palexia retard 150 mg',       d:'150 mg',      m:'0', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'edunix50', cat:'opiac', n:'Edunix 50 mg',                d:'50 mg',       m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'targin',   cat:'opiac', n:'Targin 10/5 mg',              d:'10/5 mg',     m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria · no triturar'},
+  {id:'targin20', cat:'opiac', n:'Targin 20/10 mg',             d:'20/10 mg',    m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria · no triturar'},
+  {id:'metadona', cat:'opiac', n:'Metadona 5 mg',               d:'5 mg',        m:'', nn:'', no:'', custom:'Según pauta pautada por Unidad del Dolor', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'fent25',   cat:'opiac', n:'Fentanilo parche 25 mcg/h',   d:'25 mcg/h',    m:'', nn:'', no:'', custom:'Aplicar un parche cada 72 horas · rotar zona de aplicación', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'fent50',   cat:'opiac', n:'Fentanilo parche 50 mcg/h',   d:'50 mcg/h',    m:'', nn:'', no:'', custom:'Aplicar un parche cada 72 horas · rotar zona de aplicación', note:'No conducir ni manejar maquinaria durante el tratamiento'},
+  {id:'fent75',   cat:'opiac', n:'Fentanilo parche 75 mcg/h',   d:'75 mcg/h',    m:'', nn:'', no:'', custom:'Aplicar un parche cada 72 horas · rotar zona de aplicación', note:'No conducir ni manejar maquinaria durante el tratamiento'},
   // Tópicos
   {id:'lido5p',   cat:'topico',n:'Lidocaína 5% parche',      d:'parche',      m:'', nn:'', no:'', custom:'Aplicar sobre zona dolorosa · 12 h puesto / 12 h retirado · hasta 3 parches simultáneos'},
   {id:'dmso50',   cat:'topico',n:'DMSO 50% tópico',          d:'tópico',      m:'1', nn:'1', no:'1', note:'Aplicar sobre la zona afectada'},
@@ -3333,12 +3382,14 @@ function txRenderSlots(){
     const filled=!!s.name.trim();
     if(!filled){
       return`<div data-slot-uid="${s.uid}"
+        onclick="txOpenSlotEditor('${s.uid}')"
         ondragover="event.preventDefault();this.style.background='#f0fdf4';this.style.borderColor='#166534'"
         ondragleave="this.style.background='transparent';this.style.borderColor='#d1d5db'"
         ondrop="txDropOnSlot('${s.uid}');this.style.background='transparent';this.style.borderColor='#d1d5db'"
-        style="display:flex;align-items:center;gap:10px;border:1.5px dashed #d1d5db;border-radius:6px;padding:9px 12px;margin-bottom:5px;color:#b0b7c3;font-size:11px;transition:all .15s">
+        style="display:flex;align-items:center;gap:10px;border:1.5px dashed #d1d5db;border-radius:6px;padding:9px 12px;margin-bottom:5px;color:#b0b7c3;font-size:11px;transition:all .15s;cursor:pointer"
+        onmouseover="this.style.borderColor='#166534';this.style.color='#166534'" onmouseout="this.style.borderColor='#d1d5db';this.style.color='#b0b7c3'">
         <span style="font-size:10px;font-weight:700;color:#d1d5db;min-width:14px;text-align:right">${idx+1}</span>
-        <span>Arrastra un fármaco aquí · o haz clic en la paleta</span>
+        <span>+ Añadir fármaco</span>
       </div>`;
     }
     const isStd=s.mode==='std';
@@ -3432,17 +3483,92 @@ function txSlotField(uid,field,val){const s=TX_SLOTS.find(x=>x.uid===uid);if(s)s
 function txSetSlotMode(uid,mode){const s=TX_SLOTS.find(x=>x.uid===uid);if(s){s.mode=mode;txRenderSlots();}}
 function txSetSlotSched(uid,m,nn,no){const s=TX_SLOTS.find(x=>x.uid===uid);if(s){s.m=m;s.nn=nn;s.no=no;txRenderSlots();}}
 
+function txOpenSlotEditor(uid){
+  // Abre un mini modal para añadir fármaco a mano o buscar en el slot
+  const existing=document.getElementById('tx-slot-modal');
+  if(existing)existing.remove();
+  const modal=document.createElement('div');
+  modal.id='tx-slot-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:420px;box-shadow:0 20px 60px #0006">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Añadir fármaco al slot ${uid}</div>
+    <input id="tx-slot-search" type="text" placeholder="Buscar o escribir nombre..." autocomplete="off"
+      style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);background:var(--surface);outline:none;box-sizing:border-box;font-family:inherit">
+    <div id="tx-slot-results" style="margin-top:8px;max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="txConfirmSlotManual('${uid}')"
+        style="flex:1;padding:9px;background:#166534;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">✓ Añadir</button>
+      <button onclick="document.getElementById('tx-slot-modal').remove()"
+        style="padding:9px 16px;border:1px solid var(--border);background:transparent;color:var(--text);border-radius:8px;font-size:13px;cursor:pointer">Cancelar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  const inp=modal.querySelector('#tx-slot-search');
+  inp.focus();
+  const res=modal.querySelector('#tx-slot-results');
+  inp.oninput=()=>{
+    const q=inp.value.trim();
+    const nq=txNorm(q);
+    const matches=q?TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)).slice(0,10):TX_MEDS.slice(0,20);
+    if(!matches.length){res.style.display='none';return;}
+    res.innerHTML=matches.map(m=>{
+      const cat=TX_CATS.find(c=>c.id===m.cat);
+      return`<div onmousedown="txFillSlotFromModal('${uid}','${m.id}')"
+        style="padding:9px 13px;cursor:pointer;font-size:12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)"
+        onmouseover="this.style.background='rgba(22,101,52,.08)'" onmouseout="this.style.background='transparent'">
+        <span style="font-weight:600;color:var(--text)">${m.n}</span>
+        <span style="color:${cat?cat.color:'#9ca3af'};font-size:11px">${m.d}</span>
+      </div>`;
+    }).join('');
+    res.style.display='block';
+  };
+  inp.oninput(); // mostrar lista inicial
+}
+function txFillSlotFromModal(uid,medId){
+  const slot=TX_SLOTS.find(s=>s.uid===uid);
+  if(slot)txFillSlot(slot,medId);
+  txRenderSlots();txRenderPalette();
+  const modal=document.getElementById('tx-slot-modal');
+  if(modal)modal.remove();
+}
+function txConfirmSlotManual(uid){
+  const inp=document.getElementById('tx-slot-search');
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name)return;
+  const slot=TX_SLOTS.find(s=>s.uid===uid);
+  if(slot){slot.name=name;slot.dose='';slot.m='1';slot.nn='0';slot.no='1';slot.mode='std';}
+  txRenderSlots();txRenderPalette();
+  document.getElementById('tx-slot-modal').remove();
+}
+
 function txSearch(q){
   const dd=document.getElementById('tx-dropdown');
-  if(q.length<2){dd.style.display='none';return;}
+  if(!q.trim()){
+    // mostrar todos agrupados por categoría cuando el campo está vacío
+    const cats=TX_CATS;
+    dd.innerHTML=cats.map(cat=>{
+      const meds=TX_MEDS.filter(m=>m.cat===cat.id);
+      if(!meds.length)return'';
+      return`<div style="padding:5px 12px 2px;font-size:10px;font-weight:700;color:${cat.color};text-transform:uppercase;letter-spacing:.06em;background:var(--surface2);border-bottom:1px solid var(--border)">${cat.label}</div>`
+        +meds.map(m=>`<div class="tx-dd-item" onmousedown="txAddMedToNextSlot('${m.id}');document.getElementById('tx-search').value='';document.getElementById('tx-dropdown').style.display='none'">
+          <span style="font-weight:600;color:var(--text)">${m.n}</span><span style="color:${cat.color};font-size:11px;margin-left:auto">${m.d}</span>
+        </div>`).join('');
+    }).join('');
+    dd.style.display='block';
+    return;
+  }
   const nq=txNorm(q);
-  const res=TX_MEDS.filter(m=>txNorm(m.n).includes(nq)).slice(0,8);
-  if(!res.length){dd.style.display='none';return;}
-  dd.innerHTML=res.map(m=>
-    `<div class="tx-dd-item" onmousedown="txAddMedToNextSlot('${m.id}');document.getElementById('tx-search').value='';document.getElementById('tx-dropdown').style.display='none'">
-      <span style="font-weight:600">${m.n}</span><span style="color:var(--text2);font-size:11px;margin-left:auto">${m.d}</span>
-    </div>`
-  ).join('');
+  const res=TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div style="padding:10px 14px;font-size:12px;color:#9ca3af">Sin resultados</div>';dd.style.display='block';return;}
+  dd.innerHTML=res.map(m=>{
+    const cat=TX_CATS.find(c=>c.id===m.cat);
+    return`<div class="tx-dd-item" onmousedown="txAddMedToNextSlot('${m.id}');document.getElementById('tx-search').value='';document.getElementById('tx-dropdown').style.display='none'">
+      <span style="font-weight:600;color:var(--text)">${m.n}</span>
+      <span style="color:${cat?cat.color:'#9ca3af'};font-size:11px;margin-left:auto">${m.d}</span>
+    </div>`;
+  }).join('');
   dd.style.display='block';
 }
 document.addEventListener('click',e=>{
