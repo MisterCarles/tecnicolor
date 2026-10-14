@@ -3082,25 +3082,32 @@ const TX_CATS=[
 ];
 const TX_MEDS=[
   // Neuromoduladores
-  {id:'preg75',   cat:'neuro', n:'Pregabalina 75 mg',        d:'75 mg',       m:'1', nn:'0', no:'1'},
-  {id:'preg150',  cat:'neuro', n:'Pregabalina 150 mg',       d:'150 mg',      m:'1', nn:'0', no:'1'},
-  {id:'gaba300',  cat:'neuro', n:'Gabapentina 300 mg',       d:'300 mg',      m:'0', nn:'0', no:'1', note:'Sem 1: 0-0-1 · Sem 2: 1-0-1 · Desde sem 3: 1-1-1'},
-  {id:'gaba400',  cat:'neuro', n:'Gabapentina 400 mg',       d:'400 mg',      m:'1', nn:'1', no:'1'},
-  {id:'lacosa50', cat:'neuro', n:'Lacosamida 50 mg',         d:'50 mg',       m:'1', nn:'0', no:'1'},
-  {id:'lacosa100',cat:'neuro', n:'Lacosamida 100 mg',        d:'100 mg',      m:'1', nn:'0', no:'1'},
+  {id:'preg75',   cat:'neuro', n:'Pregabalina 75 mg',        d:'75 mg',  alias:'lyrica',   m:'1', nn:'0', no:'1'},
+  {id:'preg150',  cat:'neuro', n:'Pregabalina 150 mg',       d:'150 mg', alias:'lyrica',   m:'1', nn:'0', no:'1'},
+  {id:'gaba300',  cat:'neuro', n:'Gabapentina 300 mg',       d:'300 mg', alias:'neurontin',m:'0', nn:'0', no:'1', note:'Sem 1: 0-0-1 · Sem 2: 1-0-1 · Desde sem 3: 1-1-1'},
+  {id:'gaba400',  cat:'neuro', n:'Gabapentina 400 mg',       d:'400 mg', alias:'neurontin',m:'1', nn:'1', no:'1'},
+  {id:'lacosa50', cat:'neuro', n:'Lacosamida 50 mg',         d:'50 mg',  alias:'vimpat',   m:'1', nn:'0', no:'1'},
+  {id:'lacosa100',cat:'neuro', n:'Lacosamida 100 mg',        d:'100 mg', alias:'vimpat',   m:'1', nn:'0', no:'1'},
   // Antidepresivos
-  {id:'amit10',   cat:'antid', n:'Amitriptilina 10 mg',      d:'10 mg',       m:'0', nn:'0', no:'1'},
-  {id:'amit25',   cat:'antid', n:'Amitriptilina 25 mg',      d:'25 mg',       m:'0', nn:'0', no:'1'},
-  {id:'amit50',   cat:'antid', n:'Amitriptilina 50 mg',      d:'50 mg',       m:'0', nn:'0', no:'1'},
-  {id:'dulox30',  cat:'antid', n:'Duloxetina 30 mg',         d:'30 mg',       m:'1', nn:'0', no:'0'},
-  {id:'dulox60',  cat:'antid', n:'Duloxetina 60 mg',         d:'60 mg',       m:'1', nn:'0', no:'0'},
+  {id:'amit10',   cat:'antid', n:'Amitriptilina 10 mg',      d:'10 mg',       m:'0', nn:'0', no:'1', alias:'tryptizol'},
+  {id:'amit25',   cat:'antid', n:'Amitriptilina 25 mg',      d:'25 mg',       m:'0', nn:'0', no:'1', alias:'tryptizol'},
+  {id:'amit50',   cat:'antid', n:'Amitriptilina 50 mg',      d:'50 mg',       m:'0', nn:'0', no:'1', alias:'tryptizol'},
+  {id:'dulox30',  cat:'antid', n:'Duloxetina 30 mg',         d:'30 mg',       m:'1', nn:'0', no:'0', alias:'cymbalta'},
+  {id:'dulox60',  cat:'antid', n:'Duloxetina 60 mg',         d:'60 mg',       m:'1', nn:'0', no:'0', alias:'cymbalta'},
+  {id:'venla75',  cat:'antid', n:'Venlafaxina 75 mg',        d:'75 mg',       m:'1', nn:'0', no:'0', alias:'vandral effexor'},
+  {id:'venla150', cat:'antid', n:'Venlafaxina 150 mg',       d:'150 mg',      m:'1', nn:'0', no:'0', alias:'vandral effexor'},
+  {id:'escital',  cat:'antid', n:'Escitalopram 10 mg',       d:'10 mg',       m:'1', nn:'0', no:'0', alias:'cipralex lexapro'},
+  {id:'trazo50',  cat:'antid', n:'Trazodona 50 mg',          d:'50 mg',       m:'0', nn:'0', no:'1', alias:'deprax'},
+  {id:'trazo100', cat:'antid', n:'Trazodona 100 mg',         d:'100 mg',      m:'0', nn:'0', no:'1', alias:'deprax'},
   // Analgésicos
   {id:'pcm1g',    cat:'analg', n:'Paracetamol 1 g',          d:'1 g',         m:'1', nn:'1', no:'1'},
-  {id:'meta',     cat:'analg', n:'Metamizol 575 mg',         d:'575 mg',      m:'0', nn:'0', no:'0', custom:'A demanda si dolor · máx cada 8 h'},
-  {id:'dexket',   cat:'analg', n:'Dexketoprofeno 25 mg',     d:'25 mg',       m:'0', nn:'0', no:'0', custom:'A demanda si dolor · máx cada 8 h'},
+  {id:'pcmcod',   cat:'analg', n:'Paracetamol/Codeína',      d:'500/30 mg',   m:'1', nn:'1', no:'1', alias:'paracod'},
+  {id:'meta',     cat:'analg', n:'Metamizol 575 mg',         d:'575 mg',      m:'0', nn:'0', no:'0', custom:'A demanda si dolor · máx cada 8 h', alias:'nolotil'},
+  {id:'metaamp',  cat:'analg', n:'Metamizol 2 g amp.',       d:'2 g/amp.',    m:'', nn:'', no:'', custom:'1 ampolla IV/IM cada 8 h si dolor · diluir en 100 mL SF y administrar lento', alias:'nolotil ampollas'},
+  {id:'dexket',   cat:'analg', n:'Dexketoprofeno 25 mg',     d:'25 mg',       m:'0', nn:'0', no:'0', custom:'A demanda si dolor · máx cada 8 h', alias:'enantyum'},
   // AINEs / COX-2
-  {id:'cele200',  cat:'aine',  n:'Celecoxib 200 mg',         d:'200 mg',      m:'1', nn:'0', no:'0'},
-  {id:'etori90',  cat:'aine',  n:'Etoricoxib 90 mg',         d:'90 mg',       m:'1', nn:'0', no:'0'},
+  {id:'cele200',  cat:'aine',  n:'Celecoxib 200 mg',         d:'200 mg', alias:'celebrex', m:'1', nn:'0', no:'0'},
+  {id:'etori90',  cat:'aine',  n:'Etoricoxib 90 mg',         d:'90 mg',  alias:'arcoxia',  m:'1', nn:'0', no:'0'},
   {id:'ibu400',   cat:'aine',  n:'Ibuprofeno 400 mg',        d:'400 mg',      m:'1', nn:'1', no:'1'},
   {id:'ibu600',   cat:'aine',  n:'Ibuprofeno 600 mg',        d:'600 mg',      m:'1', nn:'0', no:'1'},
   // Corticoides
@@ -3110,9 +3117,10 @@ const TX_MEDS=[
   {id:'pred30',   cat:'cort',  n:'Prednisona 30 mg',         d:'30 mg',       m:'1', nn:'0', no:'0', note:'Tomar con el desayuno'},
   {id:'pred60',   cat:'cort',  n:'Prednisona 60 mg',         d:'60 mg',       m:'1', nn:'0', no:'0', note:'Tomar con el desayuno'},
   // Opioides débiles / combinados
-  {id:'tram50',   cat:'opiac', n:'Tramadol retard 50 mg',       d:'50 mg',       m:'1', nn:'0', no:'1'},
-  {id:'tram100',  cat:'opiac', n:'Tramadol retard 100 mg',      d:'100 mg',      m:'1', nn:'0', no:'1'},
-  {id:'tram150',  cat:'opiac', n:'Tramadol retard 150 mg',      d:'150 mg',      m:'1', nn:'0', no:'1'},
+  {id:'tram50',   cat:'opiac', n:'Tramadol retard 50 mg',       d:'50 mg',       m:'1', nn:'0', no:'1', alias:'tradonal adolonta'},
+  {id:'tram100',  cat:'opiac', n:'Tramadol retard 100 mg',      d:'100 mg',      m:'1', nn:'0', no:'1', alias:'tradonal adolonta'},
+  {id:'tram150',  cat:'opiac', n:'Tramadol retard 150 mg',      d:'150 mg',      m:'1', nn:'0', no:'1', alias:'tradonal adolonta'},
+  {id:'tram200',  cat:'opiac', n:'Tramadol retard 200 mg',      d:'200 mg',      m:'1', nn:'0', no:'1', alias:'tradonal adolonta', note:'No conducir ni manejar maquinaria durante el tratamiento'},
   {id:'diliban',  cat:'opiac', n:'Diliban 100 mg',              d:'100 mg ret.', m:'1', nn:'0', no:'1', note:'No conducir ni manejar maquinaria durante el tratamiento'},
   {id:'zaldiar',  cat:'opiac', n:'Zaldiar (tramadol/PCM)',      d:'37,5/325 mg', m:'1', nn:'1', no:'1'},
   {id:'velyntra', cat:'opiac', n:'Velyntra (aceclofenaco/tram)',d:'100/37,5 mg', m:'1', nn:'0', no:'1', note:'Tomar con alimentos · no asociar otros AINEs'},
@@ -3129,13 +3137,15 @@ const TX_MEDS=[
   {id:'fent50',   cat:'opiac', n:'Fentanilo parche 50 mcg/h',   d:'50 mcg/h',    m:'', nn:'', no:'', custom:'Aplicar un parche cada 72 horas · rotar zona de aplicación', note:'No conducir ni manejar maquinaria durante el tratamiento'},
   {id:'fent75',   cat:'opiac', n:'Fentanilo parche 75 mcg/h',   d:'75 mcg/h',    m:'', nn:'', no:'', custom:'Aplicar un parche cada 72 horas · rotar zona de aplicación', note:'No conducir ni manejar maquinaria durante el tratamiento'},
   // Tópicos
-  {id:'lido5p',   cat:'topico',n:'Lidocaína 5% parche',      d:'parche',      m:'', nn:'', no:'', custom:'Aplicar sobre zona dolorosa · 12 h puesto / 12 h retirado · hasta 3 parches simultáneos'},
+  {id:'lido5p',   cat:'topico',n:'Lidocaína 5% parche',      d:'parche', alias:'versatis', m:'', nn:'', no:'', custom:'Aplicar sobre zona dolorosa · 12 h puesto / 12 h retirado · hasta 3 parches simultáneos'},
   {id:'dmso50',   cat:'topico',n:'DMSO 50% tópico',          d:'tópico',      m:'1', nn:'1', no:'1', note:'Aplicar sobre la zona afectada'},
   {id:'ketapom',  cat:'topico',n:'Pomada ketamina',           d:'pomada',      m:'', nn:'', no:'', custom:'Aplicar una capa fina sobre la zona dolorosa 2-3 veces al día'},
   {id:'capspom',  cat:'topico',n:'Capsaicina 0,075% crema',   d:'crema',       m:'', nn:'', no:'', custom:'Aplicar sobre zona dolorosa 3-4 veces al día · puede producir escozor inicial los primeros días'},
   // Gastroprotección
-  {id:'omep',     cat:'gastro',n:'Omeprazol 20 mg',          d:'20 mg',       m:'1', nn:'0', no:'0'},
-  {id:'pantop',   cat:'gastro',n:'Pantoprazol 40 mg',        d:'40 mg',       m:'1', nn:'0', no:'0'},
+  {id:'omep',     cat:'gastro',n:'Omeprazol 20 mg',          d:'20 mg',       m:'1', nn:'0', no:'0', alias:'losec'},
+  {id:'pantop',   cat:'gastro',n:'Pantoprazol 40 mg',        d:'40 mg',       m:'1', nn:'0', no:'0', alias:'pantecta anagastra'},
+  {id:'nexium',   cat:'gastro',n:'Esomeprazol 20 mg',        d:'20 mg',       m:'1', nn:'0', no:'0', alias:'nexium'},
+  {id:'nexium40', cat:'gastro',n:'Esomeprazol 40 mg',        d:'40 mg',       m:'1', nn:'0', no:'0', alias:'nexium'},
   // Otros
   {id:'vitc',     cat:'otros', n:'Vitamina C 1 g',           d:'1 g',         m:'1', nn:'0', no:'0'},
   {id:'alend',    cat:'otros', n:'Alendronato 70 mg',        d:'70 mg',       m:'', nn:'', no:'', custom:'1 comprimido una vez por semana (en ayunas, con agua)'},
@@ -3146,7 +3156,8 @@ const TX_MEDS=[
   {id:'clonaz',   cat:'benzo', n:'Clonazepam gotas',          d:'gotas',       m:'', nn:'', no:'', custom:'____ gotas por la noche'},
   {id:'diaz5',    cat:'benzo', n:'Diazepam 5 mg',             d:'5 mg',        m:'0', nn:'0', no:'1'},
   {id:'diaz10',   cat:'benzo', n:'Diazepam 10 mg',            d:'10 mg',       m:'0', nn:'0', no:'1'},
-  {id:'alpraz',   cat:'benzo', n:'Alprazolam 0,5 mg',         d:'0,5 mg',      m:'0', nn:'0', no:'1'},
+  {id:'alpraz',   cat:'benzo', n:'Alprazolam 0,5 mg',         d:'0,5 mg',      m:'0', nn:'0', no:'1', alias:'trankimazin'},
+  {id:'zolpid',   cat:'benzo', n:'Zolpidem 10 mg',            d:'10 mg',       m:'0', nn:'0', no:'1', alias:'stilnox', note:'Tomar inmediatamente antes de acostarse · no conducir al día siguiente'},
 ];
 
 const TX_PACKS=[
@@ -3510,7 +3521,7 @@ function txOpenSlotEditor(uid){
   inp.oninput=()=>{
     const q=inp.value.trim();
     const nq=txNorm(q);
-    const matches=q?TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)).slice(0,10):TX_MEDS.slice(0,20);
+    const matches=q?TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)||(m.alias&&txNorm(m.alias).includes(nq))).slice(0,10):TX_MEDS.slice(0,20);
     if(!matches.length){res.style.display='none';return;}
     res.innerHTML=matches.map(m=>{
       const cat=TX_CATS.find(c=>c.id===m.cat);
@@ -3560,7 +3571,7 @@ function txSearch(q){
     return;
   }
   const nq=txNorm(q);
-  const res=TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)).slice(0,12);
+  const res=TX_MEDS.filter(m=>txNorm(m.n).includes(nq)||txNorm(m.d).includes(nq)||(m.alias&&txNorm(m.alias).includes(nq))).slice(0,12);
   if(!res.length){dd.innerHTML='<div style="padding:10px 14px;font-size:12px;color:#9ca3af">Sin resultados</div>';dd.style.display='block';return;}
   dd.innerHTML=res.map(m=>{
     const cat=TX_CATS.find(c=>c.id===m.cat);
